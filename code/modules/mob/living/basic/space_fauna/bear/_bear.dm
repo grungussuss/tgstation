@@ -31,6 +31,7 @@
 	friendly_verb_continuous = "bear hugs"
 	friendly_verb_simple = "bear hug"
 
+
 	faction = list(FACTION_RUSSIAN)
 
 	habitable_atmos = null
@@ -55,6 +56,23 @@
 	AddElement(/datum/element/ridable, /datum/component/riding/creature/bear)
 	can_buckle = TRUE
 	buckle_lying = 0
+
+/mob/living/basic/bear/melee_attack(mob/living/target, list/modifiers, ignore_cooldown)
+	. = ..()
+	if (!. || !isliving(target))
+		return
+	emote("roar")
+
+/datum/emote/bear/roar
+	key = "roar"
+	key_third_person = "roars"
+	message = "roars!"
+	message_param = "roars at %t."
+	emote_type = EMOTE_AUDIBLE | EMOTE_VISIBLE
+	sound = pick(
+		'sound/creatures/bear_roar_1.ogg' ,
+		 'sound/creatures/bear_roar_2.ogg',
+		 )
 
 /mob/living/basic/bear/update_icons()
 	..()
