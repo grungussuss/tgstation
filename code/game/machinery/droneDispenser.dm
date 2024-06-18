@@ -136,6 +136,16 @@
 	recharge_sound = null
 	recharge_message = null
 
+/obj/machinery/drone_dispenser/binoculars
+	name = "binoculars fabricator"
+	desc = "A hefty machine that periodically creates a pair of binoculars. Really, Nanotrasen? We're getting this lazy?"
+	energy_used = 0
+	glass_cost = 0
+	iron_cost = 0
+	maximum_idle = 1
+	starting_amount = 25000
+	dispense_type = /obj/item/binoculars
+
 /obj/machinery/drone_dispenser/examine(mob/user)
 	. = ..()
 	var/material_requirement_string = "It needs "
@@ -220,7 +230,7 @@
 	icon_state = icon_on
 	return ..()
 
-/obj/machinery/drone_dispenser/attackby(obj/item/I, mob/living/user)
+/obj/machinery/drone_dispenser/interact_with_atom(obj/item/I, mob/living/user, list/modifiers)
 	if(I.tool_behaviour == TOOL_CROWBAR)
 		materials.retrieve_all()
 		I.play_tool_sound(src)
@@ -229,17 +239,17 @@
 	else if(I.tool_behaviour == TOOL_WELDER)
 		if(!(machine_stat & BROKEN))
 			to_chat(user, span_warning("[src] doesn't need repairs."))
-			return
+			return ITEM_INTERACT_SUCCESS
 
 		if(!I.tool_start_check(user, amount=1))
-			return
+			return ITEM_INTERACT_SUCCESS
 
 		user.visible_message(
 			span_notice("[user] begins patching up [src] with [I]."),
 			span_notice("You begin restoring the damage to [src]..."))
 
 		if(!I.use_tool(src, user, 40, volume=50))
-			return
+			return ITEM_INTERACT_SUCCESS
 
 		user.visible_message(
 			span_notice("[user] fixes [src]!"),
@@ -249,7 +259,7 @@
 		atom_integrity = max_integrity
 		update_appearance()
 	else
-		return ..()
+		return NONE
 
 /obj/machinery/drone_dispenser/atom_break(damage_flag)
 	. = ..()
