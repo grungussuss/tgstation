@@ -17,6 +17,9 @@
 	attack_verb_continuous = list("bops")
 	attack_verb_simple = list("bop")
 
+/obj/item/hand_item/circlegame/attack
+	SEND_SIGNAL(user, COMSIG_LIVING_CIRCLE_MOB, circled)
+
 /obj/item/hand_item/circlegame/Initialize(mapload)
 	. = ..()
 	var/mob/living/owner = loc
