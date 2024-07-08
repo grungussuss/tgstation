@@ -437,6 +437,13 @@
 	if(offered_item.on_offered(src)) // see if the item interrupts with its own behavior
 		return
 
+	if(src.runechat_prefs_check(viewer, EMOTE_MESSAGE))
+		viewer.create_chat_message(
+			speaker = src,
+			raw_message = "offers something",
+			runechat_flags = EMOTE_MESSAGE,
+		)
+
 	visible_message(span_notice("[src] is offering [offered ? "[offered] " : ""][offered_item]."), \
 					span_notice("You offer [offered ? "[offered] " : ""][offered_item]."), null, 2)
 
