@@ -144,6 +144,7 @@
 		pick('sound/effects/wounds/sizzle1.ogg', 'sound/effects/wounds/sizzle2.ogg'),
 		50,
 		vary = TRUE,
+		ignore_walls =  FALSE,
 	)
 
 /datum/component/irradiated/proc/create_glow()

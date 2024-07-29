@@ -180,7 +180,7 @@
 
 	new /obj/item/holochip(get_turf(source), venue_price)
 	venue_to_pay.total_income += venue_price
-	playsound(get_turf(source), 'sound/effects/cashregister.ogg', 60, TRUE)
+	playsound(get_turf(source), 'sound/effects/cashregister.ogg', 60, TRUE, TRUE, FALSE)
 
 
 /////ICE CREAM FLAVOUR DATUM STUFF

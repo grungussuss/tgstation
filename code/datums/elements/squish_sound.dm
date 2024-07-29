@@ -24,4 +24,6 @@
 		soundin = sound_to_play,
 		vol = HAS_TRAIT(crossed, TRAIT_LIGHT_STEP) ? 20 : 50,
 		vary = TRUE,
+		pressure_affected = TRUE,
+		ignore_walls = FALSE,
 	)

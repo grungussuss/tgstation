@@ -35,7 +35,7 @@
 
 /datum/element/venue_price/proc/produce_cash(mob/living/basic/robot_customer/sold_to, obj/item/container)
 	new /obj/item/holochip(get_turf(container), venue_price)
-	playsound(container, 'sound/effects/cashregister.ogg', 60, TRUE)
+	playsound(container, 'sound/effects/cashregister.ogg', 60, TRUE, TRUE, FALSE)
 
 	var/datum/venue/venue_to_pay = sold_to.ai_controller.blackboard[BB_CUSTOMER_ATTENDING_VENUE]
 	venue_to_pay.total_income += venue_price

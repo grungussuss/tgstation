@@ -174,7 +174,7 @@
 /datum/component/transforming/proc/default_transform_message(obj/item/source, mob/user)
 	if(user)
 		source.balloon_alert(user, "[active ? "enabled" : "disabled"] [source]")
-	playsound(source, 'sound/weapons/batonextend.ogg', 50, TRUE)
+	playsound(source, 'sound/weapons/batonextend.ogg', 50, TRUE, TRUE, FALSE)
 
 /*
  * Toggle active between true and false, and call

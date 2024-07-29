@@ -132,7 +132,7 @@
 	else if(!board.forceMove(src))
 		return FALSE
 
-	playsound(src, 'sound/items/deconstruct.ogg', 50, TRUE)
+	playsound(src, 'sound/items/deconstruct.ogg', 50, TRUE, TRUE, FALSE)
 	balloon_alert(user, "circuit installed")
 	circuit = board
 	if(by_hand)

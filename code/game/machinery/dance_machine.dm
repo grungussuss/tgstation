@@ -79,7 +79,7 @@
 					to_chat(usr, span_warning("Error: The device is still resetting from the last activation, \
 						it will be ready again in [DisplayTimeText(COOLDOWN_TIMELEFT(src, jukebox_song_cd))]."))
 					if(COOLDOWN_FINISHED(src, jukebox_error_cd))
-						playsound(src, 'sound/misc/compiler-failure.ogg', 33, TRUE)
+						playsound(src, 'sound/misc/compiler-failure.ogg', 33, TRUE, TRUE, FALSE)
 						COOLDOWN_START(src, jukebox_error_cd, 15 SECONDS)
 					return TRUE
 
@@ -134,7 +134,7 @@
 
 	if(!QDELING(src))
 		COOLDOWN_START(src, jukebox_song_cd, 10 SECONDS)
-		playsound(src,'sound/machines/terminal_off.ogg',50,TRUE)
+		playsound(src,'sound/machines/terminal_off.ogg',50,TRUE, TRUE, FALSE)
 		update_use_power(IDLE_POWER_USE)
 		update_appearance(UPDATE_ICON_STATE)
 	return TRUE

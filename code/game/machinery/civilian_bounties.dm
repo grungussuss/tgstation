@@ -76,11 +76,11 @@
 		return FALSE
 	if(!inserted_scan_id)
 		status_report = "Please insert your ID first."
-		playsound(loc, 'sound/machines/synth_no.ogg', 30 , TRUE)
+		playsound(loc, 'sound/machines/synth_no.ogg', 30 , TRUE, TRUE, FALSE)
 		return FALSE
 	if(!inserted_scan_id.registered_account.civilian_bounty)
 		status_report = "Please accept a new civilian bounty first."
-		playsound(loc, 'sound/machines/synth_no.ogg', 30 , TRUE)
+		playsound(loc, 'sound/machines/synth_no.ogg', 30 , TRUE, TRUE, FALSE)
 		return FALSE
 	status_report = "Civilian Bounty: "
 	var/obj/machinery/piratepad/civilian/pad = pad_ref?.resolve()
@@ -89,16 +89,16 @@
 			continue
 		if(inserted_scan_id.registered_account.civilian_bounty.applies_to(AM))
 			status_report += "Target Applicable."
-			playsound(loc, 'sound/machines/synth_yes.ogg', 30 , TRUE)
+			playsound(loc, 'sound/machines/synth_yes.ogg', 30 , TRUE, TRUE, FALSE)
 			return
 	status_report += "Not Applicable."
-	playsound(loc, 'sound/machines/synth_no.ogg', 30 , TRUE)
+	playsound(loc, 'sound/machines/synth_no.ogg', 30 , TRUE, TRUE, FALSE)
 
 /**
  * This fully rewrites base behavior in order to only check for bounty objects, and no other types of objects like pirate-pads do.
  */
 /obj/machinery/computer/piratepad_control/civilian/send()
-	playsound(loc, 'sound/machines/wewewew.ogg', 70, TRUE)
+	playsound(loc, 'sound/machines/wewewew.ogg', 70, TRUE, TRUE, FALSE)
 	if(!sending)
 		return
 	if(!inserted_scan_id)
@@ -135,7 +135,7 @@
 	pad.visible_message(span_notice("[pad] activates!"))
 	flick(pad.sending_state,pad)
 	pad.icon_state = pad.idle_state
-	playsound(loc, 'sound/machines/synth_yes.ogg', 30 , TRUE)
+	playsound(loc, 'sound/machines/synth_yes.ogg', 30 , TRUE, TRUE, FALSE)
 	sending = FALSE
 
 ///Here is where cargo bounties are added to the player's bank accounts, then adjusted and scaled into a civilian bounty.
@@ -164,7 +164,7 @@
  */
 /obj/machinery/computer/piratepad_control/civilian/proc/pick_bounty(datum/bounty/choice)
 	if(!inserted_scan_id || !inserted_scan_id.registered_account || !inserted_scan_id.registered_account.bounties || !inserted_scan_id.registered_account.bounties[choice])
-		playsound(loc, 'sound/machines/synth_no.ogg', 40 , TRUE)
+		playsound(loc, 'sound/machines/synth_no.ogg', 40 , TRUE, TRUE, FALSE)
 		return
 	inserted_scan_id.registered_account.civilian_bounty = inserted_scan_id.registered_account.bounties[choice]
 	inserted_scan_id.registered_account.bounties = null
@@ -242,13 +242,13 @@
 
 	if(target)
 		if(holder_item && inserting_item.InsertID(target))
-			playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE)
+			playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE, TRUE, FALSE)
 		else
 			id_eject(user, target)
 
 	user.visible_message(span_notice("[user] inserts \the [card_to_insert] into \the [src]."),
 						span_notice("You insert \the [card_to_insert] into \the [src]."))
-	playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE)
+	playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE, TRUE, FALSE)
 	ui_interact(user)
 	return TRUE
 
@@ -263,7 +263,7 @@
 			user.put_in_hands(target)
 		user.visible_message(span_notice("[user] gets \the [target] from \the [src]."), \
 							span_notice("You get \the [target] from \the [src]."))
-		playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE)
+		playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE, TRUE, FALSE)
 		inserted_scan_id = null
 		return TRUE
 
@@ -408,7 +408,7 @@
 	addtimer(CALLBACK(src, PROC_REF(launch_payload)), 1 SECONDS)
 
 /obj/item/civ_bounty_beacon/proc/launch_payload()
-	playsound(src, SFX_SPARKS, 80, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
+	playsound(src, SFX_SPARKS, 80, TRUE, SHORT_RANGE_SOUND_EXTRARANGE, TRUE, FALSE)
 	switch(uses)
 		if(2)
 			new /obj/machinery/piratepad/civilian(drop_location())

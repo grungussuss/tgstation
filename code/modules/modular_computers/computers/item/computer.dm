@@ -197,7 +197,7 @@
 /obj/item/modular_computer/pre_attack_secondary(atom/A, mob/living/user, params)
 	if(active_program?.tap(A, user, params))
 		user.do_attack_animation(A) //Emulate this animation since we kill the attack in three lines
-		playsound(loc, 'sound/weapons/tap.ogg', get_clamped_volume(), TRUE, -1) //Likewise for the tap sound
+		playsound(loc, 'sound/weapons/tap.ogg', get_clamped_volume(), TRUE, -1, TRUE, FALSE) //Likewise for the tap sound
 		addtimer(CALLBACK(src, PROC_REF(play_ping)), 0.5 SECONDS, TIMER_UNIQUE) //Slightly delayed ping to indicate success
 		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 	return ..()
@@ -219,7 +219,7 @@
  * Timers runtime if you try to make them call playsound. Yep.
  */
 /obj/item/modular_computer/proc/play_ping()
-	playsound(loc, 'sound/machines/ping.ogg', get_clamped_volume(), FALSE, -1)
+	playsound(loc, 'sound/machines/ping.ogg', get_clamped_volume(), FALSE, -1, TRUE, FALSE)
 
 /obj/item/modular_computer/get_cell()
 	return internal_cell
@@ -289,7 +289,7 @@
 		to_chat(user, span_notice("You insert \the [inserting_id] into the card slot."))
 		balloon_alert(user, "inserted ID")
 
-	playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE)
+	playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE, TRUE, FALSE)
 
 	if(ishuman(loc))
 		var/mob/living/carbon/human/human_wearer = loc
@@ -323,7 +323,7 @@
 
 	if(!silent && !isnull(user))
 		to_chat(user, span_notice("You remove the card from the card slot."))
-		playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE)
+		playsound(src, 'sound/machines/terminal_insert_disc.ogg', 50, FALSE, TRUE, FALSE)
 		balloon_alert(user, "removed ID")
 
 	if(ishuman(loc))
@@ -477,9 +477,9 @@
 		return
 	user.put_in_hands(inserted_disk)
 	inserted_disk = null
-	playsound(src, 'sound/machines/card_slide.ogg', 50)
+	playsound(src, 'sound/machines/card_slide.ogg', 50, FALSE, TRUE, FALSE)
 
-/obj/item/modular_computer/proc/turn_on(mob/user, open_ui = TRUE)
+/obj/item/modular_computer/proc/turn_on(mob/user, open_ui = TRUE, TRUE, FALSE)
 	var/issynth = FALSE // Robots and AIs get different activation messages.
 	if(user)
 		issynth = HAS_SILICON_ACCESS(user)
@@ -553,20 +553,20 @@
 /obj/item/modular_computer/proc/alert_call(datum/computer_file/program/caller, alerttext, sound = 'sound/machines/twobeep_high.ogg')
 	if(!caller || !caller.alert_able || caller.alert_silenced || !alerttext) //Yeah, we're checking alert_able. No, you don't get to make alerts that the user can't silence.
 		return FALSE
-	playsound(src, sound, 50, TRUE)
+	playsound(src, sound, 50, TRUE, TRUE, FALSE)
 	physical.loc.visible_message(span_notice("[icon2html(physical, viewers(physical.loc))] \The [src] displays a [caller.filedesc] notification: [alerttext]"))
 
 /obj/item/modular_computer/proc/ring(ringtone) // bring bring
 	if(!use_energy())
 		return
 	if(HAS_TRAIT(SSstation, STATION_TRAIT_PDA_GLITCHED))
-		playsound(src, pick('sound/machines/twobeep_voice1.ogg', 'sound/machines/twobeep_voice2.ogg'), 50, TRUE)
+		playsound(src, pick('sound/machines/twobeep_voice1.ogg', 'sound/machines/twobeep_voice2.ogg'), 50, TRUE, TRUE, FALSE)
 	else
-		playsound(src, 'sound/machines/twobeep_high.ogg', 50, TRUE)
+		playsound(src, 'sound/machines/twobeep_high.ogg', 50, TRUE, TRUE, FALSE)
 	audible_message("*[ringtone]*")
 
 /obj/item/modular_computer/proc/send_sound()
-	playsound(src, 'sound/machines/terminal_success.ogg', 15, TRUE)
+	playsound(src, 'sound/machines/terminal_success.ogg', 15, TRUE, TRUE, FALSE)
 
 // Function used by NanoUI's to obtain data for header. All relevant entries begin with "PC_"
 /obj/item/modular_computer/proc/get_header_data()
@@ -924,7 +924,7 @@
 		user.put_in_hands(inserted_disk)
 		balloon_alert(user, "disks swapped")
 	inserted_disk = disk
-	playsound(src, 'sound/machines/card_slide.ogg', 50)
+	playsound(src, 'sound/machines/card_slide.ogg', 50, FALSE, TRUE, FALSE)
 	return ITEM_INTERACT_SUCCESS
 
 /obj/item/modular_computer/atom_deconstruct(disassembled = TRUE)

@@ -47,5 +47,5 @@
 		span_notice("You [action_text] [source]."),
 	)
 
-	playsound(source, 'sound/effects/shovel_dig.ogg', 50, TRUE)
+	playsound(source, 'sound/effects/shovel_dig.ogg', 50, TRUE, TRUE, FALSE)
 	source.ScrapeAway(flags = CHANGETURF_INHERIT_AIR)
