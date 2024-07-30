@@ -81,6 +81,10 @@
 	var/drop_sound
 	///Do the drop and pickup sounds vary?
 	var/sound_vary = FALSE
+	///If the item has reagent/gas storage and has more than 0 reagents/gas in it, play this sound on pickup instead of the normal one
+	var/filled_pickup_sound
+	///If the item has reagent/gas storage and has more than 0 reagents in it, play this sound on drop instead of the normal one
+	var/filled_drop_sound
 	///Whether or not we use stealthy audio levels for this item's attack sounds
 	var/stealthy_audio = FALSE
 	///Sound which is produced when blocking an attack
@@ -679,6 +683,9 @@
 	item_flags &= ~IN_INVENTORY
 	SEND_SIGNAL(src, COMSIG_ITEM_DROPPED, user)
 	if(!silent)
+		if(filled_drop_sound != null && (reagents.total_volume > 0 || ))
+			playsound(src, filled_drop_sound, DROP_SOUND_VOLUME, vary = sound_vary)
+			return
 		playsound(src, drop_sound, DROP_SOUND_VOLUME, vary = sound_vary, ignore_walls = FALSE)
 	user?.update_equipment_speed_mods()
 
@@ -745,6 +752,9 @@
 		if(equip_sound && (slot_flags & slot))
 			playsound(src, equip_sound, EQUIP_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
 		else if(slot & ITEM_SLOT_HANDS)
+			if(filled_drop_sound != null && reagents.total_volume >= 1)
+				playsound(src, filled_pickup_sound, PICKUP_SOUND_VOLUMEE, vary = sound_vary, ignore_walls = FALSE)
+				return
 			playsound(src, pickup_sound, PICKUP_SOUND_VOLUME, ignore_walls = FALSE)
 	user.update_equipment_speed_mods()
 
