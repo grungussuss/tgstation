@@ -5,8 +5,8 @@
 	name = "guest pass"
 	desc = "Allows temporary access to workplace areas."
 	icon_state = "guest"
-	overlay_state = "guest"
 
+	var/guest_pass_ID = 0
 	var/temp_access = list() //to prevent agent cards stealing access as permanent
 	var/expiration_time = 0
 	var/reason = "NOT SPECIFIED"
@@ -17,10 +17,10 @@
 	else
 		return temp_access
 
-/obj/item/card/id/guest/get_examine_text(mob/user, distance, is_adjacent, infix, suffix)
+/obj/item/card/id/guest/examine(mob/user, distance, is_adjacent, infix, suffix)
 	. = ..()
 	if(world.time > expiration_time)
-		. += SPAN_WARNING("This pass expired at: [worldtime2text(expiration_time)].")
+		. += span_warning("This pass expired at: [worldtime2text(expiration_time)].")
 	else
 		. += "This pass expires at: [worldtime2text(expiration_time)]."
 
@@ -36,7 +36,6 @@
 
 /obj/item/card/id/guest/proc/expire()
 	icon_state += "_invalid"
-	overlay_state += "_invalid"
 
 #define GUEST_PASS_TERMINAL_UNSET "\[UNSET\]"
 
@@ -44,11 +43,9 @@
 /obj/machinery/computer/guestpass
 	name = "guest pass terminal"
 	desc = "A guest pass terminal. It allows issuing temporary access passes to one or more areas."
-	icon = 'icons/obj/computer.dmi'
 	icon_state = "altcomputerw"
 	light_color = LIGHT_COLOR_BLUE
 	icon_screen = "guest"
-	icon_scanline = "altcomputerw-scanline"
 	density = FALSE
 	appearance_flags = TILE_BOUND // prevents people from viewing the overlay through a wall
 
@@ -63,7 +60,7 @@
 
 /obj/machinery/computer/guestpass/Initialize()
 	. = ..()
-	uid = "[rand(100,999)]-G[rand(10,99)]"
+	guest_pass_ID = "[rand(100,999)]-G[rand(10,99)]"
 
 /obj/machinery/computer/guestpass/attackby(obj/item/attacking_item, mob/user)
 	if(istype(attacking_item, /obj/item/card/id))
