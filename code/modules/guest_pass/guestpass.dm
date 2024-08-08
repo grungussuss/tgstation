@@ -132,9 +132,9 @@
 				if(reas)
 					reason = reas
 			if("duration")
-				var/dur = tgui_input_number(usr, "Insert the duration (in minutes) during which this pass is valid (up to 60 minutes).", "Duration", 30, 60, 0)
+				var/dur = tgui_input_number(usr, "Insert the duration (in minutes) during which this pass is valid (up to 10 minutes).", "Duration", 5, 10, 0)
 				if(dur)
-					if(dur > 0 && dur <= 60)
+					if(dur > 0 && dur <= 10)
 						duration = dur
 					else
 						to_chat(usr, "<b>\The [src]</b> displays, \"Invalid duration.\"")
