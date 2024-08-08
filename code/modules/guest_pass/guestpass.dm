@@ -62,7 +62,8 @@
 	. = ..()
 	guest_pass_ID = "[rand(100,999)]-G[rand(10,99)]"
 
-/obj/machinery/computer/guestpass/attackby(obj/item/attacking_item, mob/user)
+/obj/machinery/computer/guestpass/attackby(obj/item/attacking_item, mob/user, params)
+	. = ..()
 	if(istype(attacking_item, /obj/item/card/id))
 		if((!giver || giver == GUEST_PASS_TERMINAL_UNSET) && user.unEquip(attacking_item))
 			attacking_item.forceMove(src)
