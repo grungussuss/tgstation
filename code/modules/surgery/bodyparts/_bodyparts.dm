@@ -1256,6 +1256,9 @@
 	current_gauze.gauzed_bodypart = src
 	if(newly_gauzed)
 		SEND_SIGNAL(src, COMSIG_BODYPART_GAUZED, current_gauze, new_gauze)
+	//'bodypart == BP' is set in subtypes to ensure some proper signals and behaviours
+	if(overlay_prefix && bodypart.owner)
+		bodypart.owner.update_bandage_overlays()
 
 /**
  * seep_gauze() is for when a gauze wrapping absorbs blood or pus from wounds, lowering its absorption capacity.
