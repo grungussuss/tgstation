@@ -34,6 +34,8 @@
 	var/flesh_regeneration
 	/// Time it takes to assess injuries when looping healing
 	var/assessing_injury_delay = 1 SECONDS
+	/// Suffix for our used overlay. The suffix is the bodypart zone, and "_digitigrade" for some legs. If this is null then it wont make an overlay.
+	var/overlay_prefix
 
 /obj/item/stack/medical/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
 	if(!isliving(interacting_with))
