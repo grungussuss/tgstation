@@ -6,7 +6,7 @@
 	show_in_antagpanel = FALSE
 	job_rank = ROLE_BLOB
 	ui_name = "AntagInfoBlob"
-	stinger_sound = 'sound/ambience/antag/blobalert.ogg'
+	stinger_sound = 'sound/ambience/antag/blob_antag_stinger.ogg'
 	/// Action to release a blob infection
 	var/datum/action/innate/blobpop/pop_action
 	/// Initial points for a human blob
