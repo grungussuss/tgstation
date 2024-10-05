@@ -1375,6 +1375,17 @@
 		/datum/stock_part/servo = 1)
 	needs_anchored = FALSE
 
+/obj/item/circuitboard/machine/hydraulic_press
+	name = "Hydraulic press"
+	build_path = /obj/machinery/hydraulic_press
+	req_components = list(
+		/datum/stock_part/servo = 2,
+		/obj/item/stack/sheet/plasteel = 5,
+		/obj/item/stack/cable_coil = 2,
+		)
+
+	needs_anchored = TRUE
+
 /obj/item/circuitboard/machine/seed_extractor
 	name = "Seed Extractor"
 	greyscale_colors = CIRCUIT_COLOR_SERVICE
