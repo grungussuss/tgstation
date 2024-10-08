@@ -8,7 +8,7 @@
 	icon_state = "grinder-o0"
 	layer = ABOVE_ALL_MOB_LAYER
 	plane = ABOVE_GAME_PLANE
-	density = TRUE
+	density = FALSE
 	circuit = /obj/item/circuitboard/machine/hydraulic_press
 	var/icon_name = "grinder-o"
 	///handles the iconstate, becomes bloody if it crushes a humanoid.
@@ -22,29 +22,12 @@
 	///prevents crushing if it's a living, emag act disables this.
 	var/safety_override = FALSE
 
-	/obj/machinery/hydraulic_press/examine(mob/user)
-	. = ..()
-	. += {"The power light is [(machine_stat & NOPOWER) ? "off" : "on"].
-	The safety-mode light is [safety_override ? "on" : "off"].
-	The safety-sensors status light is [obj_flags & EMAGGED ? "off" : "on"]."}
-
-/obj/machinery/recycler/attackby(obj/item/some_item, mob/user, params)
-	if(default_deconstruction_screwdriver(user, "grinder-oOpen", "grinder-o0", some_item))
-		return
-
-	if(default_pry_open(some_item, close_after_pry = TRUE))
-		return
-
-	if(default_deconstruction_crowbar(some_item))
-		return
-	return ..()
-
 /obj/machinery/hydraulic_press/emag_act(mob/user, obj/item/card/emag/emag_card)
 	if(obj_flags & EMAGGED)
-		return FALSE
+		return TRUE
 	obj_flags |= EMAGGED
-	if(safety_override)
-		safety_override = FALSE
+	if(!safety_override)
+		safety_override = TRUE
 		update_appearance()
 	playsound(src, SFX_SPARKS, 75, TRUE, SILENCED_SOUND_EXTRARANGE)
 	balloon_alert(user, "safety override enabled!")
@@ -60,7 +43,8 @@
 	use_energy(idle_power_usage)
 
 /obj/machinery/hydraulic_press/proc/perform_check()
-	for(var/mob/living/living_mob in pickup_zone)
+	var/atom/squish_location = get_turf(src)
+	for(var/mob/living/living_mob in squish_location)
 		if(!(obj_flags & EMAGGED) && isliving(living_mob)) //Can only squish living when emagged.
 			playsound(src, 'sound/machines/buzz/buzz-sigh.ogg', 25)
 			say("Living matter detected, operation aborted.")
@@ -69,13 +53,14 @@
 
 /obj/machinery/hydraulic_press/proc/whirr_up()
 	playsound(src, crushing_whirr_up_sound, 25)
-	addtimer(CALLBACK(src, PROC_REF(squish), aggressive), 1.2 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(squish)), 1.2 SECONDS)
 
-/obj/machinery/hydraulic_press/proc/squish
+/obj/machinery/hydraulic_press/proc/squish()
 	if(perform_check())
 		return
 	playsound(src, crushing_machine_sound, 25)
-	for(var/atom/movable/movable_atom in pickup_zone)
+	var/atom/squish_location = get_turf(src)
+	for(var/atom/movable/movable_atom in squish_location)
 		if(isliving(movable_atom))
 			var/mob/living/fucked_up_thing = movable_atom
 			fucked_up_thing.investigate_log("has been gibbed by [src].", INVESTIGATE_DEATHS)
