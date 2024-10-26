@@ -219,7 +219,7 @@ Then the player gets the profit from selling his own wasted time.
 
 	if(unit_name)
 		msg += unit_name
-		if(total_amount > 1)
+		if(total_amount > 1 && !copytext(msg, -1) == "s")
 			msg += "s"
 		if(message)
 			msg += " "
