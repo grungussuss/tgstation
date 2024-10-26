@@ -17,6 +17,7 @@
 
 /obj/item/stack/spacecash/Initialize(mapload, new_amount, merge = TRUE, list/mat_override=null, mat_amt=1)
 	. = ..()
+	update_export_value()
 	update_desc()
 
 /obj/item/stack/spacecash/update_desc()
@@ -24,15 +25,20 @@
 	var/total_worth = get_item_credit_value()
 	desc = "It's worth [total_worth] credit[(total_worth > 1) ? "s" : null] in total."
 
+/obj/item/stack/spacecash/proc/update_export_value()
+	export_value = get_item_credit_value()
+
 /obj/item/stack/spacecash/get_item_credit_value()
 	return (amount*value)
 
 /obj/item/stack/spacecash/merge(obj/item/stack/S)
 	. = ..()
+	update_export_value()
 	update_desc()
 
 /obj/item/stack/spacecash/use(used, transfer = FALSE, check = TRUE)
 	. = ..()
+	update_export_value()
 	update_desc()
 
 /obj/item/stack/spacecash/update_icon_state()
