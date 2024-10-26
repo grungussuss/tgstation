@@ -17,7 +17,6 @@
 
 /obj/item/stack/spacecash/Initialize(mapload, new_amount, merge = TRUE, list/mat_override=null, mat_amt=1)
 	. = ..()
-	update_export_value()
 	update_desc()
 
 /obj/item/stack/spacecash/update_desc()
