@@ -923,9 +923,9 @@
 		return .
 	if((tool.item_flags & ABSTRACT) || (user.combat_mode && !(tool.item_flags & NOBLUDGEON)))
 		return NONE
-	if(user.transferItemToLoc(tool, drop_location(), silent = FALSE))
-		return ITEM_INTERACT_SUCCESS
-	return ITEM_INTERACT_BLOCKING
+	if(!user.transferItemToLoc(tool, drop_location(), silent = FALSE))
+		return ITEM_INTERACT_BLOCKING
+	return ITEM_INTERACT_SUCCESS
 
 /obj/structure/rack/attack_paw(mob/living/user, list/modifiers)
 	attack_hand(user, modifiers)
