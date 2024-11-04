@@ -14,6 +14,16 @@
 	equip_sound = 'sound/items/equip/toolbelt_equip.ogg'
 	w_class = WEIGHT_CLASS_BULKY
 	var/content_overlays = FALSE //If this is true, the belt will gain overlays based on what it's holding
+	var/can_smack = TRUE
+
+/obj/item/storage/belt/afterattack(atom/target, mob/user, click_parameters)
+	. = ..()
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(human_target.age < 18)
+			to_chat(user, span_warning("You discipline [target]!"))
+			to_chat(target, span_warning("[user] disciplines you with the [src]!"))
+			playsound(target.loc, 'sound/effects/snap.ogg', 50, TRUE)
 
 /obj/item/storage/belt/suicide_act(mob/living/carbon/user)
 	user.visible_message(span_suicide("[user] begins belting [user.p_them()]self with \the [src]! It looks like [user.p_theyre()] trying to commit suicide!"))
