@@ -137,3 +137,18 @@
 		return
 	SSadmin_verbs.dynamic_invoke_verb(user, /datum/admin_verb/display_tags)
 	return TRUE
+
+/datum/keybinding/admin/view_variables
+	hotkey_keys = list("Unbound")
+	name = "view_variables"
+	full_name = "View Variables"
+	description = "Open the View Variables menu"
+	keybind_signal = COMSIG_KB_ADMIN_VIEWVARIABLES_DOWN
+
+/datum/keybinding/admin/view_variables/down(client/user)
+	. = ..()
+	if (.)
+		return
+	var/datum/weakref/some_atom = user.mouse_object_ref
+	SSadmin_verbs.dynamic_invoke_verb(user, /datum/admin_verb/debug_variables, some_atom)
+	return TRUE
