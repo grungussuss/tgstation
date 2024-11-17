@@ -649,6 +649,7 @@
 #define GRADIENT_APPLIES_TO_FACIAL_HAIR (1<<1)
 
 // Hair masks
+#define HAIR_MASK_HIDE_ABOVE_45_DEG_HIGH "hide_above_45deg_high"
 #define HAIR_MASK_HIDE_ABOVE_45_DEG_MEDIUM "hide_above_45deg_medium"
 #define HAIR_MASK_HIDE_ABOVE_45_DEG_LOW "hide_above_45deg_low"
 
