@@ -1491,7 +1491,7 @@
 	return
 
 
-/atom/movable/proc/do_attack_animation(atom/attacked_atom, visual_effect_icon, obj/item/used_item, no_effect, fov_effect = TRUE)
+/atom/movable/proc/do_attack_animation(atom/attacked_atom, visual_effect_icon, obj/item/used_item, no_effect, fov_effect = TRUE, help)
 	if(!no_effect && (visual_effect_icon || used_item))
 		do_item_attack_animation(attacked_atom, visual_effect_icon, used_item)
 
@@ -1499,29 +1499,36 @@
 		return //don't do an animation if attacking self
 	var/pixel_x_diff = 0
 	var/pixel_y_diff = 0
+	var/pixel_diff_modifier = 1
+	var/anim_time = 1
+	var/turn_degrees = 15
+	if(help)
+		pixel_diff_modifier = 2.5
+		anim_time += 1.3 SECONDS
+		turn_degrees = 2
 	var/turn_dir = 1
 
 	var/direction = get_dir(src, attacked_atom)
 	if(direction & NORTH)
-		pixel_y_diff = 8
+		pixel_y_diff = 8 * pixel_diff_modifier
 		turn_dir = prob(50) ? -1 : 1
 	else if(direction & SOUTH)
-		pixel_y_diff = -8
+		pixel_y_diff = -8 * pixel_diff_modifier
 		turn_dir = prob(50) ? -1 : 1
 
 	if(direction & EAST)
-		pixel_x_diff = 8
+		pixel_x_diff = 8 * pixel_diff_modifier
 	else if(direction & WEST)
-		pixel_x_diff = -8
+		pixel_x_diff = -8 * pixel_diff_modifier
 		turn_dir = -1
 
 	if(fov_effect)
 		play_fov_effect(attacked_atom, 5, "attack")
 
 	var/matrix/initial_transform = matrix(transform)
-	var/matrix/rotated_transform = transform.Turn(15 * turn_dir)
-	animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff, transform=rotated_transform, time = 1, easing=BACK_EASING|EASE_IN, flags = ANIMATION_PARALLEL)
-	animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, transform=initial_transform, time = 2, easing=SINE_EASING, flags = ANIMATION_PARALLEL)
+	var/matrix/rotated_transform = transform.Turn(turn_degrees * turn_dir)
+	animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff, transform=rotated_transform, time = anim_time, easing=BACK_EASING|EASE_IN, flags = ANIMATION_PARALLEL)
+	animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, transform=initial_transform, time = anim_time + 1, easing=SINE_EASING, flags = ANIMATION_PARALLEL)
 
 /* Language procs
 * Unless you are doing something very specific, these are the ones you want to use.

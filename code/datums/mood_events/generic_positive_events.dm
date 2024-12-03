@@ -1,6 +1,34 @@
+/datum/mood_event/pat
+	description = "Pats are nice."
+	mood_change = 1
+	timeout = 2 MINUTES
+
+/datum/mood_event/warmpat
+	description = "Warm pats are nice."
+	mood_change = 1
+	timeout = 2 MINUTES
+
+/datum/mood_event/hard_pat
+	description = "I got pat pretty roughly, but it was quite nice."
+	mood_change = 1
+	timeout = 2 MINUTES
+
+/datum/mood_event/betterpat
+	description = "Someone was very nice to me."
+	mood_change = 2
+	timeout = 4 MINUTES
+
+/datum/mood_event/betterhug/add_effects(mob/friend)
+	description = "[friend.name] was very nice to me."
+
+/datum/mood_event/bestpat
+	description = "Someone is great to be around, they make me feel so happy!"
+	mood_change = 3
+	timeout = 4 MINUTES
+
 /datum/mood_event/hug
 	description = "Hugs are nice."
-	mood_change = 1
+	mood_change = 2
 	timeout = 2 MINUTES
 
 /datum/mood_event/bear_hug
@@ -10,7 +38,7 @@
 
 /datum/mood_event/betterhug
 	description = "Someone was very nice to me."
-	mood_change = 3
+	mood_change = 4
 	timeout = 4 MINUTES
 
 /datum/mood_event/betterhug/add_effects(mob/friend)
@@ -18,7 +46,7 @@
 
 /datum/mood_event/besthug
 	description = "Someone is great to be around, they make me feel so happy!"
-	mood_change = 5
+	mood_change = 6
 	timeout = 4 MINUTES
 
 /datum/mood_event/besthug/add_effects(mob/friend)
@@ -26,7 +54,7 @@
 
 /datum/mood_event/warmhug
 	description = "Warm cozy hugs are the best!"
-	mood_change = 1
+	mood_change = 2
 	timeout = 2 MINUTES
 
 /datum/mood_event/tailpulled

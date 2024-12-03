@@ -28,7 +28,7 @@
 				else if(user.zone_selected == BODY_ZONE_PRECISE_GROIN && !isnull(get_organ_by_type(/obj/item/organ/tail)))
 					context[SCREENTIP_CONTEXT_LMB] = "Pull tail"
 				else
-					context[SCREENTIP_CONTEXT_LMB] = "Hug"
+					context[SCREENTIP_CONTEXT_LMB] = "Pat"
 			else if (health >= 0 && !HAS_TRAIT(src, TRAIT_FAKEDEATH))
 				context[SCREENTIP_CONTEXT_LMB] = "Shake"
 			else

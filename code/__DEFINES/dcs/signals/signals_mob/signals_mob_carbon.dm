@@ -3,14 +3,14 @@
 	/// Stops the rest of the help
 	#define COMPONENT_BLOCK_HELP_ACT (1<<0)
 
-///Called from /mob/living/carbon/help_shake_act, before any hugs have occurred. (mob/living/helper)
+///Called from /mob/living/carbon/help_shake_act, before any pats have occurred. (mob/living/helper)
 #define COMSIG_CARBON_PRE_MISC_HELP "carbon_pre_misc_help"
 	/// Stops the rest of help act (hugging, etc) from occurring
 	#define COMPONENT_BLOCK_MISC_HELP (1<<0)
 
-///Called from /mob/living/carbon/help_shake_act on the person being helped, after any hugs have occurred. (mob/living/helper)
+///Called from /mob/living/carbon/help_shake_act on the person being helped, after any pats have occurred. (mob/living/helper)
 #define COMSIG_CARBON_HELP_ACT "carbon_help"
-///Called from /mob/living/carbon/help_shake_act on the helper, after any hugs have occurred. (mob/living/helped)
+///Called from /mob/living/carbon/help_shake_act on the helper, after any pats have occurred. (mob/living/helped)
 #define COMSIG_CARBON_HELPED "carbon_helped_someone"
 
 ///When a carbon slips. Called on /turf/open/handle_slip()

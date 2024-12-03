@@ -72,7 +72,7 @@ Fluoride Stare: After someone says 5 words, blah blah blah...
 	tongue_owner.clear_mood_event("gondola_zen")
 	return ..()
 
-/// Loving arms: your hands become unable to hold much of anything but your hugs now infuse the subject with pax.
+/// Loving arms: your hands become unable to hold much of anything but your pats now infuse the subject with pax.
 /obj/item/organ/liver/gondola
 	name = "mutated gondola-liver"
 	desc = "Gondola DNA infused into what was once a normal liver."

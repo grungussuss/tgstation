@@ -109,6 +109,127 @@
 		to_chat(sucker, span_userdanger("[owner] bops you with [owner.p_their()] [src.name]!"))
 	qdel(src)
 
+//hugs!
+/obj/item/hand_item/hughand
+	name = "hug"
+	desc = "You are preparing to hug someone!"
+	inhand_icon_state = "nothing"
+
+/obj/item/hand_item/hughand/pre_attack(mob/living/carbon/help_target, mob/living/carbon/hugger, params)
+	if(!loc.Adjacent(help_target) || !istype(hugger) || !istype(help_target))
+		return ..()
+
+	if(hugger.resting)
+		to_chat(hugger, span_warning("You can't hug when you're lying down!"))
+		return TRUE
+
+
+/obj/item/hand_item/hughand/pre_attack_secondary(mob/living/carbon/help_target, mob/living/carbon/hugger, params)
+	if(!loc.Adjacent(help_target) || !istype(hugger) || !istype(help_target))
+		return ..()
+
+	if(hugger.resting)
+		to_chat(hugger, span_warning("You can't hug when you're lying down!"))
+		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+
+	return SECONDARY_ATTACK_CALL_NORMAL
+
+
+/obj/item/hand_item/hughand/attack(mob/living/carbon/hugee, mob/living/carbon/hugger, params)
+
+	if(hugger.grab_state >= GRAB_AGGRESSIVE)
+		hugger.visible_message(span_notice("[hugger] embraces [hugee] in a tight bear hug!"), \
+					null, span_hear("You hear the rustling of clothes."), DEFAULT_MESSAGE_RANGE, list(hugger, hugee))
+		to_chat(hugger, span_notice("You wrap [hugee] into a tight bear hug!"))
+		to_chat(hugee, span_notice("[hugger] squeezes you super tightly in a firm bear hug!"))
+	else
+		hugger.visible_message(span_notice("[hugger] hugs [hugee] to make [p_them()] feel better!"), \
+					null, span_hear("You hear the rustling of clothes."), DEFAULT_MESSAGE_RANGE, list(hugger, hugee))
+		to_chat(hugger, span_notice("You hug [hugee] to make [p_them()] feel better!"))
+		to_chat(hugee, span_notice("[hugger] hugs you to make you feel better!"))
+
+	// Warm them up with touches
+	hugee.share_bodytemperature(hugger)
+
+	// No moodlets for people who hate touches
+	if(!HAS_TRAIT(hugee, TRAIT_BADTOUCH))
+		if (hugger.grab_state >= GRAB_AGGRESSIVE)
+			hugee.add_mood_event("hug", /datum/mood_event/bear_hug)
+		else
+			if(hugee.bodytemperature > hugger.bodytemperature)
+				if(!HAS_TRAIT(hugger, TRAIT_BADTOUCH))
+					hugger.add_mood_event("hug", /datum/mood_event/warmhug, hugee) // hugger got a warm hug (Unless they hate touches)
+				hugee.add_mood_event("hug", /datum/mood_event/hug) // Receiver always gets a mood for being hugged
+			else
+				hugee.add_mood_event("hug", /datum/mood_event/warmhug, hugger) // You got a warm hug
+	else
+		if (hugger.grab_state >= GRAB_AGGRESSIVE)
+			hugee.add_mood_event("hug", /datum/mood_event/bad_touch_bear_hug)
+
+	// Let people know if they hugted someone really warm or really cold
+	if(hugger.bodytemperature > BODYTEMP_HEAT_DAMAGE_LIMIT)
+		to_chat(hugee, span_warning("It feels like [hugger] is over heating as [hugger.p_they()] hug[hugger.p_s()] you."))
+	else if(hugger.bodytemperature < BODYTEMP_COLD_DAMAGE_LIMIT)
+		to_chat(hugee, span_warning("It feels like [hugger] is freezing as [hugger.p_they()] hug[hugger.p_s()] you."))
+
+	if(hugee.bodytemperature > BODYTEMP_HEAT_DAMAGE_LIMIT)
+		to_chat(hugger, span_warning("It feels like [hugee] is over heating as you hug [hugee.p_them()]."))
+	else if(hugee.bodytemperature < BODYTEMP_COLD_DAMAGE_LIMIT)
+		to_chat(hugger, span_warning("It feels like [hugee] is freezing as you hug [hugee.p_them()]."))
+
+	if(HAS_TRAIT(hugger, TRAIT_FRIENDLY))
+		if (hugger.mob_mood.sanity >= SANITY_GREAT)
+			new /obj/effect/temp_visual/heart(loc)
+			hugee.add_mood_event("friendly_hug", /datum/mood_event/besthug, hugger)
+		else if (hugger.mob_mood.sanity >= SANITY_DISTURBED)
+			hugee.add_mood_event("friendly_hug", /datum/mood_event/betterhug, hugger)
+
+	if(HAS_TRAIT(hugee, TRAIT_BADTOUCH))
+		to_chat(hugger, span_warning("[hugee] looks visibly upset as you hug [hugee.p_them()]."))
+
+	playsound(loc, 'sound/items/weapons/thudswoosh.ogg', 50, TRUE, -1)
+
+	return TRUE
+
+
+/obj/item/hand_item/hughand/on_offered(mob/living/carbon/offerer, mob/living/carbon/offered)
+	. = TRUE
+
+	if(!istype(offerer))
+		return
+
+	if(offerer.body_position == LYING_DOWN)
+		to_chat(offerer, span_warning("You can't hug when you're lying down!"))
+		return
+
+	if(!offered)
+		offered = locate(/mob/living/carbon) in orange(1, offerer)
+
+	offerer.visible_message(span_notice("[offerer] offers a hug to [offered]!"),
+		span_notice("You offer a hug!"), null, 2)
+
+	offerer.apply_status_effect(/datum/status_effect/offering/no_item_received, src, /atom/movable/screen/alert/give/hand)
+	return
+
+/obj/item/hand_item/hughand/on_offer_taken(mob/living/carbon/offerer, mob/living/carbon/taker)
+	. = TRUE
+
+	qdel(src)
+
+	if(taker.buckled?.buckle_prevents_pull)
+		return // hugging together while buckled to something :mistake:
+
+	var/did_offerer_succeed = offerer.start_pulling(taker) // Will return either null or FALSE. We only want to silence FALSE.
+	var/did_taker_succeed = taker.start_pulling(offerer)
+
+	if(did_taker_succeed == FALSE || did_offerer_succeed == FALSE)
+		return // That didn't work for one reason or the other. No need to display anything.
+	offerer.add_mood_event("hug", /datum/mood_event/hug)
+	taker.add_mood_event("hug", /datum/mood_event/hug)
+	to_chat(offerer, span_notice("[taker] accepts and you hug!"))
+	to_chat(taker, span_notice("You accept [offerer]'s hug!"))
+
+	qdel(src)
 
 /obj/item/hand_item/noogie
 	name = "noogie"

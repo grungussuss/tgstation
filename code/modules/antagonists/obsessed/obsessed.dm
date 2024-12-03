@@ -1,6 +1,6 @@
 #define OBSESSED_OBJECTIVE_SPEND_TIME "spend_time"
 #define OBSESSED_OBJECTIVE_POLAROID "polaroid"
-#define OBSESSED_OBJECTIVE_HUG "hug"
+#define OBSESSED_OBJECTIVE_TOUCH "touch"
 #define OBSESSED_OBJECTIVE_HEIRLOOM "heirloom"
 #define OBSESSED_OBJECTIVE_JEALOUS "jealous"
 
@@ -93,7 +93,7 @@
 	H.regenerate_icons()
 
 /datum/antagonist/obsessed/forge_objectives(datum/mind/obsessionmind)
-	var/list/objectives_left = list(OBSESSED_OBJECTIVE_SPEND_TIME, OBSESSED_OBJECTIVE_POLAROID, OBSESSED_OBJECTIVE_HUG)
+	var/list/objectives_left = list(OBSESSED_OBJECTIVE_SPEND_TIME, OBSESSED_OBJECTIVE_POLAROID, OBSESSED_OBJECTIVE_TOUCH)
 	var/datum/objective/assassinate/obsessed/kill = new
 	kill.owner = owner
 	kill.target = obsessionmind
@@ -124,11 +124,11 @@
 				polaroid.owner = owner
 				polaroid.target = obsessionmind
 				objectives += polaroid
-			if(OBSESSED_OBJECTIVE_HUG)
-				var/datum/objective/hug/hug = new
-				hug.owner = owner
-				hug.target = obsessionmind
-				objectives += hug
+			if(OBSESSED_OBJECTIVE_TOUCH)
+				var/datum/objective/touch/touch = new
+				touch.owner = owner
+				touch.target = obsessionmind
+				objectives += touch
 			if(OBSESSED_OBJECTIVE_HEIRLOOM)
 				var/datum/objective/steal/heirloom_thief/heirloom_thief = new
 				heirloom_thief.owner = owner
@@ -246,25 +246,25 @@
 	return timer <= 0 || explanation_text == "Free Objective"
 
 
-/datum/objective/hug//this objective isn't perfect. hugging the correct amount of times, then switching bodies, might fail the objective anyway. maybe i'll come back and fix this sometime.
-	name = "hugs"
-	var/hugs_needed
+/datum/objective/touch//this objective isn't perfect. touching the correct amount of times, then switching bodies, might fail the objective anyway. maybe i'll come back and fix this sometime.
+	name = "touches"
+	var/touches_needed
 
-/datum/objective/hug/update_explanation_text()
+/datum/objective/touch/update_explanation_text()
 	..()
-	if(!hugs_needed)//just so admins can mess with it
-		hugs_needed = rand(4,6)
+	if(!touches_needed)//just so admins can mess with it
+		touches_needed = rand(4,6)
 	var/datum/antagonist/obsessed/creeper = owner.has_antag_datum(/datum/antagonist/obsessed)
 	if(target?.current && creeper)
-		explanation_text = "Hug [target.name] [hugs_needed] times while they're alive."
+		explanation_text = "touch [target.name] [touches_needed] times while they're alive."
 	else
 		explanation_text = "Free Objective"
 
-/datum/objective/hug/check_completion()
+/datum/objective/touch/check_completion()
 	var/datum/antagonist/obsessed/creeper = owner.has_antag_datum(/datum/antagonist/obsessed)
-	if(!creeper || !creeper.trauma || !hugs_needed)
+	if(!creeper || !creeper.trauma || !touches_needed)
 		return TRUE//free objective
-	return creeper.trauma.obsession_hug_count >= hugs_needed
+	return creeper.trauma.obsession_touch_count >= touches_needed
 
 /datum/objective/polaroid //take a picture of the target with you in it.
 	name = "polaroid"
@@ -302,6 +302,6 @@
 
 #undef OBSESSED_OBJECTIVE_SPEND_TIME
 #undef OBSESSED_OBJECTIVE_POLAROID
-#undef OBSESSED_OBJECTIVE_HUG
+#undef OBSESSED_OBJECTIVE_TOUCH
 #undef OBSESSED_OBJECTIVE_HEIRLOOM
 #undef OBSESSED_OBJECTIVE_JEALOUS

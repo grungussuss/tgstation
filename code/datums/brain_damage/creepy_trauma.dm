@@ -14,7 +14,7 @@
 
 	var/total_time_creeping = 0 //just for round end fun
 	var/time_spent_away = 0
-	var/obsession_hug_count = 0
+	var/obsession_touch_count = 0
 
 /datum/brain_trauma/special/obsessed/on_gain()
 	//setup, linking, etc//
@@ -34,7 +34,7 @@
 	antagonist.forge_objectives(obsession.mind)
 	antagonist.greet()
 	log_game("[key_name(antagonist)] has developed an obsession with [key_name(obsession)].")
-	RegisterSignal(owner, COMSIG_CARBON_HELPED, PROC_REF(on_hug))
+	RegisterSignal(owner, COMSIG_CARBON_HELPED, PROC_REF(on_pat))
 
 /datum/brain_trauma/special/obsessed/on_life(seconds_per_tick, times_fired)
 	if(!obsession || obsession.stat == DEAD)
@@ -83,14 +83,14 @@
 			to_chat(owner, span_warning("Being near [obsession] makes you nervous and you begin to stutter..."))
 		owner.set_stutter_if_lower(6 SECONDS)
 
-/// Singal proc for [COMSIG_CARBON_HELPED], when our obsessed helps (hugs) our obsession, increases hug count
-/datum/brain_trauma/special/obsessed/proc/on_hug(datum/source, mob/living/hugged)
+/// Singal proc for [COMSIG_CARBON_HELPED], when our obsessed helps (pats) our obsession, increases pat count
+/datum/brain_trauma/special/obsessed/proc/on_pat(datum/source, mob/living/patted)
 	SIGNAL_HANDLER
 
-	if(hugged != obsession)
+	if(patted != obsession)
 		return
 
-	obsession_hug_count++
+	obsession_touch_count++
 
 /datum/brain_trauma/special/obsessed/proc/on_failed_social_interaction()
 	if(QDELETED(owner) || owner.stat >= UNCONSCIOUS)

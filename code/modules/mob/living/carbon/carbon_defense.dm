@@ -340,12 +340,14 @@
 			to_chat(helper, span_notice("You wrap [src] into a tight bear hug!"))
 			to_chat(src, span_notice("[helper] squeezes you super tightly in a firm bear hug!"))
 		else
-			helper.visible_message(span_notice("[helper] hugs [src] to make [p_them()] feel better!"), \
+			helper.visible_message(span_notice("[helper] pats [src] on the back to make [p_them()] feel better!"), \
 						null, span_hear("You hear the rustling of clothes."), DEFAULT_MESSAGE_RANGE, list(helper, src))
-			to_chat(helper, span_notice("You hug [src] to make [p_them()] feel better!"))
-			to_chat(src, span_notice("[helper] hugs you to make you feel better!"))
+			to_chat(helper, span_notice("You pat [src] on the back to make [p_them()] feel better!"))
+			to_chat(src, span_notice("[helper] pats you on the back to make you feel better!"))
 
-		// Warm them up with hugs
+		// lil animation so signal our interaction
+		helper.do_attack_animation(src, help = TRUE)
+		// Warm them up with touches
 		share_bodytemperature(helper)
 
 		// No moodlets for people who hate touches
@@ -355,34 +357,35 @@
 			else
 				if(bodytemperature > helper.bodytemperature)
 					if(!HAS_TRAIT(helper, TRAIT_BADTOUCH))
-						helper.add_mood_event("hug", /datum/mood_event/warmhug, src) // Hugger got a warm hug (Unless they hate hugs)
-					add_mood_event("hug", /datum/mood_event/hug) // Receiver always gets a mood for being hugged
+						helper.add_mood_event("pat", /datum/mood_event/warmpat, src) // Patter got a warm pat (Unless they hate touches)
+					add_mood_event("pat", /datum/mood_event/pat) // Receiver always gets a mood for being patted
 				else
-					add_mood_event("hug", /datum/mood_event/warmhug, helper) // You got a warm hug
+					add_mood_event("pat", /datum/mood_event/warmpat, helper) // You got a warm pat
 		else
 			if (helper.grab_state >= GRAB_AGGRESSIVE)
 				add_mood_event("hug", /datum/mood_event/bad_touch_bear_hug)
 
-		// Let people know if they hugged someone really warm or really cold
+		// Let people know if they patted someone really warm or really cold
 		if(helper.bodytemperature > BODYTEMP_HEAT_DAMAGE_LIMIT)
-			to_chat(src, span_warning("It feels like [helper] is over heating as [helper.p_they()] hug[helper.p_s()] you."))
+			to_chat(src, span_warning("It feels like [helper] is over heating as [helper.p_they()] pat[helper.p_s()] you."))
 		else if(helper.bodytemperature < BODYTEMP_COLD_DAMAGE_LIMIT)
-			to_chat(src, span_warning("It feels like [helper] is freezing as [helper.p_they()] hug[helper.p_s()] you."))
+			to_chat(src, span_warning("It feels like [helper] is freezing as [helper.p_they()] pat[helper.p_s()] you."))
 
 		if(bodytemperature > BODYTEMP_HEAT_DAMAGE_LIMIT)
-			to_chat(helper, span_warning("It feels like [src] is over heating as you hug [p_them()]."))
+			to_chat(helper, span_warning("It feels like [src] is over heating as you pat [p_them()]."))
 		else if(bodytemperature < BODYTEMP_COLD_DAMAGE_LIMIT)
-			to_chat(helper, span_warning("It feels like [src] is freezing as you hug [p_them()]."))
+			to_chat(helper, span_warning("It feels like [src] is freezing as you pat [p_them()]."))
 
 		if(HAS_TRAIT(helper, TRAIT_FRIENDLY) || force_friendly)
 			if (helper.mob_mood.sanity >= SANITY_GREAT)
 				new /obj/effect/temp_visual/heart(loc)
-				add_mood_event("friendly_hug", /datum/mood_event/besthug, helper)
+				add_mood_event("friendly_pat", /datum/mood_event/bestpat, helper)
 			else if (helper.mob_mood.sanity >= SANITY_DISTURBED)
-				add_mood_event("friendly_hug", /datum/mood_event/betterhug, helper)
+				add_mood_event("friendly_pat", /datum/mood_event/betterpat, helper)
 
 		if(HAS_TRAIT(src, TRAIT_BADTOUCH))
-			to_chat(helper, span_warning("[src] looks visibly upset as you hug [p_them()]."))
+			to_chat(helper, span_warning("[src] looks visibly upset as you pat [p_them()]."))
+		helper.do_attack_animation(src, help = TRUE)
 
 	SEND_SIGNAL(src, COMSIG_CARBON_HELP_ACT, helper)
 	SEND_SIGNAL(helper, COMSIG_CARBON_HELPED, src)
@@ -415,7 +418,7 @@
 		for(var/obj/item/I in LB.embedded_objects)
 			if(!embeds)
 				embeds = TRUE
-				// this way, we only visibly try to examine ourselves if we have something embedded, otherwise we'll still hug ourselves :)
+				// this way, we only visibly try to examine ourselves if we have something embedded, otherwise we'll still pat ourselves :)
 				visible_message(span_notice("[src] examines [p_them()]self."), \
 					span_notice("You check yourself for shrapnel."))
 			if(I.is_embed_harmless())

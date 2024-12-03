@@ -1,6 +1,6 @@
 /datum/quirk/friendly
 	name = "Friendly"
-	desc = "You give the best hugs, especially when you're in the right mood."
+	desc = "You give the best hugs and pats, especially when you're in the right mood."
 	icon = FA_ICON_HANDS_HELPING
 	value = 2
 	mob_trait = TRAIT_FRIENDLY

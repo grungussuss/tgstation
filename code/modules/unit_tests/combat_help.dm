@@ -1,4 +1,4 @@
-/// Tests help intent clicking on people, particularly ensuring it results in a help_shake (check self or hug)
+/// Tests help intent clicking on people, particularly ensuring it results in a help_shake (check self or pat)
 /datum/unit_test/help_click
 	var/helper_times_helped = 0
 	var/helpee_times_helped = 0

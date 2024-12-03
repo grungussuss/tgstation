@@ -46,9 +46,16 @@
 /datum/emote/living/carbon/human/hug
 	key = "hug"
 	key_third_person = "hugs"
-	message = "hugs themself."
-	message_param = "hugs %t."
 	hands_use_check = TRUE
+
+/datum/emote/living/carbon/human/hug/run_emote(mob/user, params, type_override, intentional)
+	. = ..()
+	if(!length(user.get_empty_held_indexes()))
+		to_chat(user, span_warning("You don't have any free hands to hug with."))
+		return
+	var/obj/item/hand_item/hughand/hughand = new(user)
+	if(user.put_in_hands(hughand))
+		to_chat(user, span_notice("You prepare to hug!"))
 
 /datum/emote/living/carbon/human/mumble
 	key = "mumble"

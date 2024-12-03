@@ -3,7 +3,7 @@
 /// How much terror a random panic attack will give the victim.
 #define PANIC_ATTACK_TERROR_AMOUNT 35
 /// Amount of terror actively removed (or generated) upon being hugged.
-#define HUG_TERROR_AMOUNT 60
+#define PAT_TERROR_AMOUNT 60
 /// Amount of terror caused by subsequent casting of the Terrify spell.
 #define STACK_TERROR_AMOUNT 135
 
@@ -92,24 +92,24 @@
 
 	return span_notice("[owner] looks rather anxious. [owner.p_They()] could probably use a hug...")
 
-/// If we get a hug from a friend, we calm down! If we get a hug from a nightmare, we FREAK OUT.
-/datum/status_effect/terrified/proc/comfort_owner(datum/source, mob/living/hugger)
+/// If we get a pat from a friend, we calm down! If we get a pat from a nightmare, we FREAK OUT.
+/datum/status_effect/terrified/proc/comfort_owner(datum/source, mob/living/patter)
 	SIGNAL_HANDLER
 
-	if(isnightmare(hugger)) //hey wait a minute, that's not a comforting, friendly hug!
+	if(isnightmare(patter)) //hey wait a minute, that's not a comforting, friendly pat!
 		if(check_surrounding_darkness())
-			addtimer(CALLBACK(src, PROC_REF(freak_out), HUG_TERROR_AMOUNT))
+			addtimer(CALLBACK(src, PROC_REF(freak_out), PAT_TERROR_AMOUNT))
 			owner.visible_message(
-				span_warning("[owner] recoils in fear as [hugger] waves [hugger.p_their()] arms and shrieks at [owner.p_them()]!"),
+				span_warning("[owner] recoils in fear as [patter] waves [patter.p_their()] arms and shrieks at [owner.p_them()]!"),
 				span_boldwarning("The shadows lash out at you, and you drop to the ground in fear!"),
 				span_hear("You hear someone shriek in fear. How embarassing!"),
 				)
 			return COMPONENT_BLOCK_MISC_HELP
 
-	terror_buildup -= HUG_TERROR_AMOUNT
+	terror_buildup -= PAT_TERROR_AMOUNT
 	owner.visible_message(
-		span_notice("[owner] seems to relax as [hugger] gives [owner.p_them()] a comforting hug."),
-		span_nicegreen("You feel yourself calm down as [hugger] gives you a reassuring hug."),
+		span_notice("[owner] seems to relax as [patter] gives [owner.p_them()] a comforting pat."),
+		span_nicegreen("You feel yourself calm down as [patter] gives you a reassuring pat."),
 		span_hear("You hear shuffling and a sigh of relief."),
 	)
 
@@ -156,7 +156,7 @@
 
 #undef DARKNESS_TERROR_AMOUNT
 #undef PANIC_ATTACK_TERROR_AMOUNT
-#undef HUG_TERROR_AMOUNT
+#undef PAT_TERROR_AMOUNT
 #undef STACK_TERROR_AMOUNT
 #undef DARKNESS_TERROR_CAP
 #undef TERROR_FEAR_THRESHOLD
