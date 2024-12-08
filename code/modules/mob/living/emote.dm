@@ -602,6 +602,12 @@
 	emote_type = EMOTE_VISIBLE | EMOTE_AUDIBLE
 	cooldown = 5 SECONDS
 
+/datum/emote/living/yawn/get_sound(mob/living/carbon/human/user)
+	. = ..()
+	if(istype(user))
+		user.dna.species.get_
+
+
 /datum/emote/living/yawn/run_emote(mob/user, params, type_override, intentional)
 	. = ..()
 	if(!isliving(user))

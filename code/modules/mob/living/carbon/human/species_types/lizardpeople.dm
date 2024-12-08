@@ -117,6 +117,11 @@
 /datum/species/lizard/get_hiss_sound(mob/living/carbon/human/lizard)
 	return 'sound/mobs/humanoids/lizard/lizard_hiss.ogg'
 
+/datum/species/human/lizard/get_yawn_sound(mob/living/carbon/human/lizard)
+	if(lizard.physique == FEMALE)
+		return // female sound here
+	return 'sound/mobs/humanoids/human/yawn/yawn_male1.ogg'
+
 /datum/species/lizard/get_physical_attributes()
 	return "Lizardpeople can withstand slightly higher temperatures than most species, but they are very vulnerable to the cold \
 		and can't regulate their body-temperature internally, making the vacuum of space extremely deadly to them."
