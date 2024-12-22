@@ -15,6 +15,10 @@
 		FREQ_CTF_BLUE,
 	)
 
+/obj/machinery/telecomms/Initialize(mapload)
+	. = ..()
+	register_context()
+
 /obj/machinery/telecomms/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
 	. = ..()
 
@@ -39,11 +43,15 @@
 	. = ..()
 	if(isnull(held_item))
 		return NONE
-
-	if(held_item.tool_behaviour == TOOL_MULTITOOL)
+	else if(held_item.tool_behaviour == TOOL_MULTITOOL)
 		context[SCREENTIP_CONTEXT_RMB] = "Link"
 		context[SCREENTIP_CONTEXT_CTRL_LMB] = "Buffer"
 		return CONTEXTUAL_SCREENTIP_SET
+	else if(held_item.tool_behaviour == TOOL_SCREWDRIVER)
+		context[SCREENTIP_CONTEXT_LMB] = "[panel_open ? "Close" : "Open"] Panel"
+		return CONTEXTUAL_SCREENTIP_SET
+	else if(held_item.tool_behaviour == TOOL_CROWBAR && panel_open)
+		context[SCREENTIP_CONTEXT_LMB] = "Deconstruct"
 
 /obj/machinery/telecomms/item_interaction_secondary(mob/living/user, obj/item/multitool/tool, list/modifiers)
 	. = ..()
