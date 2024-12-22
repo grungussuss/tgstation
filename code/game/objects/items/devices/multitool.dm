@@ -85,12 +85,15 @@
  * * buffer - the new object to assign to the multitool's buffer
  */
 /obj/item/multitool/proc/set_buffer(datum/buffer)
+	if(src.buffer == buffer)
+		return FALSE
 	if(src.buffer)
 		UnregisterSignal(src.buffer, COMSIG_QDELETING)
 		remove_buffer(src.buffer)
 	src.buffer = buffer
 	if(!QDELETED(buffer))
 		RegisterSignal(buffer, COMSIG_QDELETING, PROC_REF(remove_buffer))
+	return TRUE
 
 /**
  * Called when the buffer's stored object is deleted

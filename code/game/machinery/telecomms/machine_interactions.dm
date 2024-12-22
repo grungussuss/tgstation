@@ -15,7 +15,8 @@
 		FREQ_CTF_BLUE,
 	)
 
-/obj/machinery/telecomms/attackby(obj/item/attacking_item, mob/user, params)
+/obj/machinery/telecomms/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	. = ..()
 
 	var/icon_closed = initial(icon_state)
 	var/icon_open = "[initial(icon_state)]_o"
@@ -23,16 +24,48 @@
 		icon_closed = "[initial(icon_state)]_off"
 		icon_open = "[initial(icon_state)]_o_off"
 
-	if(default_deconstruction_screwdriver(user, icon_open, icon_closed, attacking_item))
-		return
-	// Using a multitool lets you access the receiver's interface
-	else if(attacking_item.tool_behaviour == TOOL_MULTITOOL)
-		attack_hand(user)
+	if(default_deconstruction_screwdriver(user, icon_open, icon_closed, tool))
+		return ITEM_INTERACT_SUCCESS
 
-	else if(default_deconstruction_crowbar(attacking_item))
-		return
-	else
-		return ..()
+	if(default_deconstruction_crowbar(tool))
+		return ITEM_INTERACT_SUCCESS
+
+	// Using a multitool lets you access the receiver's interface
+	if(tool.tool_behaviour == TOOL_MULTITOOL)
+		attack_hand(user)
+		return ITEM_INTERACT_SUCCESS
+
+/obj/machinery/telecomms/add_context(atom/source, list/context, obj/item/held_item, mob/user)
+	. = ..()
+	if(isnull(held_item))
+		return NONE
+
+	if(held_item.tool_behaviour == TOOL_MULTITOOL)
+		context[SCREENTIP_CONTEXT_RMB] = "Link"
+		context[SCREENTIP_CONTEXT_CTRL_LMB] = "Buffer"
+		return CONTEXTUAL_SCREENTIP_SET
+
+/obj/machinery/telecomms/item_interaction_secondary(mob/living/user, obj/item/multitool/tool, list/modifiers)
+	. = ..()
+	if(!istype(tool))
+		return ITEM_INTERACT_BLOCKING
+	if(tool.tool_behaviour == TOOL_MULTITOOL)
+		if(add_new_link(src, user))
+			balloon_alert(user, span_notice("linked!"))
+			return ITEM_INTERACT_SUCCESS
+		else
+			balloon_alert(user, span_notice("failed link!"))
+	return ITEM_INTERACT_BLOCKING
+
+/obj/machinery/telecomms/click_ctrl(mob/user)
+	. = ..()
+	var/obj/item/multitool/tool = user?.get_active_held_item()
+	if(tool && tool.tool_behaviour == TOOL_MULTITOOL)
+		if(tool.set_buffer(src))
+			balloon_alert(user, span_notice("buffered!"))
+			return TRUE
+		balloon_alert(user, span_notice("already buffered!"))
+		return FALSE
 
 /obj/machinery/telecomms/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
