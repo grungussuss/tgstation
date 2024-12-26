@@ -14,7 +14,7 @@
 
 /obj/artifact/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/anomalous_item)
+	AddComponent(/datum/component/artifact)
 
 /datum/armor/artifact
 	melee = 95
