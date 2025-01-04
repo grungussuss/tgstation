@@ -110,10 +110,12 @@
 	w_class = WEIGHT_CLASS_SMALL
 	throw_speed = 3
 	throw_range = 5
-	custom_materials = list(/datum/material/iron= SHEET_MATERIAL_AMOUNT * 5)
+	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 5)
 	armor_type = /datum/armor/item_hand_tele
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | ACID_PROOF
-	var/list/active_portal_pairs
+	///List of portal pairs created by this hand tele
+	var/list/active_portal_pairs = list()
+	///Maximum concurrent active portal pairs allowed
 	var/max_portal_pairs = 3
 
 	/**
@@ -130,10 +132,7 @@
 	fire = 100
 	acid = 100
 
-/obj/item/hand_tele/Initialize(mapload)
-	. = ..()
-	active_portal_pairs = list()
-
+///Checks if the targeted portal was created by us, then causes it to expire, removing it
 /obj/item/hand_tele/proc/try_dispel_portal(atom/target, mob/user)
 	if(is_parent_of_portal(target))
 		to_chat(user, span_notice("You dispel [target] with [src]!"))
@@ -180,7 +179,17 @@
 		var/area/computer_area = get_area(target)
 		if(!computer_area || (computer_area.area_flags & NOTELEPORT))
 			continue
-		if(computer.power_station?.teleporter_hub && computer.power_station.engaged)
+
+		if(!computer.power_station || !computer.power_station.teleporter_hub)
+			continue
+
+		if((computer.power_station.machine_stat & (NOPOWER|BROKEN|MAINT)) || computer.power_station.panel_open)
+			continue
+
+		if((computer.power_station.teleporter_hub.machine_stat & (NOPOWER|BROKEN|MAINT)) || computer.power_station.teleporter_hub.panel_open)
+			continue
+
+		if(computer.power_station.engaged)
 			locations["[get_area(target)] (Active)"] = computer
 		else
 			locations["[get_area(target)] (Inactive)"] = computer
@@ -262,6 +271,9 @@
 	RegisterSignal(portal2, COMSIG_QDELETING, PROC_REF(on_portal_destroy))
 
 	try_move_adjacent(portal1, user.dir)
+	if(QDELETED(portal1) || QDELETED(portal2)) //in the event that something managed to delete the portal objects, i.e. something teleported them
+		to_chat(user, span_notice("[src] vibrates, but no portal seems to appear. Maybe you should try something else."))
+		return
 	active_portal_pairs[portal1] = portal2
 
 	investigate_log("was used by [key_name(user)] at [AREACOORD(user)] to create a portal pair with destinations [AREACOORD(portal1)] and [AREACOORD(portal2)].", INVESTIGATE_PORTAL)
@@ -271,6 +283,9 @@
 
 	return TRUE
 
+///Checks for whether creating a portal in our area is allowed or not,
+///returning FALSE when in a NOTELEPORT area, an away mission or when the user is not on a turf.
+///Is, for some reason, separate from the teleport target's check in try_create_portal_to()
 /obj/item/hand_tele/proc/can_teleport_notifies(mob/user)
 	var/turf/current_location = get_turf(user)
 	var/area/current_area = current_location.loc
@@ -280,6 +295,7 @@
 
 	return TRUE
 
+///Clears last teleport location when the teleporter providing our target location changes its target
 /obj/item/hand_tele/proc/on_teleporter_new_target(datum/source)
 	SIGNAL_HANDLER
 
@@ -287,6 +303,7 @@
 		last_portal_location = null
 		UnregisterSignal(source, COMSIG_TELEPORTER_NEW_TARGET)
 
+///Removes a destroyed portal from active_portal_pairs list
 /obj/item/hand_tele/proc/on_portal_destroy(obj/effect/portal/P)
 	SIGNAL_HANDLER
 

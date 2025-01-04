@@ -34,7 +34,6 @@
 /mob/living/basic/mining/gutlunch/Initialize(mapload)
 	. = ..()
 	GLOB.gutlunch_count++
-	RegisterSignal(src, COMSIG_HOSTILE_PRE_ATTACKINGTARGET, PROC_REF(pre_attack))
 	if(greyscale_config)
 		set_greyscale(colors = list(pick(possible_colors)))
 	AddElement(/datum/element/ai_retaliate)
@@ -52,19 +51,18 @@
 	GLOB.gutlunch_count--
 	return ..()
 
-/mob/living/basic/mining/gutlunch/proc/pre_attack(mob/living/puncher, atom/target)
-	SIGNAL_HANDLER
-
-	if(!istype(target, /obj/structure/ore_container/food_trough/gutlunch_trough))
+/mob/living/basic/mining/gutlunch/early_melee_attack(atom/target, list/modifiers, ignore_cooldown)
+	. = ..()
+	if(!.)
 		return
-
+	if(!istype(target, /obj/structure/ore_container/food_trough/gutlunch_trough))
+		return TRUE
 	var/obj/ore_food = locate(/obj/item/stack/ore) in target
-
 	if(isnull(ore_food))
 		balloon_alert(src, "no food!")
 	else
-		melee_attack(ore_food)
-	return COMPONENT_HOSTILE_NO_ATTACK
+		UnarmedAttack(ore_food, TRUE, modifiers)
+	return FALSE
 
 /mob/living/basic/mining/gutlunch/proc/after_birth(mob/living/basic/mining/gutlunch/grub/baby, mob/living/partner)
 	var/our_color = LAZYACCESS(atom_colours, FIXED_COLOUR_PRIORITY) || COLOR_GRAY
@@ -113,11 +111,12 @@
 	//pet commands when we tame the gutluncher
 	var/static/list/pet_commands = list(
 		/datum/pet_command/idle,
+		/datum/pet_command/move,
 		/datum/pet_command/free,
-		/datum/pet_command/point_targeting/attack,
-		/datum/pet_command/point_targeting/breed/gutlunch,
+		/datum/pet_command/attack,
+		/datum/pet_command/breed/gutlunch,
 		/datum/pet_command/follow,
-		/datum/pet_command/point_targeting/fetch,
+		/datum/pet_command/fetch,
 		/datum/pet_command/mine_walls,
 	)
 
@@ -139,7 +138,7 @@
 	can_breed = FALSE
 	gender = NEUTER
 	ai_controller = /datum/ai_controller/basic_controller/gutlunch/gutlunch_baby
-	current_size = 0.6
+	initial_size = 0.6
 	///list of stats we inherited
 	var/datum/gutlunch_inherited_stats/inherited_stats
 
