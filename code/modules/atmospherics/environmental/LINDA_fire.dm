@@ -375,7 +375,7 @@
 	var/list/obj/effect/hotspot/spot_list = list()
 	///the sound center turf which the looping sound will play
 	var/turf/open/current_sound_loc
-	var/datum/looping_sound/fire/sound
+	var/datum/looping_sound/fire/fire_soundloop
 	var/tiles_limit = 80 // arbitrary limit so we dont have one giant group
 	///these lists and average var are to find the average center of a group
 	var/list/x_coord = list()
@@ -393,7 +393,8 @@
 	. = ..()
 	current_sound_loc = null
 	spot_list = null
-	qdel(sound)
+	qdel(fire_soundloop)
+	to_chat(world, "hot_group successfully destroyed and soundloop was cleared.")
 
 /datum/hot_group/proc/remove_from_group(obj/effect/hotspot/target)
 	spot_list -= target
@@ -443,13 +444,15 @@
 	average_Z = round((min(z_coord) + max(z_coord))/2)
 	drop_off_dist = max((max(y_coord) - min(y_coord)), (max(x_coord) - min(x_coord)), 1)// pick the largest value between the width and length of the group to determine sound drop off
 	var/turf/open/sound_turf = locate(average_x, average_y, average_Z)
-	if(sound)
-		sound.falloff_distance = drop_off_dist
+	if(fire_soundloop)
+		fire_soundloop.falloff_distance = drop_off_dist
 		if(sound_turf != current_sound_loc)
-			sound.parent = sound_turf
+			fire_soundloop.parent = sound_turf
+			to_chat(world, "soundloop.parent updated.")
 		return
-	sound = new(sound_turf, TRUE)
-	sound.falloff_distance = drop_off_dist
+	fire_soundloop = new(sound_turf, TRUE)
+	to_chat(world, "new soundloop created.")
+	fire_soundloop.falloff_distance = drop_off_dist
 	current_sound_loc = sound_turf
 
 #undef MIN_SIZE_SOUND
