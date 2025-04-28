@@ -246,13 +246,13 @@
 	var/obj/structure/sign/poster/placed_poster = rolled_poster.poster_structure
 
 	flick("poster_being_set", placed_poster)
-	placed_poster.forceMove(src) //deletion of the poster is handled in poster/Exited(), so don't have to worry about P anymore.
 	playsound(src, 'sound/items/poster/poster_being_created.ogg', 100, TRUE)
-
 	var/turf/user_drop_location = get_turf(user) //cache this so it just falls to the ground if they move. also no tk memes allowed.
 	if(!do_after(user, PLACE_SPEED, placed_poster, extra_checks = CALLBACK(placed_poster, TYPE_PROC_REF(/obj/structure/sign/poster, snowflake_closed_turf_check), src)))
 		placed_poster.roll_and_drop(user_drop_location, user)
 		return
+
+	placed_poster.forceMove(src) //deletion of the poster is handled in poster/Exited(), so don't have to worry about P anymore.
 
 	placed_poster.on_placed_poster(user)
 	return TRUE
