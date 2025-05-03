@@ -37,7 +37,7 @@
 	icon_state = "culthood"
 	inhand_icon_state = "culthood"
 	desc = "A torn, dust-caked hood. Strange letters line the inside."
-	flags_inv = HIDEFACE|HIDEHAIR|HIDEEARS|SNUG_FIT
+	flags_inv = HIDEFACE|HIDEHAIR|HIDEEARS
 	flags_cover = HEADCOVERSEYES
 	armor_type = /obj/item/clothing/suit/hooded/cultrobes::armor_type
 	cold_protection = HEAD
