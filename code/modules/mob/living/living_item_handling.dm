@@ -127,9 +127,14 @@
 
 
 /mob/living/proc/offer_item(mob/living/offered_to, obj/offered_item)
-	if(isnull(offered_to) || isnull(offered_item))
+
+	if(isnull(offered_to))
 		stack_trace("no offered_to or offered_item in offer_item()")
 		return
+
+	if(!offered_item)
+		to_chat(src, span_danger("Nothing to offer!"))
+		return FALSE
 
 	if(offered_to == src)
 		to_chat(src, span_danger("You can't offer something to yourself!"))
@@ -159,7 +164,6 @@
 		stop_offering_item()
 		return
 
-
 	visible_message(
 		span_notice("[src] puts their hand back down."), \
 		span_notice("I stop offering [offered_item ? offered_item : "the item"]."), \
@@ -178,11 +182,13 @@
 		to_chat(src, span_warning("I need a free hand to take it!"))
 		return FALSE
 
+	if(!transferItemToLoc(offered_item, src))
+		return FALSE
+
 	accept_offered_item(offerer, offered_item)
 	return TRUE
 
 /mob/living/proc/accept_offered_item(mob/living/offerer, obj/offered_item)
-	transferItemToLoc(offered_item, src)
 	put_in_active_hand(offered_item)
 
 	to_chat(offerer, span_notice("[src] takes [offered_item] from my outstretched hand."))
@@ -193,6 +199,6 @@
 		ignored_mobs = list(offerer)
 	)
 
-	SEND_SIGNAL(offered_item, COMSIG_LIVING_ACCEPTED_ITEM, src, offerer)
+	SEND_SIGNAL(offered_item, COMSIG_OBJ_HANDED_OVER, src, offerer)
 	offerer.stop_offering_item()
 
