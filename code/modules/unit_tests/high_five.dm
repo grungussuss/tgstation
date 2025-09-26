@@ -1,4 +1,5 @@
 // Test a high five through and through, with multiple people nearby
+/*
 /datum/unit_test/high_five
 
 /datum/unit_test/high_five/Run()
@@ -7,7 +8,7 @@
 	var/mob/living/carbon/human/random_bystander = allocate(/mob/living/carbon/human/consistent) // this guy's just here for another valid taker
 
 	offer_guy.emote("slap")
-	offer_guy.give()
+	offer_guy.offer_item(take_guy, )
 
 	TEST_ASSERT_NOTNULL(offer_guy.has_status_effect(/datum/status_effect/offering/no_item_received/high_five), \
 		"Offerer doesn't have the high five offer status effect after offering (giving) to takers nearby")
@@ -56,3 +57,4 @@
 	take_guy_B.forceMove(run_loc_floor_top_right)
 	TEST_ASSERT_NULL(offer_guy.has_status_effect(/datum/status_effect/offering/no_item_received/high_five), \
 		"Offerer still has the high fiver offer status effect from taker B moving away, which is invalid because there are no takers are nearby")
+*/

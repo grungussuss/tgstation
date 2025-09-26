@@ -247,3 +247,9 @@
 
 	/// how many tiles can this mob reach with their hands? 1 tile is adjacent.
 	var/reach_length = 1
+
+	/// cooldown for the next time this person can offer
+	COOLDOWN_DECLARE(offer_cooldown)
+
+	/// Weakref to the item we are offering
+	var/datum/weakref/offered_item_ref

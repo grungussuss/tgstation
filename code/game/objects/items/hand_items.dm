@@ -215,6 +215,7 @@
 	hitsound = 'sound/effects/snap.ogg'
 	/// How many smaller table smacks we can do before we're out
 	var/table_smacks_left = 3
+	offer_effects = /datum/offer_effects/high_five
 
 /obj/item/hand_item/slapper/Initialize(mapload)
 	. = ..()
@@ -367,7 +368,7 @@
 	if(!loc.Adjacent(target_mob) || !istype(user) || !istype(target_mob))
 		return TRUE
 
-	user.give(target_mob)
+	user.offer_item(target_mob, src)
 	return TRUE
 
 

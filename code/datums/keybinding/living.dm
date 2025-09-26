@@ -201,29 +201,3 @@
 		return
 	var/mob/living/living_user = user.mob
 	living_user.throw_mode_off(THROW_MODE_HOLD)
-
-/datum/keybinding/living/give
-	hotkey_keys = list("G")
-	name = "Give_Item"
-	full_name = "Give item"
-	description = "Give the item you're currently holding"
-	keybind_signal = COMSIG_KB_LIVING_GIVEITEM_DOWN
-
-/datum/keybinding/living/give/can_use(client/user)
-	. = ..()
-	if (!.)
-		return FALSE
-	if(!user.mob)
-		return FALSE
-	if(!HAS_TRAIT(user.mob, TRAIT_CAN_HOLD_ITEMS))
-		return FALSE
-	return TRUE
-
-/datum/keybinding/living/give/down(client/user, turf/target)
-	. = ..()
-	if(.)
-		return
-	var/mob/living/living_user = user.mob
-	if(!HAS_TRAIT(living_user, TRAIT_CAN_HOLD_ITEMS))
-		return
-	living_user.give()

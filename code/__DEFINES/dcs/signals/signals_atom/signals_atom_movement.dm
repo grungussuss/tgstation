@@ -74,3 +74,7 @@
 	#define COMSIG_ATOM_BLOCKS_PRESSURE (1<<0)
 ///From base of /datum/move_loop/process() after attempting to move a movable: (datum/move_loop/loop, old_dir)
 #define COMSIG_MOVABLE_MOVED_FROM_LOOP "movable_moved_from_loop"
+///sent in /mob/living/stop_offering_item()
+#define COMSIG_LIVING_STOPPED_OFFERING_ITEM "living_stop_offering_item"
+/// sent in /mob/living/accept_offered_item() args: (obj/item/offered_item, mob/living/taker, mob/living/offerer)
+#define COMSIG_LIVING_ACCEPTED_ITEM "living_accepted_item"

@@ -250,6 +250,8 @@
 	var/unique_reskin_changes_inhand = FALSE
 	/// Do we apply a click cooldown when resisting this object if it is restraining them?
 	var/resist_cooldown = CLICK_CD_BREAKOUT
+	/// things to do in case of offering
+	var/datum/offer_effects/offer_effects
 
 /obj/item/Initialize(mapload)
 	if(attack_verb_continuous)

@@ -414,7 +414,7 @@ or shoot a gun to move around via Newton's 3rd Law of Motion."
 	var/mob/living/taker = owner
 	var/mob/living/offerer = offer.owner
 	var/obj/item/receiving = offer.offered_item
-	taker.take(offerer, receiving)
+	//taker.take(offerer, receiving)
 	SEND_SIGNAL(offerer, COMSIG_LIVING_ITEM_GIVEN, taker, receiving)
 
 /atom/movable/screen/alert/give/highfive

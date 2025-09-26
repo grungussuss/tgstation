@@ -119,103 +119,80 @@
 	newtonian_move(get_angle(target, src), drift_force = drift_force)
 	thrown_thing.safe_throw_at(target, thrown_thing.throw_range + extra_throw_range, max(1,thrown_thing.throw_speed + power_throw), src, null, null, null, move_force)
 
-// Giving stuff
-/**
- * Proc called when offering an item to another player
- *
- * This handles creating an alert and adding an overlay to it
- * Arguments:
- * * offered - The player being offered the item (optional, if null the offer is to everyone around)
- */
-/mob/living/proc/give(mob/living/offered)
-	if(has_status_effect(/datum/status_effect/offering))
-		to_chat(src, span_warning("You're already offering something!"))
-		return
-
-	if(IS_DEAD_OR_INCAP(src))
-		to_chat(src, span_warning("You're unable to offer anything in your current state!"))
-		return
-
-	var/obj/item/offered_item = get_active_held_item()
-	// if it's an abstract item, should consider it to be non-existent (unless it's a HAND_ITEM, which means it's an obj/item that is just a representation of our hand)
-	if(!offered_item || ((offered_item.item_flags & ABSTRACT) && !(offered_item.item_flags & HAND_ITEM)))
-		to_chat(src, span_warning("You're not holding anything to offer!"))
-		return
-
-	if(offered)
-		if(offered == src)
-			if(!swap_hand(get_inactive_hand_index())) //have to swap hands first to take something
-				to_chat(src, span_warning("You try to take [offered_item] from yourself, but fail."))
-				return
-			if(!put_in_active_hand(offered_item))
-				to_chat(src, span_warning("You try to take [offered_item] from yourself, but fail."))
-				return
-			else
-				to_chat(src, span_notice("You take [offered_item] from yourself."))
-				return
-
-		if(IS_DEAD_OR_INCAP(offered))
-			to_chat(src, span_warning("[offered.p_Theyre()] unable to take anything in [offered.p_their()] current state!"))
-			return
-
-		if(!offered.IsReachableBy(src))
-			to_chat(src, span_warning("You have to be beside [offered.p_them()]!"))
-			return
-
-		if(!HAS_TRAIT(offered, TRAIT_CAN_HOLD_ITEMS))
-			to_chat(src, span_warning("[offered.p_They()] can't hold anything you offer!"))
-			return
-	else if(!(locate(/mob/living) in orange(1, src)))
-		to_chat(src, span_warning("There's nobody beside you to take it!"))
-		return
-
-	if(offered_item.on_offered(src)) // see if the item interrupts with its own behavior
-		return
-
-	balloon_alert_to_viewers("offers something")
-	visible_message(span_notice("[src] is offering [offered ? "[offered] " : ""][offered_item]."), \
-					span_notice("You offer [offered ? "[offered] " : ""][offered_item]."), null, 2)
-
-	apply_status_effect(/datum/status_effect/offering, offered_item, null, offered)
-
-/**
- * Proc called when the player clicks the give alert
- *
- * Handles checking if the player taking the item has open slots and is in range of the offerer
- * Also deals with the actual transferring of the item to the players hands
- * Arguments:
- * * offerer - The living mob giving the original item
- * * offered_item - The item being given by the offerer
- */
-/mob/living/proc/take(mob/living/offerer, obj/item/offered_item)
-	clear_alert("[offerer]")
-	if(IS_DEAD_OR_INCAP(src))
-		to_chat(src, span_warning("You're unable to take anything in your current state!"))
-		return
-	if(get_dist(src, offerer) > 1)
-		to_chat(src, span_warning("[offerer] is out of range!"))
-		return
-	if(!offered_item || offerer.get_active_held_item() != offered_item)
-		to_chat(src, span_warning("[offerer] is no longer holding the item they were offering!"))
-		return
-	if(!get_empty_held_indexes())
-		to_chat(src, span_warning("You have no empty hands!"))
-		return
-
-	if(offered_item.on_offer_taken(offerer, src)) // see if the item has special behavior for being accepted
-		return
-
-	if(!offerer.temporarilyRemoveItemFromInventory(offered_item))
-		visible_message(span_notice("[offerer] tries to hand over [offered_item] but it's stuck to them...."))
-		return
-
-	visible_message(span_notice("[src] takes [offered_item] from [offerer]."), \
-					span_notice("You take [offered_item] from [offerer]."))
-	offered_item.do_pickup_animation(src, offerer)
-	put_in_hands(offered_item)
-
 
 /mob/living/click_ctrl_shift(mob/user)
 	if(HAS_TRAIT(src, TRAIT_CAN_HOLD_ITEMS))
 		var/mob/living/living_user = user
-		living_user.give(src)
+		living_user.offer_item(src, living_user.get_active_held_item(living_user))
+
+
+/mob/living/proc/offer_item(mob/living/offered_to, obj/offered_item)
+	if(isnull(offered_to) || isnull(offered_item))
+		stack_trace("no offered_to or offered_item in offer_item()")
+		return
+
+	if(offered_to == src)
+		to_chat(src, span_danger("You can't offer something to yourself!"))
+		return FALSE
+
+	var/time_left = COOLDOWN_TIMELEFT(src, offer_cooldown)
+
+	if(time_left)
+		to_chat(src, span_danger("I must wait [time_left / 10] seconds before offering again."))
+		return FALSE
+
+	offered_item_ref = WEAKREF(offered_item)
+
+	visible_message(
+		span_notice("[src] offers [offered_item] to [offered_to] with an outstretched hand."), \
+		span_notice("I offer [offered_item] to [offered_to] with an outstretched hand."), \
+		vision_distance = COMBAT_MESSAGE_RANGE, \
+		ignored_mobs = list(offered_to)
+	)
+	to_chat(offered_to, span_notice("[offered_to] offers [offered_item] to me..."))
+
+	new /obj/effect/temp_visual/offered_item_effect(get_turf(src), offered_item, src, offered_to)
+
+/mob/living/proc/cancel_offering_item()
+	var/obj/offered_item = offered_item_ref?.resolve()
+	if(isnull(offered_item))
+		stop_offering_item()
+		return
+
+
+	visible_message(
+		span_notice("[src] puts their hand back down."), \
+		span_notice("I stop offering [offered_item ? offered_item : "the item"]."), \
+		vision_distance = COMBAT_MESSAGE_RANGE, \
+	)
+
+	stop_offering_item()
+
+/mob/living/proc/stop_offering_item()
+	COOLDOWN_START(src, offer_cooldown, 1 SECONDS)
+	SEND_SIGNAL(src, COMSIG_LIVING_STOPPED_OFFERING_ITEM)
+	offered_item_ref = null
+
+/mob/living/proc/try_accept_offered_item(mob/living/offerer, obj/offered_item)
+	if(get_active_held_item())
+		to_chat(src, span_warning("I need a free hand to take it!"))
+		return FALSE
+
+	accept_offered_item(offerer, offered_item)
+	return TRUE
+
+/mob/living/proc/accept_offered_item(mob/living/offerer, obj/offered_item)
+	transferItemToLoc(offered_item, src)
+	put_in_active_hand(offered_item)
+
+	to_chat(offerer, span_notice("[src] takes [offered_item] from my outstretched hand."))
+	visible_message(
+		span_warning("[src] takes [offered_item] from [offerer]'s outstretched hand!"), \
+		span_notice("I take [offered_item] from [offerer]'s outstretched hand."), \
+		vision_distance = COMBAT_MESSAGE_RANGE, \
+		ignored_mobs = list(offerer)
+	)
+
+	SEND_SIGNAL(offered_item, COMSIG_LIVING_ACCEPTED_ITEM, src, offerer)
+	offerer.stop_offering_item()
+
