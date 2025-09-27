@@ -1,51 +1,3 @@
-#define ATTACKBY_BLOCKING TRUE
-#define ATTACKBY_CONTINUE FALSE
-
-#define HANDOVER_ANIMATION_INTERRUPT TRUE
-#define HANDOVER_ANIMATION_PROCEED FALSE
-
-/datum/offer_effects
-	var/datum/weakref/giver_weakref
-	var/datum/weakref/taker_weakref
-	var/datum/weakref/offered_item_weakref
-	var/obj/offered_item_typepath
-	var/obj/effect/temp_visual/offered_item_effect/parent
-
-	var/override_drop = FALSE
-
-/datum/offer_effects/proc/on_creation(parent, mob/giver, mob/taker, obj/offered_item)
-	src.parent = parent
-	giver_weakref = WEAKREF(giver)
-	taker_weakref = WEAKREF(taker)
-	offered_item_weakref = WEAKREF(offered_item)
-	offered_item_typepath = offered_item.type
-	if(isnull(parent) || isnull(giver) || isnull(taker) || isnull(offered_item))
-		stack_trace("offer effects not given full args")
-
-/datum/offer_effects/proc/fade_offer()
-	parent.fade_out()
-
-/datum/offer_effects/proc/unregister_offer_signals()
-	parent.unregister_signals()
-
-/datum/offer_effects/proc/on_fade()
-	return
-
-/datum/offer_effects/proc/moved_out_of_range()
-	return
-
-/datum/offer_effects/proc/try_accept_intercept(mob/taker)
-	return
-
-/datum/offer_effects/proc/before_handover(mob/taker)
-	return
-
-/datum/offer_effects/proc/on_handover(mob/taker)
-	return
-
-/datum/offer_effects/proc/attackby(mob/attacker, obj/attacking_thing)
-	return
-
 /datum/offer_effects/high_five
 	var/list/datum/weakref/attempters_assoc = list()
 
@@ -64,7 +16,7 @@
 
 	return attempt_count
 
-/datum/offer_effects/high_five/try_accept_intercept(mob/taker)
+/datum/offer_effects/high_five/try_accept(mob/taker)
 	var/attempt_count = get_attempt_count(taker)
 	var/string = ""
 
@@ -94,11 +46,10 @@
 
 	playsound(attacker, 'sound/items/weapons/slap.ogg', 100, TRUE, 1)
 
-	var/mob/living/offerer = giver_weakref.resolve()
-	var/mob/living/taker = attacker
-
 	offerer.do_attack_animation(attacker)
 	attacker.do_attack_animation(parent)
+
+	var/mob/living/taker = attacker
 
 	var/obj/effect/slap_effect = new(attacker)
 	slap_effect.vis_flags = VIS_INHERIT_LAYER|VIS_INHERIT_PLANE|VIS_UNDERLAY
@@ -159,7 +110,7 @@
 		offerer.add_mood_event(descriptor, /datum/mood_event/high_five)
 		taker.add_mood_event(descriptor, /datum/mood_event/high_five)
 
-	addtimer(CALLBACK(parent, TYPE_PROC_REF(/obj/effect/temp_visual/offered_item_effect, fade_out)), 0.5 SECONDS)
+	addtimer(CALLBACK(parent, PROC_REF(fade_out)), 0.5 SECONDS)
 
 /datum/offer_effects/high_five/on_handover(mob/taker)
 	to_chat(world, span_notice("handover success"))

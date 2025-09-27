@@ -156,7 +156,7 @@
 	)
 	to_chat(offered_to, span_notice("[offered_to] offers [offered_item] to me..."))
 
-	new /obj/effect/temp_visual/offered_item_effect(get_turf(src), offered_item, src, offered_to)
+	new /obj/effect/temp_visual/offered_item_effect(src, offered_item, src, offered_to)
 
 /mob/living/proc/cancel_offering_item()
 	var/obj/offered_item = offered_item_ref?.resolve()
