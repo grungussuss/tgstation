@@ -8,14 +8,8 @@
 	var/fading_out = FALSE
 
 /obj/effect/temp_visual/offered_item_effect/proc/fade_out()
-	unregister_signals()
-	var/mob/living/offerer = offerer_weak_ref.resolve()
-	offerer?.stop_offering_item()
-
+	offer_effects.fade_out()
 	fading_out = TRUE
-
-	animate(src, time = fade_time, alpha = 0)
-	QDEL_IN(src, fade_time)
 
 /obj/effect/temp_visual/offered_item_effect/Initialize(mapload, obj/item/offered_thing, mob/living/offerer, mob/living/offered_to)
 	. = ..()
@@ -45,10 +39,7 @@
 /obj/effect/temp_visual/offered_item_effect/proc/on_drop()
 	SIGNAL_HANDLER
 
-	if(offer_effects?.override_drop)
-		return
-
-	qdel(src)
+	offer_effects.on_drop()
 
 /obj/effect/temp_visual/offered_item_effect/proc/handover(obj/handed_thing, mob/living/taker, mob/living/offerer)
 	SIGNAL_HANDLER
@@ -58,33 +49,19 @@
 /obj/effect/temp_visual/offered_item_effect/proc/someone_moved(mob/mover)
 	SIGNAL_HANDLER
 
-	if(QDELETED(src))
-		return
-
-	var/mob/living/offerer = offerer_weak_ref.resolve()
-	var/mob/living/offered_to = offered_to_weak_ref.resolve()
-
-	if(isnull(offerer) || isnull(offered_to))
-		qdel(src)
-		return
-
-	offer_effects.someone_moved(offerer, offered_to)
+	offer_effects.someone_moved()
 
 /obj/effect/temp_visual/offered_item_effect/proc/calculate_offset(mob/living/offerer, mob/living/offered_to)
 	if(QDELETED(src))
 		return
 
-	if(isnull(offerer) || isnull(offered_to))
-		qdel(src)
-		return
-
-	offer_effects.someone_moved(offerer, offered_to)
+	offer_effects.calculate_offset(offerer, offered_to)
 
 /obj/effect/temp_visual/offered_item_effect/attack_hand(mob/living/user)
 	. = ..()
 
 	var/mob/living/offerer = offer_effects.offerer
-	var/obj/offered_thing = offer_effects.offered_thing
+	var/obj/offered_item = offer_effects.offered_item
 
 	if(fading_out)
 		return
@@ -98,7 +75,7 @@
 		user.changeNext_move(CLICK_CD_MELEE)
 		return
 
-	offer_effects.try_accept(user, offered_thing)
+	offer_effects.try_accept(user, offered_item)
 
 /obj/effect/temp_visual/offered_item_effect/attackby(obj/item/I, mob/living/user, params)
 	. = ..()

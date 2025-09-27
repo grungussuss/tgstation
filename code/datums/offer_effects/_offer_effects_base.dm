@@ -8,30 +8,36 @@
 	var/mob/living/offerer
 	var/mob/living/offered_to
 	var/obj/offered_item
-	var/obj/offered_item_typepath
 	var/obj/effect/temp_visual/offered_item_effect/parent
+	var/time_out_time = OFFER_EFFECT_DURATION - 1 SECONDS
+	var/fade_time = 0.5 SECONDS
 
 	var/override_drop = FALSE
 
-/datum/offer_effects/proc/on_creation(parent, obj/item/offered_thing, mob/living/offerer, mob/living/offered_to)
+/datum/offer_effects/proc/on_creation(parent, obj/item/offered_item, mob/living/offerer, mob/living/offered_to)
 	src.parent = parent
+	src.offered_item = offered_item
+	src.offerer = offerer
+	src.offered_to = offered_to
 	RegisterSignal(offerer, COMSIG_QDELETING, PROC_REF(something_deleted))
 	RegisterSignal(offered_to, COMSIG_QDELETING, PROC_REF(something_deleted))
 	RegisterSignal(offered_item, COMSIG_QDELETING, PROC_REF(something_deleted))
-	offered_item_typepath = offered_item.type
 	if(isnull(parent) || isnull(offerer) || isnull(offered_to) || isnull(offered_item))
 		stack_trace("offer effects not given full args")
 
 	RegisterSignal(offerer, COMSIG_MOVABLE_MOVED, PROC_REF(someone_moved))
 	RegisterSignal(offered_to, COMSIG_MOVABLE_MOVED, PROC_REF(someone_moved))
 	RegisterSignal(offerer, COMSIG_LIVING_STOPPED_OFFERING_ITEM, PROC_REF(stopped_offering))
-	RegisterSignal(offered_thing, COMSIG_OBJ_HANDED_OVER, PROC_REF(on_handover))
-	RegisterSignal(offered_thing, COMSIG_ITEM_DROPPED, PROC_REF(on_drop))
+	RegisterSignal(offered_item, COMSIG_OBJ_HANDED_OVER, PROC_REF(on_handover))
+	RegisterSignal(offered_item, COMSIG_ITEM_DROPPED, PROC_REF(on_drop))
 	addtimer(CALLBACK(src, PROC_REF(fade_out)), time_out_time)
 
 	calculate_offset()
 
-/datum/offer_effects/on_drop()
+/datum/offer_effects/proc/stopped_offering()
+	qdel(parent)
+
+/datum/offer_effects/proc/on_drop()
 	qdel(parent)
 
 /datum/offer_effects/proc/something_deleted(datum/source)
@@ -48,7 +54,8 @@
 
 /datum/offer_effects/proc/fade_out()
 	on_fade()
-	parent.fade_out()
+	animate(parent, time = fade_time, alpha = 0)
+	QDEL_IN(parent, fade_time)
 
 /datum/offer_effects/proc/unregister_offer_signals()
 	UnregisterSignal(offerer, list(COMSIG_MOVABLE_MOVED, COMSIG_LIVING_STOPPED_OFFERING_ITEM))
@@ -76,7 +83,7 @@
 	var/w_displace = (offered_to.x - offerer.x) * 16
 	var/z_displace = (offered_to.y - offerer.y) * 16 + 4
 
-	animate(src, pixel_w = w_displace, pixel_z = z_displace, time = world.tick_lag * 2, transform = matrix() * 1)
+	animate(parent, pixel_w = w_displace, pixel_z = z_displace, time = world.tick_lag * 2, transform = matrix() * 1)
 
 /datum/offer_effects/proc/try_accept(mob/living/taker)
 	if(istype(taker))
