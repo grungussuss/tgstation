@@ -35,10 +35,10 @@
 	calculate_offset()
 
 /datum/offer_effects/proc/stopped_offering()
-	qdel(parent)
+	fade()
 
 /datum/offer_effects/proc/on_drop()
-	qdel(parent)
+	fade()
 
 /datum/offer_effects/proc/something_deleted(datum/source)
 	qdel(parent)
