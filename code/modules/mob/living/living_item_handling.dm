@@ -140,6 +140,10 @@
 		to_chat(src, span_danger("You can't offer something to yourself!"))
 		return FALSE
 
+	if(offered_item_ref)
+		to_chat(src, span_danger("Already offering something!"))
+		return FALSE
+
 	var/time_left = COOLDOWN_TIMELEFT(src, offer_cooldown)
 
 	if(time_left)

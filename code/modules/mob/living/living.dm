@@ -2997,3 +2997,9 @@ GLOBAL_LIST_EMPTY(fire_appearances)
 	if(HAS_TRAIT(src, TRAIT_ANALGESIA) && !force)
 		return
 	INVOKE_ASYNC(src, PROC_REF(emote), "scream")
+
+/mob/living/IsContainedAtomAccessible(atom/contained, atom/movable/user)
+	. = ..()
+
+	if(istype(contained, /obj/effect/temp_visual/offered_item_effect))
+		return TRUE

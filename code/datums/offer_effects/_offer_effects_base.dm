@@ -35,10 +35,10 @@
 	calculate_offset()
 
 /datum/offer_effects/proc/stopped_offering()
-	fade()
+	effect_end_move_to(offerer)
 
 /datum/offer_effects/proc/on_drop()
-	fade()
+	fade_out()
 
 /datum/offer_effects/proc/something_deleted(datum/source)
 	qdel(parent)
@@ -52,9 +52,18 @@
 	UnregisterSignal(offered_item, COMSIG_QDELETING)
 	fade_out()
 
+/datum/offer_effects/proc/effect_end_move_to(atom/target, time)
+	var/_time = time || fade_time
+
+	var/w_displace = (target.x - offerer.x) * ICON_SIZE_ALL
+	var/z_displace = (target.y - offerer.y) * ICON_SIZE_ALL
+
+	animate(parent, time = _time, pixel_z = z_displace, pixel_w = w_displace, transform = matrix() * 0, alpha = 0)
+	QDEL_IN(parent, _time)
+
 /datum/offer_effects/proc/fade_out()
 	on_fade()
-	animate(parent, time = fade_time, alpha = 0)
+	animate(parent, time = fade_time, pixel_z = 0, alpha = 0)
 	QDEL_IN(parent, fade_time)
 
 /datum/offer_effects/proc/unregister_offer_signals()
@@ -70,7 +79,7 @@
 
 /datum/offer_effects/proc/stop_offering()
 	offerer?.cancel_offering_item()
-	fade_out()
+	effect_end_move_to(offerer)
 
 /datum/offer_effects/proc/someone_moved()
 	if(!offerer.Adjacent(offered_to) && !(offerer.pulling == offered_to))
@@ -83,7 +92,7 @@
 	var/w_displace = (offered_to.x - offerer.x) * 16
 	var/z_displace = (offered_to.y - offerer.y) * 16 + 4
 
-	animate(parent, pixel_w = w_displace, pixel_z = z_displace, time = world.tick_lag * 2, transform = matrix() * 1)
+	animate(parent, pixel_w = w_displace, pixel_z = z_displace, time = 16 / offerer.glide_size, transform = matrix() * 1)
 
 /datum/offer_effects/proc/try_accept(mob/living/taker)
 	if(istype(taker))
@@ -92,10 +101,13 @@
 	if(before_handover(taker))
 		return FALSE
 
-	taker.try_accept_offered_item(offerer, offered_item)
+	if(!taker.try_accept_offered_item(offerer, offered_item))
+		return FALSE
+
+	effect_end_move_to(taker)
 
 /datum/offer_effects/proc/before_handover(mob/taker)
-	return
+	return TRUE
 
 /datum/offer_effects/proc/on_handover(mob/taker)
 	animate(parent, transform = matrix() * 0, alpha = 0, pixel_w = 0, pixel_z = 0, time = HANDOVER_TIME)
