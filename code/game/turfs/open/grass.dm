@@ -6,10 +6,7 @@
 	base_icon_state = "grass"
 	baseturfs = /turf/open/misc/sandy_dirt
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_GRASS
-	barefootstep = FOOTSTEP_GRASS
-	clawfootstep = FOOTSTEP_GRASS
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_GRASS
 	smoothing_flags = SMOOTH_BITMASK
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN + SMOOTH_GROUP_FLOOR_GRASS
 	canSmoothWith = SMOOTH_GROUP_FLOOR_GRASS + SMOOTH_GROUP_CLOSED_TURFS

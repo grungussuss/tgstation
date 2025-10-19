@@ -1,3 +1,15 @@
+#define MOVE_SOUND_TYPE_WOOD "wood"
+#define MOVE_SOUND_TYPE_FLOOR "floor"
+#define MOVE_SOUND_TYPE_PLATING "plating"
+#define MOVE_SOUND_TYPE_CARPET "carpet"
+#define MOVE_SOUND_TYPE_SAND "sand"
+#define MOVE_SOUND_TYPE_GRASS "grass"
+#define MOVE_SOUND_TYPE_WATER "water"
+#define MOVE_SOUND_TYPE_LAVA "lava"
+#define MOVE_SOUND_TYPE_MEAT "meat"
+#define MOVE_SOUND_TYPE_CATWALK "catwalk"
+
+
 #define FOOTSTEP_WOOD "wood"
 #define FOOTSTEP_FLOOR "floor"
 #define FOOTSTEP_PLATING "plating"

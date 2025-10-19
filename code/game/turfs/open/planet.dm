@@ -8,10 +8,7 @@
 	baseturfs = /turf/open/chasm/jungle
 	initial_gas_mix = OPENTURF_LOW_PRESSURE
 	planetary_atmos = TRUE
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 

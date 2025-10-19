@@ -4,10 +4,8 @@
 	icon = 'icons/turf/sand.dmi'
 	flags_1 = NONE
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	rust_resistance = RUST_RESISTANCE_REINFORCED
 
 /turf/open/misc/beach/Initialize(mapload)
@@ -38,10 +36,7 @@
 	icon = 'icons/turf/beach.dmi'
 	icon_state = "beach"
 	base_icon_state = "beach"
-	footstep = FOOTSTEP_WATER
-	barefootstep = FOOTSTEP_WATER
-	clawfootstep = FOOTSTEP_WATER
-	heavyfootstep = FOOTSTEP_WATER
+	move_sound_type = MOVE_SOUND_TYPE_WATER
 
 /turf/open/misc/beach/coast/Initialize(mapload)
 	. = ..()
@@ -68,10 +63,7 @@
 	icon_state = "sand"
 	base_icon_state = "sand"
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 
@@ -88,10 +80,7 @@
 	desc = "Like sand, but more <i>iron</i>."
 	icon_state = "ironsand1"
 	base_icon_state = "ironsand1"
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 
 /turf/open/misc/ironsand/Initialize(mapload)
 	. = ..()

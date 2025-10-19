@@ -55,10 +55,7 @@
 	temperature = ICEBOX_MIN_TEMPERATURE
 	attachment_holes = FALSE
 	planetary_atmos = TRUE
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	rust_resistance = RUST_RESISTANCE_BASIC
 
 /turf/open/floor/plating/snowed/cavern

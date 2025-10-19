@@ -11,10 +11,7 @@
 	icon_state = "tram_platform"
 	base_icon_state = "tram_platform"
 	floor_tile = /obj/item/stack/tile/tram
-	footstep = FOOTSTEP_CATWALK
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_CATWALK
 	tiled_dirt = FALSE
 	rcd_proof = TRUE
 
@@ -144,10 +141,7 @@
 	icon = 'icons/turf/tram.dmi'
 	icon_state = "tram_platform"
 	base_icon_state = "tram_platform"
-	footstep = FOOTSTEP_CATWALK
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_CATWALK
 
 /turf/open/indestructible/tram/attackby(obj/item/object, mob/living/user, list/modifiers)
 	. = ..()

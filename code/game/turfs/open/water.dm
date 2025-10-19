@@ -10,10 +10,7 @@
 	bullet_sizzle = TRUE
 	bullet_bounce_sound = null //needs a splashing sound one day.
 	turf_flags = NO_RUST
-	footstep = FOOTSTEP_WATER
-	barefootstep = FOOTSTEP_WATER
-	clawfootstep = FOOTSTEP_WATER
-	heavyfootstep = FOOTSTEP_WATER
+	move_sound_type = MOVE_SOUND_TYPE_WATER
 	underfloor_accessibility = UNDERFLOOR_INTERACTABLE
 	///The transparency of the immerse element's overlay
 	var/immerse_overlay_alpha = 180

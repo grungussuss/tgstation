@@ -13,7 +13,7 @@
 	baseturfs = /turf/open/floor/plating
 	floor_tile = /obj/item/stack/tile/catwalk_tile
 	layer = CATWALK_LAYER
-	footstep = FOOTSTEP_CATWALK
+	move_sound_type = MOVE_SOUND_TYPE_CATWALK
 	overfloor_placed = TRUE
 	underfloor_accessibility = UNDERFLOOR_VISIBLE
 	rust_resistance = RUST_RESISTANCE_BASIC

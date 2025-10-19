@@ -18,10 +18,7 @@
 	light_on = FALSE
 	bullet_bounce_sound = 'sound/items/tools/welder2.ogg'
 
-	footstep = FOOTSTEP_LAVA
-	barefootstep = FOOTSTEP_LAVA
-	clawfootstep = FOOTSTEP_LAVA
-	heavyfootstep = FOOTSTEP_LAVA
+	move_sound_type = MOVE_SOUND_TYPE_LAVA
 	rust_resistance = RUST_RESISTANCE_ABSOLUTE
 	/// How much fire damage we deal to living mobs stepping on us
 	var/lava_damage = 20

@@ -6,10 +6,7 @@
 	holodeck_compatible = TRUE
 	thermal_conductivity = 0.01
 	heat_capacity = INFINITY
-	footstep = FOOTSTEP_PLATING
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_PLATING
 	tiled_dirt = FALSE
 	rcd_proof = TRUE
 	rust_resistance = RUST_RESISTANCE_REINFORCED

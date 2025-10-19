@@ -9,10 +9,7 @@
 	smoothing_flags = SMOOTH_BITMASK
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN + SMOOTH_GROUP_FLOOR_TRANSPARENT_GLASS
 	canSmoothWith = SMOOTH_GROUP_FLOOR_TRANSPARENT_GLASS
-	footstep = FOOTSTEP_PLATING
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_PLATING
 	floor_tile = /obj/item/stack/tile/glass
 	/// List of /atom/movable/render_step that are being used to make this glass floor glow
 	/// These are OWNED by this floor, they delete when we delete them, not before not after

@@ -12,10 +12,7 @@
 	desc = "Stylish dark wood."
 	icon_state = "wood"
 	floor_tile = /obj/item/stack/tile/wood
-	footstep = FOOTSTEP_WOOD
-	barefootstep = FOOTSTEP_WOOD_BAREFOOT
-	clawfootstep = FOOTSTEP_WOOD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_WOOD
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_BASIC
 
@@ -108,10 +105,7 @@
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN + SMOOTH_GROUP_BAMBOO_FLOOR
 	canSmoothWith = SMOOTH_GROUP_BAMBOO_FLOOR
 	flags_1 = NONE
-	footstep = FOOTSTEP_WOOD
-	barefootstep = FOOTSTEP_WOOD_BAREFOOT
-	clawfootstep = FOOTSTEP_WOOD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_WOOD
 
 /turf/open/floor/bamboo/broken_states()
 	return list("bamboodamaged")
@@ -144,10 +138,7 @@
 	floor_tile = /obj/item/stack/tile/grass
 	flags_1 = NONE
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_GRASS
-	barefootstep = FOOTSTEP_GRASS
-	clawfootstep = FOOTSTEP_GRASS
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_GRASS
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 
@@ -198,10 +189,7 @@
 	floor_tile = /obj/item/stack/tile/hay
 	flags_1 = NONE
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_GRASS
-	barefootstep = FOOTSTEP_GRASS
-	clawfootstep = FOOTSTEP_GRASS
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_GRASS
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 
@@ -220,11 +208,7 @@
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 	slowdown = 1.5
 	bullet_sizzle = TRUE
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 
 /turf/open/floor/fake_snow/Initialize(mapload)
 	. = ..()
@@ -247,10 +231,7 @@
 	floor_tile = /obj/item/stack/tile/basalt
 	flags_1 = NONE
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	tiled_dirt = FALSE
 
 /turf/open/floor/fakebasalt/Initialize(mapload)
@@ -276,10 +257,7 @@
 	canSmoothWith = SMOOTH_GROUP_CARPET
 	flags_1 = NONE
 	bullet_bounce_sound = null
-	footstep = FOOTSTEP_CARPET
-	barefootstep = FOOTSTEP_CARPET_BAREFOOT
-	clawfootstep = FOOTSTEP_CARPET_BAREFOOT
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_CARPET
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_BASIC
 

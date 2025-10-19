@@ -9,10 +9,7 @@
 	initial_gas_mix = FROZEN_ATMOS
 	slowdown = 2
 	bullet_sizzle = TRUE
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 
 /turf/open/misc/snow/Initialize(mapload)
 	. = ..()

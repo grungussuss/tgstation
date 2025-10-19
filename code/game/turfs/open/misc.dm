@@ -8,10 +8,7 @@
 	flags_1 = NO_SCREENTIPS_1 | CAN_BE_DIRTY_1
 	turf_flags = IS_SOLID | NO_RUST
 
-	footstep = FOOTSTEP_FLOOR
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 
 	underfloor_accessibility = UNDERFLOOR_INTERACTABLE
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN

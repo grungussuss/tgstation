@@ -10,11 +10,7 @@
 	overfloor_placed = FALSE
 	underfloor_accessibility = UNDERFLOOR_INTERACTABLE
 	baseturfs = /turf/baseturf_bottom
-	footstep = FOOTSTEP_PLATING
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	rust_resistance = RUST_RESISTANCE_BASIC
+	move_sound_type = MOVE_SOUND_TYPE_PLATING
 
 	//Can this plating have reinforced floors placed ontop of it
 	var/attachment_holes = TRUE

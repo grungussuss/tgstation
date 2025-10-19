@@ -10,10 +10,7 @@
 	baseturfs = /turf/open/misc/ice
 	slowdown = 1
 	bullet_sizzle = TRUE
-	footstep = FOOTSTEP_FLOOR
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 	var/can_make_hole = TRUE
 	var/static/list/tool_screentips = list(

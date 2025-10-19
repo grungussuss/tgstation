@@ -265,13 +265,13 @@ GLOBAL_VAR_INIT(hhMysteryRoomNumber, rand(1, 999999))
 /turf/open/indestructible/hotelwood
 	desc = "Stylish dark wood with extra reinforcement. Secured firmly to the floor to prevent tampering."
 	icon_state = "wood"
-	footstep = FOOTSTEP_WOOD
+	move_sound_type = MOVE_SOUND_TYPE_WOOD
 	tiled_dirt = FALSE
 
 /turf/open/indestructible/hoteltile
 	desc = "Smooth tile with extra reinforcement. Secured firmly to the floor to prevent tampering."
 	icon_state = "showroomfloor"
-	footstep = FOOTSTEP_FLOOR
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 	tiled_dirt = FALSE
 
 /turf/open/space/bluespace

@@ -5,10 +5,8 @@
 	///negative for faster, positive for slower
 	var/slowdown = 0
 
-	var/footstep = null
-	var/barefootstep = null
-	var/clawfootstep = null
-	var/heavyfootstep = null
+	/// The type of sound this turf makes when a movable moves on it, see
+	var/move_sound_type
 
 	/// Determines the type of damage overlay that will be used for the tile
 	var/damaged_dmi = null
@@ -184,10 +182,7 @@
 	desc = "The floor you walk on. It looks near-impervious to damage."
 	icon = 'icons/turf/floors.dmi'
 	icon_state = "floor"
-	footstep = FOOTSTEP_FLOOR
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 	tiled_dirt = TRUE
 
 /turf/open/indestructible/Melt()
@@ -238,10 +233,7 @@
 /turf/open/indestructible/honk
 	name = "bananium floor"
 	icon_state = "bananium"
-	footstep = null
-	barefootstep = null
-	clawfootstep = null
-	heavyfootstep = null
+	move_sound_type = null
 	var/sound = 'sound/effects/footstep/clownstep1.ogg'
 
 /turf/open/indestructible/honk/Initialize(mapload)
@@ -260,10 +252,7 @@
 	icon_state = "necro1"
 	baseturfs = /turf/open/indestructible/necropolis
 	initial_gas_mix = LAVALAND_DEFAULT_ATMOS
-	footstep = FOOTSTEP_LAVA
-	barefootstep = FOOTSTEP_LAVA
-	clawfootstep = FOOTSTEP_LAVA
-	heavyfootstep = FOOTSTEP_LAVA
+	move_sound_type = MOVE_SOUND_TYPE_LAVA
 	tiled_dirt = FALSE
 
 /turf/open/indestructible/necropolis/Initialize(mapload)
@@ -323,10 +312,7 @@
 	name = "notebook floor"
 	desc = "A floor made of invulnerable notebook paper."
 	icon_state = "paperfloor"
-	footstep = null
-	barefootstep = null
-	clawfootstep = null
-	heavyfootstep = null
+	move_sound_type = null
 	tiled_dirt = FALSE
 
 /turf/open/indestructible/binary
@@ -334,10 +320,7 @@
 	can_atmos_pass = ATMOS_PASS_NO
 	baseturfs = /turf/open/indestructible/binary
 	icon_state = "binary"
-	footstep = null
-	barefootstep = null
-	clawfootstep = null
-	heavyfootstep = null
+	move_sound_type = null
 
 /turf/open/indestructible/airblock
 	icon_state = "bluespace"
@@ -347,10 +330,7 @@
 
 /turf/open/indestructible/meat
 	icon_state = "meat"
-	footstep = FOOTSTEP_MEAT
-	barefootstep = FOOTSTEP_MEAT
-	clawfootstep = FOOTSTEP_MEAT
-	heavyfootstep = FOOTSTEP_MEAT
+	move_sound_type = MOVE_SOUND_TYPE_MEAT
 	initial_gas_mix = OPENTURF_DEFAULT_ATMOS
 	baseturfs = /turf/open/indestructible/meat
 
@@ -366,7 +346,7 @@
 	desc = "The attachment points are all bent to uselessness, looks nigh-impervious to damage."
 	overfloor_placed = FALSE
 	underfloor_accessibility = UNDERFLOOR_INTERACTABLE
-	footstep = FOOTSTEP_PLATING
+	move_sound_type = MOVE_SOUND_TYPE_PLATING
 
 /turf/open/indestructible/plating/airless
 	initial_gas_mix = AIRLESS_ATMOS
@@ -571,12 +551,7 @@
 
 /turf/open/apply_main_material_effects(datum/material/main_material, amount, multipier)
 	. = ..()
-	if(!main_material.turf_sound_override)
-		return
-	footstep = main_material.turf_sound_override
-	barefootstep = main_material.turf_sound_override + "barefoot"
-	clawfootstep = main_material.turf_sound_override + "claw"
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = main_material.turf_move_sound_type_override || move_sound_type
 
 /// Very similar to build_with_rods, this exists to allow building transport/tram girders on openspace
 /turf/open/proc/build_with_titanium(obj/item/stack/sheet/mineral/titanium/used_stack, user)

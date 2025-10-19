@@ -294,6 +294,22 @@ GLOBAL_LIST_EMPTY(sfx_datum_by_key)
 #define SFX_GLASSES_PICKUP "glasses_pickup"
 #define SFX_GLASSES_DROP "glasses_drop"
 #define SFX_GLASSES_EQUIP "glasses_equip"
+#define SFX_FOOTSTEP_FLOOR "footstep_floor"
+#define SFX_FOOTSTEP_PLATING "footstep_plating"
+#define SFX_FOOTSTEP_BARE_HARD "footstep_bare_hard"
+#define SFX_FOOTSTEP_CLAW_HARD "footstep_claw_hard"
+#define SFX_FOOTSTEP_WOOD "footstep_wood"
+#define SFX_FOOTSTEP_BARE_WOOD "footstep_bare_wood"
+#define SFX_FOOTSTEP_CLAW_WOOD "footstep_claw_wood"
+#define SFX_FOOTSTEP_CARPET "footstep_carpet"
+#define SFX_FOOTSTEP_BARE_CARPET "footstep_bare_carpet"
+#define SFX_FOOTSTEP_ASTEROID "footstep_asteroid"
+#define SFX_FOOTSTEP_GRASS "footstep_grass"
+#define SFX_FOOTSTEP_WATER "footstep_water"
+#define SFX_FOOTSTEP_LAVA "footstep_lava"
+#define SFX_FOOTSTEP_MEAT "footstep_meat"
+#define SFX_FOOTSTEP_CATWALK "footstep_catwalk"
+#define SFX_FOOTSTEP_HEAVY "footstep_heavy"
 
 // Standard is 44.1khz
 #define MIN_EMOTE_PITCH 40000

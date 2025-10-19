@@ -11,11 +11,7 @@
 	base_icon_state = "asteroid"
 	turf_flags = IS_SOLID
 
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	rust_resistance = RUST_RESISTANCE_BASIC
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	/// Base turf type to be created by the tunnel
 	var/turf_type = /turf/open/misc/asteroid
 			/// Whether this turf has different icon states
@@ -254,10 +250,7 @@ GLOBAL_LIST_EMPTY(dug_up_basalt)
 	floor_variance = 0
 	icon_state = "snow-ice"
 	base_icon_state = "snow-ice"
-	footstep = FOOTSTEP_FLOOR
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 	damaged_dmi = null
 
 /turf/open/misc/asteroid/snow/ice/break_tile()

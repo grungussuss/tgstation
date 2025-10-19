@@ -757,7 +757,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 	integrity_modifier = 0.1
 	armor_modifiers = list(MELEE = 0.25, BULLET = 0.25, LASER = 1.25, ENERGY = 0.25, BOMB = 0.25, BIO = 0.25, FIRE = 1.5, ACID = 1.5)
 	beauty_modifier = 0.25
-	turf_sound_override = FOOTSTEP_SAND
+	turf_move_sound_type_override = MOVE_SOUND_TYPE_SAND
 	texture_layer_icon_state = "sand"
 	mat_rust_resistance = RUST_RESISTANCE_BASIC
 	fish_weight_modifier = 1.2
@@ -789,7 +789,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 	value_per_unit = 5 / SHEET_MATERIAL_AMOUNT
 	armor_modifiers = list(MELEE = 0.5, BULLET = 0.5, LASER = 1.25, ENERGY = 0.5, BOMB = 0.5, BIO = 0.25, FIRE = 1.5, ACID = 1.5)
 	beauty_modifier = 0.3
-	turf_sound_override = FOOTSTEP_WOOD
+	turf_move_sound_type_override = MOVE_SOUND_TYPE_WOOD
 	texture_layer_icon_state = "brick"
 	mat_rust_resistance = RUST_RESISTANCE_BASIC
 	fish_weight_modifier = 1.2
@@ -817,7 +817,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 	value_per_unit = 5 / SHEET_MATERIAL_AMOUNT
 	armor_modifiers = list(MELEE = 0.25, BULLET = 0.25, LASER = 0.25, ENERGY = 0.25, BOMB = 0.25, BIO = 0.25, FIRE = 0.25, ACID = 1.5)
 	beauty_modifier = 0.3
-	turf_sound_override = FOOTSTEP_SAND
+	turf_move_sound_type_override = MOVE_SOUND_TYPE_SAND
 	texture_layer_icon_state = "sand"
 	mat_rust_resistance = RUST_RESISTANCE_ORGANIC
 	fish_weight_modifier = 0.8
@@ -899,7 +899,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 	strength_modifier = 0.3
 	armor_modifiers = list(MELEE = 0.1, BULLET = 0.1, LASER = 0.1, ENERGY = 0.1, BOMB = 0.1, BIO = 0.1, ACID = 1.5)
 	beauty_modifier = 0.3
-	turf_sound_override = FOOTSTEP_SAND
+	turf_move_sound_type_override = MOVE_SOUND_TYPE_SAND
 	texture_layer_icon_state = "paper"
 	fish_weight_modifier = 0.4
 	fishing_difficulty_modifier = 40 //child's play
@@ -1047,7 +1047,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 	value_per_unit = 5 / SHEET_MATERIAL_AMOUNT
 	armor_modifiers = list(MELEE = 0.5, BULLET = 0.5, LASER = 0.5, ENERGY = 0.5, BOMB = 0.5, BIO = 0.51, FIRE = 0.5, ACID = 1.5)
 	beauty_modifier = 0.2
-	turf_sound_override = FOOTSTEP_WOOD
+	turf_move_sound_type_override = MOVE_SOUND_TYPE_WOOD
 	texture_layer_icon_state = "bamboo"
 	fish_weight_modifier = 0.5
 	fishing_difficulty_modifier = -4

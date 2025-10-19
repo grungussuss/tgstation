@@ -59,8 +59,8 @@ Simple datum which is instanced once per type and is used for every object of sa
 	var/beauty_modifier = 0
 	///Can be used to override the sound items make, lets add some SLOSHing.
 	var/item_sound_override
-	///Can be used to override the stepsound a turf makes. MORE SLOOOSH
-	var/turf_sound_override
+	///Can be used to override the turf move sound type a turf makes. MORE SLOOOSH
+	var/turf_move_sound_type_override
 	///what texture icon state to overlay
 	var/texture_layer_icon_state
 	///a cached icon for the texture filter

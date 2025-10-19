@@ -10,10 +10,7 @@
 	initial_gas_mix = LAVALAND_DEFAULT_ATMOS
 	planetary_atmos = TRUE
 
-	footstep = FOOTSTEP_SAND
-	barefootstep = FOOTSTEP_SAND
-	clawfootstep = FOOTSTEP_SAND
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_SAND
 	tiled_dirt = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 	var/smooth_icon = 'icons/turf/floors/ash.dmi'
@@ -48,10 +45,7 @@
 	layer = MID_TURF_LAYER
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN + SMOOTH_GROUP_FLOOR_ASH_ROCKY
 	canSmoothWith = SMOOTH_GROUP_FLOOR_ASH_ROCKY + SMOOTH_GROUP_CLOSED_TURFS
-	footstep = FOOTSTEP_FLOOR
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 
 /turf/open/misc/ashplanet/wateryrock
 	gender = PLURAL
@@ -60,10 +54,7 @@
 	icon_state = "wateryrock"
 	base_icon_state = "wateryrock"
 	slowdown = 2
-	footstep = FOOTSTEP_FLOOR
-	barefootstep = FOOTSTEP_HARD_BAREFOOT
-	clawfootstep = FOOTSTEP_HARD_CLAW
-	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	move_sound_type = MOVE_SOUND_TYPE_FLOOR
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 
 /turf/open/misc/ashplanet/wateryrock/Initialize(mapload)
