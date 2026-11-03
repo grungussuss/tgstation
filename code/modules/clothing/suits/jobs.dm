@@ -30,6 +30,13 @@
 	)
 	species_exception = list(/datum/species/golem)
 	armor_type = /datum/armor/suit_apron
+	supports_variations_flags = CLOTHING_DIGITIGRADE_MASK
+	bodyshapes_with_variations = BODYSHAPE_DIGITIGRADE|BODYSHAPE_CERULEAN
+	item_flags = CAN_BE_OVERSLOT
+
+/obj/item/clothing/suit/apron/generate_digitigrade_icons(icon/base_icon, greyscale_colors)
+	var/icon/legs = icon(SSgreyscale.GetColoredIconByType(/datum/greyscale_config/digitigrade, greyscale_colors), "apron_worn")
+	return apply_icon_mask(base_icon, LEGS_MASK, legs)
 
 /datum/armor/suit_apron
 	bio = 50
@@ -49,6 +56,7 @@
 	post_init_icon_state = "overalls"
 	inhand_icon_state = ""
 	body_parts_covered = CHEST|GROIN|LEGS
+	gender = PLURAL
 	species_exception = list(/datum/species/golem)
 	greyscale_config = /datum/greyscale_config/overalls
 	greyscale_config_worn = /datum/greyscale_config/overalls/worn
@@ -57,7 +65,7 @@
 
 /obj/item/clothing/suit/apron/overalls/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/adjust_fishing_difficulty, -4)
+	AddElement(/datum/element/adjust_fishing_difficulty, -4)
 
 //Captain
 /obj/item/clothing/suit/jacket/capjacket
@@ -98,6 +106,7 @@
 	)
 	toggle_noun = "sleeves"
 	species_exception = list(/datum/species/golem)
+	item_flags = CAN_BE_OVERSLOT
 
 //Cook
 /datum/armor/toggle_chef
@@ -142,6 +151,7 @@
 	desc = "A hard-boiled private investigator's dark trenchcoat."
 	icon_state = "noir_trenchcoat"
 	inhand_icon_state = null
+	supports_variations_flags = CLOTHING_CERULEAN_MASK_INBETWEEN
 
 /obj/item/clothing/suit/jacket/det_suit
 	name = "brown blazer jacket"
@@ -192,8 +202,10 @@
 	)
 	resistance_flags = NONE
 	species_exception = list(/datum/species/golem)
+	item_flags = CAN_BE_OVERSLOT
+	bodyshapes_with_variations = NONE
 
-/obj/item/clothing/suit/hazardvest/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/clothing/suit/hazardvest/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if(!isinhands)
 		. += emissive_appearance(icon_file, "[icon_state]-emissive", src, alpha = src.alpha, effect_type = EMISSIVE_SPECULAR)
@@ -214,6 +226,8 @@
 	blood_overlay_type = "coat"
 	body_parts_covered = CHEST|ARMS
 	species_exception = list(/datum/species/golem)
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
+	item_flags = CAN_BE_OVERSLOT
 
 /obj/item/clothing/suit/toggle/lawyer/purple
 	name = "purple formal suit jacket"
@@ -245,6 +259,7 @@
 		/obj/item/storage/bag/mail,
 		/obj/item/universal_scanner,
 	)
+	item_flags = CAN_BE_OVERSLOT
 
 // Quartermaster
 
@@ -287,10 +302,12 @@
 	blood_overlay_type = "armor" //it's the less thing that I can put here
 	toggle_noun = "straps"
 	species_exception = list(/datum/species/golem)
+	bodyshapes_with_variations = NONE
 	greyscale_config = /datum/greyscale_config/suspenders
 	greyscale_config_worn = /datum/greyscale_config/suspenders/worn
 	greyscale_colors = "#972A2A"
 	flags_1 = IS_PLAYER_COLORABLE_1
+	item_flags = CAN_BE_OVERSLOT
 
 //Security
 /obj/item/clothing/suit/jacket/officer/blue
@@ -343,25 +360,26 @@
 	allowed = list(
 		/obj/item/bonesetter,
 		/obj/item/cautery,
+		/obj/item/defibrillator/compact,
 		/obj/item/flashlight/pen,
 		/obj/item/healthanalyzer,
 		/obj/item/hemostat,
-		/obj/item/reagent_containers/dropper,
 		/obj/item/reagent_containers/cup/beaker,
 		/obj/item/reagent_containers/cup/bottle,
 		/obj/item/reagent_containers/cup/tube,
+		/obj/item/reagent_containers/dropper,
 		/obj/item/reagent_containers/hypospray,
 		/obj/item/reagent_containers/syringe,
 		/obj/item/retractor,
 		/obj/item/scalpel,
-		/obj/item/surgical_drapes,
 		/obj/item/storage/pill_bottle,
+		/obj/item/surgical_drapes,
 		/obj/item/tank/internals/emergency_oxygen,
 	)
 
 /obj/item/clothing/suit/apron/surgical/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/adjust_fishing_difficulty, -3) // FISH DOCTOR?!
+	AddElement(/datum/element/adjust_fishing_difficulty, -3) // FISH DOCTOR?!
 
 //Curator
 /obj/item/clothing/suit/jacket/curator
@@ -434,12 +452,20 @@
 		/obj/item/gun/ballistic/rifle/rebarxbow,
 		/obj/item/storage/bag/rebar_quiver,
 	)
+	supports_variations_flags = CLOTHING_DIGITIGRADE_MASK
+	bodyshapes_with_variations = BODYSHAPE_DIGITIGRADE|BODYSHAPE_CERULEAN
+	cerulean_flipper_palette = NO_FLIPPERS
+	item_flags = CAN_BE_OVERSLOT
+
+/obj/item/clothing/suit/atmos_overalls/generate_digitigrade_icons(icon/base_icon, greyscale_colors)
+	var/icon/legs = icon(SSgreyscale.GetColoredIconByType(/datum/greyscale_config/digitigrade, greyscale_colors), "apron_worn")
+	return apply_icon_mask(base_icon, LEGS_MASK, legs)
 
 /datum/armor/atmos_overalls
 	fire = 100
 	acid = 50
 
-/obj/item/clothing/suit/atmos_overalls/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/clothing/suit/atmos_overalls/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if(!isinhands)
-		. += emissive_appearance(icon_file, "[icon_state]-emissive", src, alpha = src.alpha, effect_type = EMISSIVE_SPECULAR)
+		. += emissive_appearance((bodyshape & BODYSHAPE_CERULEAN) ? CERULEAN_SUIT_FILE : icon_file, "[icon_state]-emissive", src, alpha = src.alpha, effect_type = EMISSIVE_SPECULAR)

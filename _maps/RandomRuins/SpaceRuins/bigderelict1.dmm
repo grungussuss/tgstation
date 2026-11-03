@@ -218,7 +218,7 @@
 "aY" = (
 /obj/structure/lattice,
 /turf/template_noop,
-/area/template_noop)
+/area/space/nearstation)
 "aZ" = (
 /turf/closed/wall,
 /area/ruin/space/has_grav/derelictoutpost)
@@ -436,8 +436,7 @@
 	icon_state = "trails_1";
 	name = "dried blood trail"
 	},
-/turf/open/floor/plating{
-	icon_state = "wall_thermite";
+/turf/open/floor/plating/melted{
 	name = "melted wall"
 	},
 /area/ruin/space/has_grav/derelictoutpost)
@@ -540,7 +539,7 @@
 	name = "Power Storage"
 	},
 /obj/effect/mapping_helpers/airlock/access/all/engineering/general,
-/obj/structure/barricade/wooden,
+/obj/structure/barricade/wooden/crude,
 /obj/structure/cable,
 /turf/open/floor/iron,
 /area/ruin/space/has_grav/derelictoutpost/powerstorage)
@@ -836,8 +835,7 @@
 	name = "dried blood trail"
 	},
 /obj/structure/alien/resin/membrane/creature,
-/turf/open/floor/plating{
-	icon_state = "wall_thermite";
+/turf/open/floor/plating/melted{
 	name = "melted wall"
 	},
 /area/ruin/space/has_grav/derelictoutpost)

@@ -12,13 +12,14 @@
 
 /obj/machinery/atmospherics/components/binary/volume_pump
 	icon_state = "volpump_map-3"
-	name = "volumetric gas pump"
+	name = "volume pump"
 	desc = "A pump that moves gas by volume."
 	can_unwrench = TRUE
 	shift_underlay_only = FALSE
 	construction_type = /obj/item/pipe/directional
 	pipe_state = "volumepump"
 	vent_movement = NONE
+	light_mask_on = TRUE
 	///Transfer rate of the component in L/s
 	var/transfer_rate = MAX_TRANSFER_RATE
 	///Check if the component has been overclocked
@@ -28,9 +29,11 @@
 
 /obj/machinery/atmospherics/components/binary/volume_pump/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/usb_port, list(
-		/obj/item/circuit_component/atmos_volume_pump,
-	))
+	AddComponent(/datum/component/usb_port, \
+		typecacheof(list(
+			/obj/item/circuit_component/atmos_volume_pump,
+		), only_root_path = TRUE) \
+	)
 	register_context()
 
 /obj/machinery/atmospherics/components/binary/volume_pump/click_ctrl(mob/user)
@@ -69,10 +72,18 @@
 	var/datum/gas_mixture/air1 = airs[1]
 	var/datum/gas_mixture/air2 = airs[2]
 
-// Pump mechanism just won't do anything if the pressure is too high/too low unless you overclock it.
+	// Pump mechanism just won't do anything if the pressure is too high/too low unless you overclock it.
 
 	var/input_starting_pressure = air1.return_pressure()
 	var/output_starting_pressure = air2.return_pressure()
+
+	// Requires being able to leak air in order to overclock.
+	if(overclocked)
+		var/turf/turf = loc
+		if(isclosedturf(turf))
+			balloon_alert_to_viewers("jammed!")
+			overclocked = FALSE
+			update_appearance(UPDATE_ICON)
 
 	if((input_starting_pressure < VOLUME_PUMP_MINIMUM_OUTPUT_PRESSURE) || ((output_starting_pressure > VOLUME_PUMP_MAX_OUTPUT_PRESSURE)) && !overclocked)
 		return
@@ -224,7 +235,7 @@
 	input_temperature = add_output_port("Input Temperature", PORT_TYPE_NUMBER)
 	output_temperature = add_output_port("Output Temperature", PORT_TYPE_NUMBER)
 
-	is_active = add_output_port("Active", PORT_TYPE_NUMBER)
+	is_active = add_output_port("Active", PORT_TYPE_BOOLEAN)
 	turned_on = add_output_port("Turned On", PORT_TYPE_SIGNAL)
 	turned_off = add_output_port("Turned Off", PORT_TYPE_SIGNAL)
 

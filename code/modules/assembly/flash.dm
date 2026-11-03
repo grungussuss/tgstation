@@ -5,11 +5,13 @@
 	desc = "A powerful and versatile flashbulb device, with applications ranging from disorienting attackers to acting as visual receptors in robot production."
 	icon = 'icons/obj/devices/flash.dmi'
 	icon_state = "flash"
+	worn_icon_state = "flash"
 	inhand_icon_state = "flashtool"
 	lefthand_file = 'icons/mob/inhands/equipment/security_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/security_righthand.dmi'
 	throwforce = 0
 	w_class = WEIGHT_CLASS_TINY
+	assembly_flags = ASSEMBLY_NO_DUPLICATES
 	custom_materials = list(/datum/material/iron = SMALL_MATERIAL_AMOUNT*3, /datum/material/glass = SMALL_MATERIAL_AMOUNT*3)
 	light_system = OVERLAY_LIGHT //Used as a flash here.
 	light_range = FLASH_LIGHT_RANGE
@@ -26,6 +28,10 @@
 	var/last_used = 0 //last world.time it was used.
 	var/cooldown = 0
 	var/last_trigger = 0 //Last time it was successfully triggered.
+
+/obj/item/assembly/flash/Initialize(mapload)
+	. = ..()
+	RegisterSignal(src, COMSIG_ITEM_IN_UNWRAPPED_TRAITOR_MAIL, PROC_REF(on_mail_unwrap))
 
 /obj/item/assembly/flash/suicide_act(mob/living/user)
 	if(burnt_out)
@@ -181,7 +187,7 @@
 
 	if(flash_result != FLASH_COMPLETED) //If the behavior was overwritten, we just skip the flashy stunny part and go with the override behavior instead
 		if(issilicon(flashed))
-			if(flashed.is_blind())
+			if(!istype(flashed, /mob/living/silicon/robot/model/syndicate) || flashed.is_blind())
 				var/flash_duration = rand(8,12) SECONDS
 				flashed.Paralyze(flash_duration)
 				flashed.set_temp_blindness_if_lower(flash_duration)
@@ -194,15 +200,15 @@
 				if(user)
 					user.visible_message(span_warning("[user] blinds [flashed] with the flash!"), span_danger("You blind [flashed] with the flash!"))
 				else
-					to_chat(flashed, "you're blinded by [src]!")
+					to_chat(flashed, "You're blinded by [src]!")
 		else
 			//easy way to make sure that you can only long stun someone who is facing in your direction
-			flashed.adjustStaminaLoss(rand(80, 120) * (1 - (deviation * 0.5)))
+			flashed.adjust_stamina_loss(rand(80, 120) * (1 - (deviation * 0.5)))
 			flashed.Knockdown(rand(25, 50) * (1 - (deviation * 0.5)))
 			if(user)
 				visible_message(span_danger("[user] blinds [flashed] with the flash!"), span_userdanger("[user] blinds you with the flash!"))
 			else
-				to_chat(flashed, "you're blinded by [src]!")
+				to_chat(flashed, "You're blinded by [src]!")
 
 	if(user)
 		SEND_SIGNAL(user, COMSIG_MOB_SUCCESSFUL_FLASHED_MOB, flashed, src, deviation)
@@ -264,6 +270,15 @@
 	// Attacker lateral to the victim.
 	return DEVIATION_PARTIAL
 
+/obj/item/assembly/flash/proc/on_mail_unwrap(atom/source, mob/user, obj/item/mail/traitor/letter)
+	SIGNAL_HANDLER
+	if(!try_use_flash())
+		return NONE
+	to_chat(user, span_danger("As you open [letter], a very bright light shoots out from inside!"))
+	flash_mob(user)
+	forceMove(user.loc)
+	return COMPONENT_TRAITOR_MAIL_HANDLED
+
 /obj/item/assembly/flash/attack(mob/living/target, mob/user)
 	if(!try_use_flash(user))
 		return FALSE
@@ -276,6 +291,7 @@
 		return FALSE
 	if(!AOE_flash(user = user))
 		return FALSE
+	return TRUE
 
 /obj/item/assembly/flash/emp_act(severity)
 	. = ..()
@@ -293,18 +309,20 @@
 /obj/item/assembly/flash/cyborg
 
 /obj/item/assembly/flash/cyborg/attack(mob/living/M, mob/user)
-	..()
-	new /obj/effect/temp_visual/borgflash(get_turf(src))
+	. = ..()
+	if (.)
+		new /obj/effect/temp_visual/borgflash(get_turf(src))
 
 /obj/item/assembly/flash/cyborg/attack_self(mob/user)
-	..()
-	new /obj/effect/temp_visual/borgflash(get_turf(src))
+	. = ..()
+	if (.)
+		new /obj/effect/temp_visual/borgflash(get_turf(src))
 
-/obj/item/assembly/flash/cyborg/attackby(obj/item/W, mob/user, list/modifiers, list/attack_modifiers)
-	return
+/obj/item/assembly/flash/cyborg/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	return ITEM_INTERACT_BLOCKING
 
 /obj/item/assembly/flash/cyborg/screwdriver_act(mob/living/user, obj/item/I)
-	return
+	return ITEM_INTERACT_BLOCKING
 
 /obj/item/assembly/flash/memorizer
 	name = "memorizer"
@@ -315,14 +333,31 @@
 	righthand_file = 'icons/mob/inhands/weapons/melee_righthand.dmi'
 
 /obj/item/assembly/flash/handheld //this is now the regular pocket flashes
+	custom_materials = list(/datum/material/iron = SMALL_MATERIAL_AMOUNT * 7.5, /datum/material/glass = SMALL_MATERIAL_AMOUNT * 7.5)
 
 /obj/item/assembly/flash/armimplant
 	name = "photon projector"
 	desc = "A high-powered photon projector implant normally used for lighting purposes, but also doubles as a flashbulb weapon. Self-repair protocols fix the flashbulb if it ever burns out."
+	light_range = 7
+	light_on = FALSE
 	var/flashcd = 20
 	var/overheat = 0
 	//Wearef to our arm
 	var/datum/weakref/arm
+
+/obj/item/assembly/flash/armimplant/Initialize(mapload)
+	. = ..()
+	if(!istype(loc, /obj/item/organ/cyberimp/arm/toolkit))
+		return INITIALIZE_HINT_QDEL
+	arm = WEAKREF(loc)
+
+/obj/item/assembly/flash/armimplant/equipped(mob/user, slot, initial = FALSE)
+	. = ..()
+	set_light_on(TRUE)
+
+/obj/item/assembly/flash/armimplant/dropped(mob/user, silent)
+	. = ..()
+	set_light_on(FALSE)
 
 /obj/item/assembly/flash/armimplant/burn_out()
 	var/obj/item/organ/cyberimp/arm/toolkit/flash/real_arm = arm.resolve()

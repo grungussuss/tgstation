@@ -1,5 +1,5 @@
 /obj/vehicle/sealed/mecha/odysseus
-	desc = "These exosuits are developed and produced by Vey-Med. (&copy; All rights reserved)."
+	desc = "A nimble DeForest Odysseus exosuit, designed and outfitted for frontline medical support and rapid response."
 	name = "\improper Odysseus"
 	icon_state = "odysseus"
 	base_icon_state = "odysseus"
@@ -22,7 +22,7 @@
 	REMOVE_TRAIT(human, TRAIT_MEDICAL_HUD, VEHICLE_TRAIT)
 	return ..()
 
-/obj/vehicle/sealed/mecha/odysseus/mmi_moved_inside(obj/item/mmi/MMI, mob/user)
+/obj/vehicle/sealed/mecha/odysseus/mmi_moved_inside(obj/item/brain_processor/MMI, mob/user)
 	. = ..()
 	if(!. || isnull(MMI.brainmob))
 		return

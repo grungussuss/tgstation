@@ -14,7 +14,7 @@
 	cost = 2
 	restricted_roles = list(JOB_CURATOR)
 	limited_stock = 1 //please don't spam deadchat
-	surplus = 5
+	surplus = 1
 
 /datum/uplink_item/role_restricted/mail_counterfeit_kit
 	name = "GLA Brand Mail Counterfeit Kit"
@@ -61,7 +61,7 @@
 
 /datum/uplink_item/role_restricted/oldtoolboxclean
 	name = "Ancient Toolbox"
-	desc = "An iconic toolbox design notorious with Assistants everywhere, this design was especially made to become more robust the more telecrystals it has inside it! Tools and insulated gloves included."
+	desc = "An iconic toolbox design notorious with Assistants everywhere. This design was specially made to become more robust the more telecrystals it has inside it! Tools and insulated gloves included."
 	item = /obj/item/storage/toolbox/mechanical/old/clean
 	cost = 2
 	restricted_roles = list(JOB_ASSISTANT)
@@ -87,8 +87,8 @@
 
 /datum/uplink_item/role_restricted/syndimmi
 	name = "Syndicate Brand MMI"
-	desc = "An MMI modified to give cyborgs laws to serve the Syndicate without having their interface damaged by Cryptographic Sequencers, this will not unlock their hidden modules."
-	item = /obj/item/mmi/syndie
+	desc = "An MMI modified to give cyborgs laws to serve the Syndicate without having their interface damaged by Cryptographic Sequencers. This will not unlock their hidden modules."
+	item = /obj/item/brain_processor/organic/syndie
 	cost = 2
 	restricted_roles = list(JOB_ROBOTICIST, JOB_RESEARCH_DIRECTOR, JOB_SCIENTIST, JOB_CORONER, JOB_MEDICAL_DOCTOR, JOB_CHIEF_MEDICAL_OFFICER)
 	surplus = 0
@@ -158,7 +158,7 @@
 
 /datum/uplink_item/role_restricted/rebarxbowsyndie
 	name = "Syndicate Rebar Crossbow"
-	desc = "A much more professional version of the engineer's bootleg rebar crossbow. 3 shot mag, quicker loading, and better ammo. Owners manual included."
+	desc = "A much more professional version of the engineer's bootleg rebar crossbow. 6 shot mag, quicker loading, and better ammo. Owners manual included."
 	item = /obj/item/storage/box/syndie_kit/rebarxbowsyndie
 	cost = 12
 	restricted_roles = list(JOB_STATION_ENGINEER, JOB_CHIEF_ENGINEER, JOB_ATMOSPHERIC_TECHNICIAN)
@@ -237,7 +237,7 @@
 	cost = 12
 	item = /obj/item/storage/box/syndie_kit/mimery
 	restricted_roles = list(JOB_MIME)
-	surplus = 0
+	surplus = 10
 
 /datum/uplink_item/role_restricted/laser_arm
 	name = "Laser Arm Implant"
@@ -256,7 +256,7 @@
 
 /datum/uplink_item/role_restricted/pie_cannon
 	name = "Banana Cream Pie Cannon"
-	desc = "A special pie cannon for a special clown, this gadget can hold up to 20 pies and automatically fabricates one every two seconds!"
+	desc = "A special pie cannon for a special clown. This gadget can hold up to 20 pies and automatically fabricates one every two seconds!"
 	cost = 10
 	item = /obj/item/pneumatic_cannon/pie/selfcharge
 	restricted_roles = list(JOB_CLOWN)
@@ -268,7 +268,6 @@
 		movement. The bomb is bulky and cannot be moved; upon ordering this item, a smaller beacon will be \
 		transported to you that will teleport the actual bomb to it upon activation. Note that this bomb can \
 		be defused, and some crew may attempt to do so."
-	progression_minimum = 15 MINUTES
 	item = /obj/item/sbeacondrop/clownbomb
 	cost = 15
 	restricted_roles = list(JOB_CLOWN)
@@ -329,7 +328,6 @@
 			some special spider extract from the giant spiders down there. Use this injector on a gold slime core \
 			to create a few of the same type of spiders we found on the planets over there. They're a bit tame until you \
 			also give them a bit of sentience though."
-	progression_minimum = 30 MINUTES
 	item = /obj/item/reagent_containers/syringe/spider_extract
 	population_minimum = TRAITOR_POPULATION_LOWPOP
 	cost = 10
@@ -342,7 +340,6 @@
 			withstand extreme pressure and temperatures, and has a mechanical trigger for triggering the transfer valve. Essentially, it turns the explosive force of a bomb into a narrow-angle \
 			blast wave \"projectile\". Aspiring scientists may find this highly useful, as forcing the pressure shockwave into a narrow angle seems to be able to bypass whatever quirk of physics \
 			disallows explosive ranges above a certain distance, allowing for the device to use the theoretical yield of a transfer valve bomb, instead of the factual yield. Its simple design makes it easy to conceal."
-	progression_minimum = 30 MINUTES
 	item = /obj/item/gun/blastcannon
 	cost = 14 //High cost because of the potential for extreme damage in the hands of a skilled scientist.
 	restricted_roles = list(JOB_RESEARCH_DIRECTOR, JOB_SCIENTIST)
@@ -361,6 +358,7 @@
 	item = /obj/item/bee_smoker
 	cost = 4
 	restricted_roles = list(JOB_BOTANIST)
+	surplus = 0 //requires too much setup to be worth including in surplus crates
 
 /datum/uplink_item/role_restricted/monkey_agent
 	name = "Simian Agent Reinforcements"
@@ -394,7 +392,6 @@
 	restricted_roles = list(JOB_MIME)
 	restricted = TRUE
 	refundable = FALSE
-	progression_minimum = 30 MINUTES
 	purchasable_from = parent_type::purchasable_from & ~UPLINK_SPY
 
 /datum/uplink_item/role_restricted/concussivedisk
@@ -404,3 +401,31 @@
 	item = /obj/item/emitter_disk/blast
 	cost = 5
 	restricted_roles = list(JOB_STATION_ENGINEER, JOB_CHIEF_ENGINEER)
+
+/datum/uplink_item/role_restricted/briefcase_gun
+	name = "Briefcase Embedded Firearm Trigger"
+	desc = "A briefcase with a firing mechanism built into the handle that connects to the first weapon stored within. \
+		\"Aiming and firing\" the briefcase will instead trigger the firing mechanism, causing the weapon to fire through a discrete hole. \
+		Work with any firearm you could fit inside."
+	item = /obj/item/storage/briefcase/gun
+	purchasable_from = UPLINK_TRAITORS
+	cant_discount = TRUE // remove this when we get uplink logic to have one discount apply to all items on the same stock key
+	cost = 4
+	surplus = 0
+	uplink_item_flags = NONE
+	stock_key = "briefcase_gun"
+	restricted_roles = list(
+		JOB_HEAD_OF_PERSONNEL,
+		JOB_LAWYER,
+		JOB_QUARTERMASTER,
+	)
+
+/datum/uplink_item/role_restricted/briefcase_gun/with_gun
+	name = "Briefcase Embedded Firearm Trigger (Combo Deal)"
+	desc = parent_type::desc + " This COMBO DEAL comes with a pre-loaded Makarov pistol! (No extra magazines, though.)"
+	item = /obj/item/storage/briefcase/gun/preloaded
+	purchasable_from = parent_type::purchasable_from | UPLINK_SPY
+	cost = 8
+	surplus = 50
+	population_minimum = /datum/uplink_item/dangerous/pistol::population_minimum
+	relevant_child_items = /datum/uplink_item/dangerous/pistol::relevant_child_items

@@ -38,7 +38,7 @@
 /datum/outfit/centcom/ert/commander
 	name = "ERT Commander"
 
-	id = /obj/item/card/id/advanced/centcom/ert
+	id = /obj/item/card/id/advanced/centcom/ert/commander
 	back = /obj/item/mod/control/pre_equipped/responsory/commander
 	l_hand = /obj/item/gun/energy/e_gun
 	box = /obj/item/storage/box/survival/centcom
@@ -54,12 +54,14 @@
 /datum/outfit/centcom/ert/commander/alert
 	name = "ERT Commander - High Alert"
 
+	l_hand = /obj/item/gun/energy/disabler/smg
 	backpack_contents = list(
 		/obj/item/gun/energy/pulse/pistol/loyalpin = 1,
 		/obj/item/melee/baton/security/loaded = 1,
 	)
 	glasses = /obj/item/clothing/glasses/thermal/eyepatch
 	l_pocket = /obj/item/melee/energy/sword/saber
+	suit_store = /obj/item/gun/energy/laser/assault
 
 /datum/outfit/centcom/ert/security
 	name = "ERT Security"
@@ -166,14 +168,14 @@
 	gloves = /obj/item/clothing/gloves/color/black
 	shoes = /obj/item/clothing/shoes/sneakers/black
 	l_pocket = /obj/item/pen
-	r_pocket = /obj/item/modular_computer/pda/heads
+	r_pocket = /obj/item/modular_computer/pda/crew/heads
 	l_hand = /obj/item/clipboard
 
 /datum/outfit/centcom/centcom_official/post_equip(mob/living/carbon/human/H, visuals_only = FALSE)
 	if(visuals_only)
 		return
 
-	var/obj/item/modular_computer/pda/heads/pda = H.r_store
+	var/obj/item/modular_computer/pda/crew/heads/pda = H.r_store
 	pda.imprint_id(H.real_name, "CentCom Official")
 
 	var/obj/item/card/id/W = H.wear_id
@@ -186,7 +188,7 @@
 	name = "Inquisition Commander"
 
 	back = /obj/item/mod/control/pre_equipped/responsory/inquisitory/commander
-	r_hand = /obj/item/nullrod/vibro/talking/chainsword
+	r_hand = /obj/item/nullrod/claymore/talking/chainsword
 	backpack_contents = null
 
 /datum/outfit/centcom/ert/security/inquisitor
@@ -442,7 +444,6 @@
 	)
 	belt = /obj/item/gun/ballistic/revolver/mateba
 	ears = /obj/item/radio/headset/headset_cent/alt
-	glasses = /obj/item/clothing/glasses/hud/toggle/thermal
 	gloves = /obj/item/clothing/gloves/tackler/combat/insulated
 	mask = /obj/item/clothing/mask/gas/sechailer/swat
 	shoes = /obj/item/clothing/shoes/combat/swat
@@ -455,6 +456,9 @@
 	)
 
 /datum/outfit/centcom/death_commando/post_equip(mob/living/carbon/human/squaddie, visuals_only = FALSE)
+	var/obj/item/organ/eyes/robotic/tacvisor/deathsquad/visor = new()
+	visor.Insert(squaddie, movement_flags = DELETE_IF_REPLACED)
+
 	if(visuals_only)
 		return
 
@@ -487,7 +491,7 @@
 /datum/outfit/centcom/ert/marine
 	name = "Marine Commander"
 
-	id = /obj/item/card/id/advanced/centcom/ert
+	id = /obj/item/card/id/advanced/centcom/ert/commander
 	suit = /obj/item/clothing/suit/armor/vest/marine
 	suit_store = /obj/item/gun/ballistic/automatic/wt550
 	back = /obj/item/shield/riot

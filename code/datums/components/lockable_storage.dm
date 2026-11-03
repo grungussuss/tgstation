@@ -83,7 +83,7 @@
 /datum/component/lockable_storage/proc/on_requesting_context_from_item(datum/source, list/context, obj/item/held_item, mob/user)
 	SIGNAL_HANDLER
 	if(isnull(held_item))
-		if(source in user.held_items)
+		if(user.is_holding(source))
 			context[SCREENTIP_CONTEXT_LMB] = "Open storage"
 			return CONTEXTUAL_SCREENTIP_SET
 		context[SCREENTIP_CONTEXT_RMB] = "Open storage"
@@ -162,7 +162,7 @@
 
 	source.visible_message(span_warning("Sparks fly from [source]!"), blind_message = span_hear("You hear a faint electrical spark."))
 	source.balloon_alert(user, "lock destroyed")
-	playsound(source, SFX_SPARKS, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
+	playsound(source, /datum/sound_effect/sparks, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
 	break_lock()
 	return ITEM_INTERACT_SUCCESS
 
@@ -226,11 +226,14 @@
 	. = ..()
 	if(action != "keypad")
 		return TRUE
+
+	var/atom/source = parent
+	playsound(source, /datum/sound_effect/terminal_type, 50, FALSE)
+
 	var/digit = params["digit"]
 	switch(digit)
 		//locking it back up
 		if("C")
-			var/atom/source = parent
 			numeric_input = ""
 			//you can't lock it if it's already locked or lacks a lock code.
 			if(source.atom_storage.locked || isnull(lock_code))
@@ -249,7 +252,6 @@
 			//unlocking the current code.
 			if(numeric_input != lock_code)
 				return TRUE
-			var/atom/source = parent
 			source.atom_storage.set_locked(STORAGE_NOT_LOCKED)
 			numeric_input = ""
 			return TRUE

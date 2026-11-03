@@ -47,6 +47,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
 	alternate_worn_layer = UNDER_SUIT_LAYER
+	bodyshapes_with_variations = NONE
 
 /obj/item/clothing/under/costume/seifuku/red
 	icon_state = "/obj/item/clothing/under/costume/seifuku/red"
@@ -105,6 +106,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	female_sprite_flags = NO_FEMALE_UNIFORM
 	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE
 	can_adjust = FALSE
 	resistance_flags = NONE
 
@@ -128,8 +130,10 @@
 	body_parts_covered = CHEST|GROIN
 	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
 	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE
 	alternate_worn_layer = UNDER_SUIT_LAYER
 	can_adjust = FALSE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR //weebs are gonna love this
 
 /obj/item/clothing/under/costume/geisha
 	name = "geisha suit"
@@ -137,25 +141,31 @@
 	icon_state = "geisha"
 	body_parts_covered = CHEST|GROIN|ARMS
 	can_adjust = FALSE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
 
 /obj/item/clothing/under/costume/yukata
 	name = "black yukata"
 	desc = "A comfortable black cotton yukata inspired by traditional designs, perfect for a non-formal setting."
 	icon_state = "yukata1"
+	inhand_icon_state = "yukata1"
 	body_parts_covered = CHEST|GROIN|ARMS
 	can_adjust = FALSE
 	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
 	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
 
 /obj/item/clothing/under/costume/yukata/green
 	name = "green yukata"
 	desc = "A comfortable green cotton yukata inspired by traditional designs, perfect for a non-formal setting."
 	icon_state = "yukata2"
+	inhand_icon_state = "yukata2"
 
 /obj/item/clothing/under/costume/yukata/white
 	name = "white yukata"
 	desc = "A comfortable white cotton yukata inspired by traditional designs, perfect for a non-formal setting."
 	icon_state = "yukata3"
+	inhand_icon_state = "yukata3"
 
 /obj/item/clothing/under/costume/kimono
 	name = "black kimono"
@@ -165,6 +175,8 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	can_adjust = FALSE
 	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
 	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
 
 /obj/item/clothing/under/costume/kimono/red
@@ -193,6 +205,7 @@
 	can_adjust = FALSE
 
 /obj/item/clothing/under/costume/singer
+	abstract_type = /obj/item/clothing/under/costume/singer
 	desc = "Just looking at this makes you want to sing."
 	body_parts_covered = CHEST|GROIN|ARMS
 	alternate_worn_layer = ABOVE_SHOES_LAYER
@@ -207,6 +220,12 @@
 /obj/item/clothing/under/costume/singer/blue
 	name = "blue performer's outfit"
 	icon_state = "bsing"
+	inhand_icon_state = null
+	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
+
+/obj/item/clothing/under/costume/singer/red
+	name = "red performer's outfit"
+	icon_state = "rsing"
 	inhand_icon_state = null
 	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
 
@@ -271,24 +290,54 @@
 	can_adjust = FALSE
 	resistance_flags = NONE
 
+// Mech suit skins
+/datum/atom_skin/mech_suit
+	abstract_type = /datum/atom_skin/mech_suit
+
+/datum/atom_skin/mech_suit/red
+	preview_name = "Red" //Asuka from evangelion
+	new_icon_state = "red_mech_suit"
+
+/datum/atom_skin/mech_suit/white
+	preview_name = "White" //Rei from evangelion
+	new_icon_state = "white_mech_suit"
+
+/datum/atom_skin/mech_suit/blue
+	preview_name = "Blue" //Shinji from Evangelion
+	new_icon_state = "blue_mech_suit"
+
+/datum/atom_skin/mech_suit/black
+	preview_name = "Black" //Based on the robotics jumpsuot
+	new_icon_state = "black_mech_suit"
+
+/datum/atom_skin/mech_suit/royal
+	preview_name = "royal division" //Kallen Stadtfeld from Code Geass
+	new_icon_state = "royal_mech_suit"
+
+/datum/atom_skin/mech_suit/royal_alt
+	preview_name = "royal division - alternate" //Kallen again, with her alternate design
+	new_icon_state = "royal_mech_suit_alt"
+
+/datum/atom_skin/mech_suit/explorer
+	preview_name = "explorer corps" //Sleeker version of the robotics jumpsuit
+	new_icon_state = "explorer_mech_suit"
+
+/datum/atom_skin/mech_suit/explorer
+	preview_name = "explorer corps - alternate" //Elster from SIGNALIS
+	new_icon_state = "explorer_mech_suit_alt"
+
 /obj/item/clothing/under/costume/mech_suit
 	name = "mech pilot's suit"
-	desc = "A mech pilot's suit. Might make your butt look big."
-	icon_state = "red_mech_suit"
+	desc = "A mech pilot's suit. Might make your butt look big. Alt-click to reskin."
+	icon_state = "explorer_mech_suit"
 	inhand_icon_state = null
 	body_parts_covered = CHEST|GROIN|LEGS|FEET|ARMS|HANDS
 	cold_protection = CHEST|GROIN|LEGS|FEET|ARMS|HANDS
-	female_sprite_flags = NO_FEMALE_UNIFORM
 	alternate_worn_layer = GLOVES_LAYER //covers hands but gloves can go over it. This is how these things work in my head.
 	can_adjust = FALSE
 
-	unique_reskin = list(
-						"Red" = "red_mech_suit",
-						"White" = "white_mech_suit",
-						"Blue" = "blue_mech_suit",
-						"Black" = "black_mech_suit",
-						)
-
+/obj/item/clothing/under/costume/mech_suit/setup_reskins()
+	AddComponent(/datum/component/reskinable_item, /datum/atom_skin/mech_suit)
 
 /obj/item/clothing/under/costume/russian_officer
 	name = "\improper Russian officer's uniform"
@@ -318,6 +367,7 @@
 	species_exception = list(/datum/species/golem)
 	can_adjust = TRUE
 	alt_covers_chest = TRUE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
 
 /obj/item/clothing/under/costume/buttondown/slacks
 	name = "button-down shirt with slacks"
@@ -358,6 +408,7 @@
 	flags_1 = IS_PLAYER_COLORABLE_1
 	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
 	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE
 
 /obj/item/clothing/under/costume/buttondown/skirt/service //preset one to be a formal white shirt and black skirt
 	icon_state = "/obj/item/clothing/under/costume/buttondown/skirt/service"
@@ -393,6 +444,7 @@
 	icon_state = "SwagOutfit"
 	inhand_icon_state = null
 	can_adjust = FALSE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
 
 /obj/item/clothing/under/costume/referee
 	name = "referee uniform"
@@ -450,6 +502,7 @@
 	inhand_icon_state = null
 	female_sprite_flags = NO_FEMALE_UNIFORM
 	can_adjust = FALSE
+	clothing_flags = parent_type::clothing_flags | CARP_STYLE_FACTOR
 
 /obj/item/clothing/under/costume/gi/Initialize(mapload)
 	. = ..()
@@ -506,3 +559,38 @@
 	armor_type = /datum/armor/clothing_under/rank_security
 	has_sensor = NO_SENSORS
 
+/obj/item/clothing/under/costume/captain
+	name = "captain's suit"
+	desc = "A green suit and yellow necktie. Exemplifies authority."
+	icon_state = "green_suit"
+	inhand_icon_state = "dg_suit"
+	can_adjust = FALSE
+
+/obj/item/clothing/under/costume/captain/skirt
+	name = "green suitskirt"
+	desc = "A green suitskirt and yellow necktie. Exemplifies authority."
+	icon_state = "green_suit_skirt"
+	inhand_icon_state = "dg_suit"
+	body_parts_covered = CHEST|GROIN|ARMS
+	dying_key = DYE_REGISTRY_JUMPSKIRT
+	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
+	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE
+
+/obj/item/clothing/under/costume/head_of_personnel
+	name = "head of personnel's suit"
+	desc = "A teal suit and yellow necktie. An authoritative yet tacky ensemble."
+	icon_state = "teal_suit"
+	inhand_icon_state = "g_suit"
+	can_adjust = FALSE
+
+/obj/item/clothing/under/costume/head_of_personnel/skirt
+	name = "teal suitskirt"
+	desc = "A teal suitskirt and yellow necktie. An authoritative yet tacky ensemble."
+	icon_state = "teal_suit_skirt"
+	inhand_icon_state = "g_suit"
+	body_parts_covered = CHEST|GROIN|ARMS
+	dying_key = DYE_REGISTRY_JUMPSKIRT
+	female_sprite_flags = FEMALE_UNIFORM_TOP_ONLY
+	supports_variations_flags = CLOTHING_DIGITIGRADE_VARIATION_NO_NEW_ICON
+	bodyshapes_with_variations = NONE

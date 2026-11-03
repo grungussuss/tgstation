@@ -4,10 +4,11 @@
 	if(!fexists(json_file))
 		return
 
-	var/list/json = json_decode(file2text(json_file))
-	if(!json)
+	var/json_text = file2text(json_file)
+	if(!rustg_json_is_valid(json_text))
 		return
 
+	var/list/json = json_decode(json_text)
 	if(json["version"] < ENGRAVING_PERSISTENCE_VERSION)
 		update_wall_engravings(json)
 
@@ -62,7 +63,7 @@
 		if(!engraving.persistent_save)
 			continue
 		var/area/engraved_area = get_area(engraving.parent)
-		if(!(engraved_area.area_flags & PERSISTENT_ENGRAVINGS))
+		if(!(engraved_area.area_flags_mapping & PERSISTENT_ENGRAVINGS))
 			continue
 		saved_data["entries"] += engraving.save_persistent()
 

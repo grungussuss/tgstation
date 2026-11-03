@@ -104,7 +104,7 @@
 /datum/uplink_item/device_tools/camera_app
 	name = "SyndEye Program"
 	desc = "A data disk containing a unique PC app that allows you to watch cameras and track crewmembers."
-	item = /obj/item/computer_disk/syndicate/camera_app
+	item = /obj/item/disk/computer/syndicate/camera_app
 	cost = 1
 	surplus = 90
 	purchasable_from = ~UPLINK_ALL_SYNDIE_OPS
@@ -137,17 +137,10 @@
 			when used cause the targeted tablet to become a new uplink with zero TCs, and immediately become unlocked. \
 			You will receive the unlock code upon activating the virus, and the new uplink may be charged with \
 			telecrystals normally."
-	item = /obj/item/computer_disk/virus/frame
+	item = /obj/item/disk/computer/virus/frame
 	cost = 4
 	restricted = TRUE
 	purchasable_from = ~UPLINK_ALL_SYNDIE_OPS
-
-/datum/uplink_item/device_tools/frame/spawn_item(spawn_path, mob/user, datum/uplink_handler/uplink_handler, atom/movable/source)
-	. = ..()
-	var/obj/item/computer_disk/virus/frame/target = .
-	if(!target)
-		return
-	target.current_progression = uplink_handler.progression_points
 
 /datum/uplink_item/device_tools/failsafe
 	name = "Failsafe Uplink Code"
@@ -195,8 +188,10 @@
 
 /datum/uplink_item/device_tools/suspiciousphone
 	name = "Protocol CRAB-17 Phone"
-	desc = "The Protocol CRAB-17 Phone, a phone borrowed from an unknown third party, it can be used to crash the space market, funneling the losses of the crew to your bank account.\
-	The crew can move their funds to a new banking site though, unless they HODL, in which case they deserve it."
+	desc = "The Protocol CRAB-17 Phone, a phone borrowed from an unknown third party, it can be used to crash the space market, \
+	withdrawing cash from the accounts of the crew and printing it as bank notes. \
+	It's recommended that you hide the phone somewhere while it is printing cash. \
+	The crew can move their funds to a new banking site, unless they HODL, in which case they deserve it."
 	item = /obj/item/suspiciousphone
 	restricted = TRUE
 	cost = 7
@@ -231,15 +226,15 @@
 	name = "Super Pointy Tape"
 	desc = "An all-purpose super pointy tape roll. The tape is built with hundreds of tiny metal needles, the roll comes with in 5 pieces. When added to items the \
 			item that was taped will embed when thrown at people. Taping people's mouthes with it will hurt them if pulled off by someone else."
-	item = /obj/item/stack/sticky_tape/pointy/super
+	item = /obj/item/stack/medical/wrap/sticky_tape/pointy/super
 	cost = 1
 
 /datum/uplink_item/device_tools/hacked_module
 	name = "Hacked AI Law Upload Module"
 	desc = "When used with an upload console, this module allows you to upload priority laws to an artificial intelligence. \
+			This board bypasses all access restrictions on the console. \
 			Be careful with wording, as artificial intelligences may look for loopholes to exploit."
-	progression_minimum = 30 MINUTES
-	item = /obj/item/ai_module/syndicate
+	item = /obj/item/ai_module/law/syndicate
 	cost = 4
 
 /datum/uplink_item/device_tools/hypnotic_flash
@@ -260,7 +255,6 @@
 			active gravitational singularities or tesla balls towards it. This will not work when the engine is still \
 			in containment. Because of its size, it cannot be carried. Ordering this \
 			sends you a small beacon that will teleport the larger beacon to your location upon activation."
-	progression_minimum = 20 MINUTES
 	item = /obj/item/sbeacondrop
 	cost = 4
 	surplus = 0 // not while there isnt one on any station
@@ -271,7 +265,6 @@
 	desc = "When screwed to wiring attached to a power grid and activated, this large device lights up and places excessive \
 			load on the grid, causing a station-wide blackout. The sink is large and cannot be stored in most \
 			traditional bags and boxes. Caution: Will explode if the powernet contains sufficient amounts of energy."
-	progression_minimum = 20 MINUTES
 	item = /obj/item/powersink
 	cost = 11
 	limited_stock = 1

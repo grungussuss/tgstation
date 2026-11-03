@@ -1,4 +1,5 @@
 /datum/job
+	abstract_type = /datum/job
 	/// The name of the job , used for preferences, bans and more. Make sure you know what you're doing before changing this.
 	var/title = "NOPE"
 
@@ -11,11 +12,8 @@
 	/// Innate skill levels unlocked at roundstart. Based on config.jobs_have_minimal_access config setting, for example with a full crew. Format is list(/datum/skill/foo = SKILL_EXP_NOVICE) with exp as an integer or as per code/_DEFINES/skills.dm
 	var/list/minimal_skills
 
-	/// Determines who can demote this position
-	var/department_head = list()
-
 	/// Tells the given channels that the given mob is the new department head. See communications.dm for valid channels.
-	var/list/head_announce = null
+	var/head_announce
 
 	/// Bitflags for the job
 	var/auto_deadmin_role_flags = NONE
@@ -71,7 +69,7 @@
 
 	var/display_order = JOB_DISPLAY_ORDER_DEFAULT
 
-	///What types of bounty tasks can this job receive past the default?
+	///What types of bounty tasks can this job receive past the default? TODO, move to id trims.
 	var/bounty_types = CIV_JOB_BASIC
 
 	/// Goodies that can be received via the mail system.
@@ -135,6 +133,12 @@
 	/// If set, look for a policy with this instead of the job title
 	var/policy_override
 
+	/// How desensitized this job is to seeing death as a base - applied with the job
+	var/desensitized_base = 1.0
+
+	///If set, adds this as the job icon map (from fontawesome5)
+	var/tgui_icon
+
 /datum/job/New()
 	. = ..()
 	var/new_spawn_positions = CHECK_MAP_JOB_CHANGE(title, "spawn_positions")
@@ -149,6 +153,8 @@
 	SHOULD_CALL_PARENT(TRUE)
 	if(length(mind_traits))
 		spawned.mind.add_traits(mind_traits, JOB_TRAIT)
+
+	spawned.mind.desensitized_level = clamp(desensitized_base, DESENSITIZED_MINIMUM, spawned.mind.desensitized_level)
 
 	var/obj/item/organ/liver/liver = spawned.get_organ_slot(ORGAN_SLOT_LIVER)
 	if(liver && length(liver_traits))
@@ -187,7 +193,7 @@
 /// Note the joining mob has no client at this point.
 /datum/job/proc/announce_job(mob/living/joining_mob)
 	if(head_announce)
-		announce_head(joining_mob, head_announce)
+		announce_head(joining_mob, list(head_announce))
 
 
 //Used for a special check of whether to allow a client to latejoin as this job.
@@ -333,7 +339,7 @@
 	uniform = /obj/item/clothing/under/color/grey
 	id = /obj/item/card/id/advanced
 	ears = /obj/item/radio/headset
-	belt = /obj/item/modular_computer/pda
+	belt = /obj/item/modular_computer/pda/crew
 	back = /obj/item/storage/backpack
 	shoes = /obj/item/clothing/shoes/sneakers/black
 	box = /obj/item/storage/box/survival
@@ -344,6 +350,7 @@
 	var/satchel = /obj/item/storage/backpack/satchel
 	var/duffelbag = /obj/item/storage/backpack/duffelbag
 	var/messenger = /obj/item/storage/backpack/messenger
+	var/wintercoat = /obj/item/clothing/suit/hooded/wintercoat
 
 	var/pda_slot = ITEM_SLOT_BELT
 
@@ -408,23 +415,29 @@
 		var/datum/bank_account/account = SSeconomy.bank_accounts_by_id["[equipped.account_id]"]
 
 		if(account && account.account_id == equipped.account_id)
-			card.registered_account = account
-			account.bank_cards += card
+			card.set_account(account)
 
 		equipped.update_ID_card()
 
+	if(!pda_slot) //This job outfit doesn't have a PDA.
+		return
+
 	var/obj/item/modular_computer/pda/pda = equipped.get_item_by_slot(pda_slot)
+	if(pda && !istype(pda)) //we found something but it isn't a PDA, check if it's inside it instead.
+		pda = locate() in pda
 
-	if(istype(pda))
-		pda.imprint_id(equipped.real_name, equipped_job.title)
-		pda.update_ringtone(equipped_job.job_tone)
-		pda.UpdateDisplay()
+	if(!istype(pda)) //We couldn't find a PDA at all.
+		stack_trace("pda_slot was set but we couldn't find a PDA!")
+		return
 
-		var/client/equipped_client = GLOB.directory[ckey(equipped.mind?.key)]
+	pda.imprint_id(equipped.real_name, equipped_job?.title || equipped.job)
+	pda.update_ringtone(equipped_job?.job_tone)
+	pda.UpdateDisplay()
 
-		if(equipped_client)
-			pda.update_pda_prefs(equipped_client)
+	var/client/equipped_client = GLOB.directory[ckey(equipped.mind?.key)]
 
+	if(equipped_client)
+		pda.update_pda_prefs(equipped_client)
 
 /datum/outfit/job/get_chameleon_disguise_info()
 	var/list/types = ..()
@@ -508,7 +521,7 @@
 	var/mob/living/spawn_instance
 	if(ispath(spawn_type, /mob/living/silicon/ai))
 		// This is unfortunately necessary because of snowflake AI init code. To be refactored.
-		spawn_instance = new spawn_type(get_turf(spawn_point), null, player_client.mob)
+		spawn_instance = new spawn_type(get_turf(spawn_point), player_client.mob, null, null, TRUE)
 	else
 		spawn_instance = spawn_point.JoinPlayerHere(spawn_type, TRUE)
 	spawn_instance.apply_prefs_job(player_client, src)
@@ -565,7 +578,7 @@
 			dna.species.roundstart_changed = TRUE
 
 		if(GLOB.current_anonymous_theme)
-			fully_replace_character_name(null, GLOB.current_anonymous_theme.anonymous_name(src))
+			fully_replace_character_name(null, GLOB.current_anonymous_theme.anonymous_name(src), log_new_name = TRUE)
 	else
 		var/is_antag = (player_client.mob.mind in GLOB.pre_setup_antags)
 		if(require_human)
@@ -612,12 +625,7 @@
 				return // Disconnected while checking the appearance ban.
 			organic_name = player_client.prefs.read_preference(/datum/preference/name/real_name)
 
-		mmi.name = "[initial(mmi.name)]: [organic_name]"
-		if(mmi.brain)
-			mmi.brain.name = "[organic_name]'s brain"
-		if(mmi.brainmob)
-			mmi.brainmob.real_name = organic_name //the name of the brain inside the cyborg is the robotized human's name.
-			mmi.brainmob.name = organic_name
+		mmi.set_name(organic_name)
 	// If this checks fails, then the name will have been handled during initialization.
 	if(!GLOB.current_anonymous_theme && player_client.prefs.read_preference(/datum/preference/name/cyborg) != DEFAULT_CYBORG_NAME)
 		apply_pref_name(/datum/preference/name/cyborg, player_client)
@@ -639,6 +647,7 @@
 /datum/job/proc/after_latejoin_spawn(mob/living/spawning)
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_JOB_AFTER_LATEJOIN_SPAWN, src, spawning)
+	spawning.client.show_spawn_text_overlay()
 
 /// Called when a mob that has this job is admin respawned
 /datum/job/proc/on_respawn(mob/new_character)
@@ -654,8 +663,16 @@
 	if(!job_outfit || !job_outfit::id_trim)
 		CRASH("[src.type] has no job outfit but isn't overwriting get_lobby_icon().")
 	var/datum/id_trim/job_trim = job_outfit::id_trim
+	var/icon = job_trim::sechud_icon
 	var/icon_state = job_trim::sechud_icon_state
-	if(!icon_state || icon_state == SECHUD_UNKNOWN)
-		CRASH("[src.type] has no job icon state.")
+	if(!icon || !icon_state || icon_state == SECHUD_UNKNOWN)
+		CRASH("[src.type] has no job icon or icon state.")
 
-	return icon('icons/mob/huds/hud.dmi', icon_state)
+	return icon(icon, icon_state)
+
+/datum/job/proc/display_order_with_department()
+	var/datum/job_department/main_department = departments_list?[1]
+	if(!main_department)
+		main_department = /datum/job_department/undefined
+
+	return display_order + (main_department::display_order * 1000)

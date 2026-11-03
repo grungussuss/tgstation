@@ -4,6 +4,13 @@
 	random_hallucination_weight = 3
 	hallucination_tier = HALLUCINATION_TIER_COMMON
 
+/datum/hallucination/battle/start()
+	if(HAS_TRAIT(hallucinator, TRAIT_DEAF))
+		return FALSE
+
+	// for subtypes
+	return TRUE
+
 /// Subtype of battle hallucination for gun based battles, where it sounds like someone is being shot.
 /datum/hallucination/battle/gun
 	abstract_hallucination_parent = /datum/hallucination/battle/gun
@@ -16,15 +23,18 @@
 	/// The sound we make when our shot actually "hits" "someone".
 	var/hit_person_sound = 'sound/items/weapons/pierce.ogg'
 	/// The sound we make when our shot misses someone and "hits" a "wall".
-	var/hit_wall_sound = SFX_RICOCHET
+	var/hit_wall_sound = /datum/sound_effect/ricochet
 	/// The number of successful hits required to "down" the "someone" we're firing at.
 	var/number_of_hits_to_end = 2
 	/// The probability chance we have to make our "hit" person fall down after we pass the number_of_hits_to_end.
 	var/chance_to_fall = 80
 
 /datum/hallucination/battle/gun/start()
+	. = ..()
+	if(!.)
+		return
+
 	fire_loop(random_far_turf(), rand(shots_to_fire_lower_range, shots_to_fire_upper_range))
-	return TRUE
 
 /// The main loop for gun based hallucinations.
 /datum/hallucination/battle/gun/proc/fire_loop(turf/source, shots_left = 3, hits = 0)
@@ -44,7 +54,7 @@
 
 	// If we scored enough hits, we have a chance to knock them down and stop the hallucination early.
 	if(hits >= number_of_hits_to_end && prob(chance_to_fall))
-		addtimer(CALLBACK(hallucinator, TYPE_PROC_REF(/mob/, playsound_local), source, SFX_BODYFALL, 25, TRUE), next_hit_sound)
+		addtimer(CALLBACK(hallucinator, TYPE_PROC_REF(/mob/, playsound_local), source, /datum/sound_effect/bodyfall, 25, TRUE), next_hit_sound)
 		qdel(src)
 
 	// Or, if we do have shots left, keep it going.
@@ -81,12 +91,15 @@
 /datum/hallucination/battle/stun_prod
 
 /datum/hallucination/battle/stun_prod/start()
+	. = ..()
+	if(!.)
+		return
+
 	var/turf/source = random_far_turf()
 
 	hallucinator.playsound_local(source, 'sound/items/weapons/egloves.ogg', 40, TRUE)
-	hallucinator.playsound_local(source, SFX_BODYFALL, 25, TRUE)
+	hallucinator.playsound_local(source, /datum/sound_effect/bodyfall, 25, TRUE)
 	addtimer(CALLBACK(src, PROC_REF(fake_cuff), source), 2 SECONDS)
-	return TRUE
 
 /// Plays a fake cable-cuff sound and deletes the hallucination.
 /datum/hallucination/battle/stun_prod/proc/fake_cuff(turf/source)
@@ -100,20 +113,23 @@
 /datum/hallucination/battle/harm_baton
 
 /datum/hallucination/battle/harm_baton/start()
+	. = ..()
+	if(!.)
+		return
+
 	var/turf/source = random_far_turf()
 
 	hallucinator.playsound_local(source, 'sound/items/weapons/egloves.ogg', 40, TRUE)
-	hallucinator.playsound_local(source, SFX_BODYFALL, 25, TRUE)
+	hallucinator.playsound_local(source, /datum/sound_effect/bodyfall, 25, TRUE)
 
 	addtimer(CALLBACK(src, PROC_REF(harmbaton_loop), source, rand(5, 12)), 2 SECONDS)
-	return TRUE
 
 /// The main sound loop for harmbatonning.
 /datum/hallucination/battle/harm_baton/proc/harmbaton_loop(turf/source, hits_remaing = 5)
 	if(QDELETED(src) || QDELETED(hallucinator) || !source)
 		return
 
-	hallucinator.playsound_local(source, SFX_SWING_HIT, 50, TRUE)
+	hallucinator.playsound_local(source, /datum/sound_effect/swing_hit, 50, TRUE)
 	hits_remaing--
 	if(hits_remaing <= 0)
 		qdel(src)
@@ -125,11 +141,14 @@
 /datum/hallucination/battle/e_sword
 
 /datum/hallucination/battle/e_sword/start()
+	. = ..()
+	if(!.)
+		return
+
 	var/turf/source = random_far_turf()
 
 	hallucinator.playsound_local(source, 'sound/items/weapons/saberon.ogg', 15, 1)
 	addtimer(CALLBACK(src, PROC_REF(stab_loop), source, rand(4, 8)), CLICK_CD_MELEE)
-	return TRUE
 
 /// The main sound loop of someone being esworded.
 /datum/hallucination/battle/e_sword/proc/stab_loop(turf/source, stabs_remaining = 4)
@@ -145,7 +164,7 @@
 		return
 
 	if(stabs_remaining == 4)
-		hallucinator.playsound_local(source, SFX_BODYFALL, 25, TRUE)
+		hallucinator.playsound_local(source, /datum/sound_effect/bodyfall, 25, TRUE)
 
 	addtimer(CALLBACK(src, PROC_REF(stab_loop), source, stabs_remaining - 1), rand(CLICK_CD_MELEE, CLICK_CD_MELEE + 6))
 
@@ -153,8 +172,11 @@
 /datum/hallucination/battle/bomb
 
 /datum/hallucination/battle/bomb/start()
+	. = ..()
+	if(!.)
+		return
+
 	addtimer(CALLBACK(src, PROC_REF(fake_tick), random_far_turf(), rand(3, 11)), 1.5 SECONDS)
-	return TRUE
 
 /// The loop of the (fake) bomb ticking down.
 /datum/hallucination/battle/bomb/proc/fake_tick(turf/source, ticks_remaining = 3)

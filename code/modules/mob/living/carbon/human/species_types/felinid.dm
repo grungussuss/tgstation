@@ -9,12 +9,11 @@
 	mutanteyes = /obj/item/organ/eyes/felinid
 	mutant_organs = list(
 		/obj/item/organ/tail/cat = "Cat",
+		/obj/item/organ/fangs/cat,
 	)
 	inherent_traits = list(
-		TRAIT_CATLIKE_GRACE,
 		TRAIT_HATED_BY_DOGS,
 		TRAIT_USES_SKINTONES,
-		TRAIT_WATER_HATER,
 	)
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | RACE_SWAP | ERT_SPAWN | SLIME_EXTRACT
 	species_language_holder = /datum/language_holder/felinid
@@ -28,17 +27,14 @@
 /datum/species/human/felinid/on_species_gain(mob/living/carbon/human/human_who_gained_species, datum/species/old_species, pref_load, regenerate_icons = TRUE, replace_missing = TRUE)
 	if(!pref_load) //Hah! They got forcefully purrbation'd. Force default felinid parts on them if they have no mutant parts in those areas!
 		if(human_who_gained_species.dna.features[FEATURE_TAIL_CAT] == SPRITE_ACCESSORY_NONE)
-			human_who_gained_species.dna.features[FEATURE_TAIL_CAT] = get_consistent_feature_entry(SSaccessories.tails_list_felinid)
+			human_who_gained_species.dna.features[FEATURE_TAIL_CAT] = get_consistent_feature_entry(SSaccessories.feature_list[FEATURE_TAIL_CAT])
 		if(human_who_gained_species.dna.features[FEATURE_EARS] == SPRITE_ACCESSORY_NONE)
-			human_who_gained_species.dna.features[FEATURE_EARS] = get_consistent_feature_entry(SSaccessories.ears_list)
+			human_who_gained_species.dna.features[FEATURE_EARS] = get_consistent_feature_entry(SSaccessories.feature_list[FEATURE_EARS])
 
 	// Swapping out feline ears for normal ol' human ears if they have invisible cat ears.
 	if(human_who_gained_species.dna.features[FEATURE_EARS] == SPRITE_ACCESSORY_NONE)
 		mutantears = /obj/item/organ/ears
 	return ..()
-
-/datum/species/human/felinid/get_hiss_sound(mob/living/carbon/human/felinid)
-	return 'sound/mobs/humanoids/felinid/felinid_hiss.ogg'
 
 /proc/mass_purrbation()
 	for(var/mob in GLOB.human_list)
@@ -128,7 +124,7 @@
 	var/obj/item/organ/ears/cat/cat_ears = human_for_preview.get_organ_by_type(/obj/item/organ/ears/cat)
 	if (cat_ears)
 		cat_ears.color = human_for_preview.hair_color
-		human_for_preview.update_body()
+		human_for_preview.update_hair()
 
 /datum/species/human/felinid/get_physical_attributes()
 	return "Felinids are very similar to humans in almost all respects, with their biggest differences being the ability to lick their wounds, \

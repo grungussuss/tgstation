@@ -21,6 +21,7 @@
 	. = ..()
 	music_player = new(src)
 	register_context()
+	AddComponent(/datum/component/leanable)
 
 /obj/machinery/jukebox/add_context(atom/source, list/context, obj/item/held_item, mob/user)
 	. = ..()
@@ -337,7 +338,7 @@
 					glow.even_cycle = !glow.even_cycle
 		if(prob(2))  // Unique effects for the dance floor that show up randomly to mix things up
 			INVOKE_ASYNC(src, PROC_REF(hierofunk))
-		sleep(music_player.selection.song_beat)
+		sleep(music_player.selection.song_beat_deciseconds || 1 SECONDS)
 		if(QDELETED(src))
 			return
 

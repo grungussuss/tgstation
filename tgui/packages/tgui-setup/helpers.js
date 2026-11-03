@@ -29,6 +29,7 @@
 
   // Expose inlined metadata
   Byond.windowId = parseMetaTag('tgui:windowId');
+  Byond.storageCdn = parseMetaTag('tgui:storagecdn');
 
   // Backwards compatibility
   window.__windowId__ = Byond.windowId;
@@ -203,13 +204,25 @@
   };
 
   Byond.subscribeTo = function (type, listener) {
+    var active = true;
     var _listener = function (_type, payload) {
-      if (_type === type) {
+      if (_type === type && active) {
         listener(payload);
       }
     };
     window.update.flushQueue(_listener);
     window.update.listeners.push(_listener);
+    // Hands back an unsubscribe so a component can drop its listener when it unmounts
+    return function () {
+      if (!active) {
+        return;
+      }
+      // A dispatch that's already running still has the old list, so active keeps this listener quiet in it
+      active = false;
+      window.update.listeners = window.update.listeners.filter(function (entry) {
+        return entry !== _listener;
+      });
+    };
   };
 
   // Asset loaders

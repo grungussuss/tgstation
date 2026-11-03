@@ -55,7 +55,7 @@
 		/obj/item/food/grown/cannabis = 1,
 		/obj/item/rag = 1,
 		/obj/effect/spawner/random/entertainment/drugs = 1,
-		/obj/item/modular_computer/pda = 1,
+		/obj/item/modular_computer/pda/crew = 1,
 		/obj/item/reagent_containers/syringe = 1,
 		/obj/effect/spawner/random/entertainment/cigar = 1,
 		/obj/item/stack/ore/gold = 1,
@@ -346,7 +346,8 @@
 	name = "box spawner"
 	icon_state = "box"
 	loot = list(
-		/obj/structure/closet/cardboard = 9,
+		/obj/structure/closet/cardboard = 5,
+		/obj/structure/closet/crate/cardboard = 4,
 		/obj/structure/closet/cardboard/metal = 1,
 	)
 

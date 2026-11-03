@@ -64,6 +64,11 @@ type ByondType = {
   strictMode: boolean;
 
   /**
+   * The external URL for the IndexedDB IFrame to use as the origin
+   */
+  storageCdn: string;
+
+  /**
    * Makes a BYOND call.
    *
    * If path is empty, this will trigger a Topic call.
@@ -156,8 +161,10 @@ type ByondType = {
   /**
    * Subscribe to incoming messages *of some specific type*
    * that were sent from `/datum/tgui_window`.
+   *
+   * Returns a function that unsubscribes the listener.
    */
-  subscribeTo(type: string, listener: (payload: any) => void): void;
+  subscribeTo(type: string, listener: (payload: any) => void): () => void;
 
   /**
    * Loads a stylesheet into the document.
@@ -172,7 +179,7 @@ type ByondType = {
   /**
    * Maps icons to their ref
    */
-  iconRefMap: Record<string, string>;
+  iconRefMap: Record<string, string | undefined>;
 
   /**
    * Downloads a blob, platform-agnostic
@@ -184,12 +191,11 @@ type ByondType = {
  * Object that provides access to Byond Skin API and is available in
  * any tgui application.
  */
-const Byond: ByondType;
+const Byond: ByondType = {};
 
 interface Window {
   Byond: ByondType;
-  __store__: Store<unknown, AnyAction>;
-  __augmentStack__: (store: Store) => StackAugmentor;
+  __augmentStack__: (stack: string, error?: Error) => string;
 
   // IE IndexedDB stuff.
   msIndexedDB: IDBFactory;
@@ -199,4 +205,6 @@ interface Window {
   hubStorage: Storage;
   domainStorage: Storage;
   serverStorage: Storage;
+
+  __chatRenderer__: any;
 }

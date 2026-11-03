@@ -3,6 +3,7 @@
 	select_name = "ion"
 	fire_sound = 'sound/items/weapons/ionrifle.ogg'
 	firing_effect_type = /obj/effect/temp_visual/dir_setting/firing_effect/blue
+	muzzle_flash_color = LIGHT_COLOR_BLUE
 
 /obj/item/ammo_casing/energy/ion/hos
 	projectile_type = /obj/projectile/ion/weak
@@ -72,7 +73,7 @@
 /obj/item/ammo_casing/energy/shrink
 	projectile_type = /obj/projectile/magic/shrink/alien
 	select_name = "shrink ray"
-	e_cost = LASER_SHOTS(5, STANDARD_CELL_CHARGE)
+	e_cost = LASER_SHOTS(3, STANDARD_CELL_CHARGE)
 
 /obj/item/ammo_casing/energy/marksman
 	projectile_type = /obj/projectile/bullet/marksman

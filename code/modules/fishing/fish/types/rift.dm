@@ -17,7 +17,7 @@
 	embed_type = /datum/embedding/chrystarfish
 	attack_verb_continuous = list("stabs", "jabs")
 	attack_verb_simple = list("stab", "jab")
-	hitsound = SFX_SHATTER
+	hitsound = /datum/sound_effect/shatter
 	pickup_sound = 'sound/items/handling/materials/glass_pick_up.ogg'
 	drop_sound = 'sound/items/handling/materials/glass_drop.ogg'
 
@@ -65,7 +65,7 @@
 	if(new_status == FISH_DEAD)
 		if(fillet_type)
 			new fillet_type(get_turf(src))
-		playsound(src, SFX_SHATTER, 50)
+		playsound(src, /datum/sound_effect/shatter, 50)
 		qdel(src)
 
 /obj/item/fish/starfish/chrystarfish/add_emissive()
@@ -124,7 +124,7 @@
 	hitsound = 'sound/items/weapons/bladeslice.ogg'
 	block_sound = 'sound/items/weapons/parry.ogg'
 	drop_sound = 'sound/mobs/non-humanoids/fish/fish_drop1.ogg'
-	pickup_sound = SFX_FISH_PICKUP
+	pickup_sound = /datum/sound_effect/fish_pickup
 	sound_vary = TRUE
 
 	base_pixel_w = -16
@@ -202,11 +202,11 @@
 	//gas check
 	var/datum/gas_mixture/turf_gasmix = onturf.return_air()
 	// likes water, gets sleepy, gets very sleepy
-	if(turf_gasmix.gases[/datum/gas/water_vapor] && turf_gasmix.gases[/datum/gas/water_vapor][MOLES] >= 5)
+	if(turf_gasmix.moles[/datum/gas/water_vapor] >= 5)
 		patience_reduction *= 0.5
-	if(turf_gasmix.gases[/datum/gas/nitrous_oxide] && turf_gasmix.gases[/datum/gas/nitrous_oxide][MOLES] >= 5)
+	if(turf_gasmix.moles[/datum/gas/nitrous_oxide] >= 5)
 		patience_reduction *= 0.25
-	if(turf_gasmix.gases[/datum/gas/healium] && turf_gasmix.gases[/datum/gas/healium][MOLES] >= 5)
+	if(turf_gasmix.moles[/datum/gas/healium] >= 5)
 		patience_reduction *= 0.1
 
 	if(!ismob(loc))
@@ -350,7 +350,7 @@
 /obj/item/fish/gullion
 	name = "gullion"
 	fish_id = "gullion"
-	desc = "This crystalline fish is actually one of only two known silicon-based lifeforms.\
+	desc = "This crystalline fish is actually one of only two known silicon-based lifeforms. \
 		It avoids death via oxygen-silicate reactions by organically shielding its exterior, allowing the thick scales to calcify into quartz and diamond, at the cost of rendering the fish functionally blind. \
 		How xenomorphs manage is a complete mystery bordering on bullshit."
 	icon = 'icons/obj/aquarium/rift.dmi'
@@ -360,7 +360,7 @@
 	righthand_file = 'icons/mob/inhands/fish_righthand.dmi'
 	attack_verb_continuous = list("stabs", "jabs")
 	attack_verb_simple = list("stab", "jab")
-	hitsound = SFX_DEFAULT_FISH_SLAP
+	hitsound = /datum/sound_effect/default_fish_slap
 	pickup_sound = 'sound/items/handling/materials/glass_pick_up.ogg'
 	drop_sound = 'sound/items/handling/materials/glass_drop.ogg'
 	sprite_width = 7
@@ -396,12 +396,13 @@
 	visible_message(span_suicide("[user] swallows [src] whole! It looks like they're trying to commit suicide!"))
 	forceMove(user)
 	var/datum/gas_mixture/environment = user.loc.return_air()
-	var/oxygen_in_air = check_gases(environment.gases, list(/datum/gas/oxygen))
+	var/oxygen_in_air = locate(/datum/gas/oxygen) in environment.moles
 	if(!oxygen_in_air || (status == FISH_DEAD))
 		visible_message(span_suicide("[user] chokes and dies! (Wait, from the fish or from lack of air?)"))
 		return OXYLOSS
 
 	user.petrify(statue_timer = INFINITY)
+	user.death()
 	visible_message(span_suicide("[user]'s skin turns into quartz upon contact with the oxygen in the air!'"))
 	qdel(src)
 	return MANUAL_SUICIDE
@@ -425,7 +426,7 @@
 	sharpness = SHARP_POINTY
 	throwforce = 9
 	throw_range = 7
-	hitsound = SFX_ALT_FISH_SLAP
+	hitsound = /datum/sound_effect/alt_fish_slap
 
 	sprite_width = 12
 	sprite_height = 13
@@ -515,7 +516,7 @@
 	damtype = BRAIN
 	attack_verb_continuous = list("screeches", "shrieks")
 	attack_verb_simple = list("screech", "shriek")
-	hitsound = SFX_DEFAULT_FISH_SLAP // todo shriek
+	hitsound = /datum/sound_effect/default_fish_slap // todo shriek
 	sound_vary = TRUE
 
 	sprite_width = 11
@@ -588,7 +589,7 @@
 
 	voice_of_god(psychic_speech, user, list("big", "alertalien"), base_multiplier = 5, include_speaker = TRUE, forced = TRUE, ignore_spam = TRUE)
 	psy_wail()
-	user.adjustOrganLoss(ORGAN_SLOT_BRAIN, INFINITY, INFINITY, ORGAN_SLOT_BRAIN)
+	user.adjust_organ_loss(ORGAN_SLOT_BRAIN, INFINITY, INFINITY, ORGAN_SLOT_BRAIN)
 	user.death()
 	return MANUAL_SUICIDE
 
@@ -635,7 +636,7 @@
 			to_chat(screeched, span_notice("You resist the psychic wail!"))
 			continue
 		var/power = 1
-		if(!screeched.can_hear()) // bit weaker if deaf. but its still psychic
+		if(HAS_TRAIT(screeched, TRAIT_DEAF)) // bit weaker if deaf. but its still psychic
 			power *= 0.5
 		var/affect_time = 15 SECONDS * power
 		// it really fucks you up
@@ -652,7 +653,7 @@
 		if(iscarbon(screeched))
 			var/mob/living/carbon/carbon_screeched = screeched
 			carbon_screeched.vomit(MOB_VOMIT_MESSAGE)
-			carbon_screeched.adjustOrganLoss(ORGAN_SLOT_BRAIN, 50)
+			carbon_screeched.adjust_organ_loss(ORGAN_SLOT_BRAIN, 50)
 
 	var/affected = 0
 	for(var/obj/item/fish/fishie in range(7, src))
@@ -705,7 +706,7 @@
 	now_fixed = span_noticealien("The psychic noise starts to fade.")
 	low_threshold_cleared = span_noticealien("The whispers leave you alone.")
 
-	bang_protect = 5
+	bang_protect = EAR_PROTECTION_VACUUM
 	damage_multiplier = 0.1
 	visual = TRUE
 	/// Overlay for the mob sprite because actual organ overlays are a fucking unusable nightmare
@@ -720,9 +721,12 @@
  */
 /datum/bodypart_overlay/simple/babbearfish
 	icon_state = "babbearfish"
+	draw_on_husks = HUSK_OVERLAY_NORMAL
+	offset_location = UPPER_BODY
+	overlay_flags = NONE
 
-/datum/bodypart_overlay/simple/babbearfish/can_draw_on_bodypart(obj/item/bodypart/bodypart_owner)
-	return !(bodypart_owner.owner?.obscured_slots & HIDEEARS)
+/datum/bodypart_overlay/simple/babbearfish/can_draw_on_bodypart(obj/item/bodypart/bodypart_owner, mob/living/carbon/owner)
+	return ..() && !(bodypart_owner.owner?.obscured_slots & HIDEEARS)
 
 /obj/item/organ/ears/babbelfish/Initialize(mapload)
 	. = ..()

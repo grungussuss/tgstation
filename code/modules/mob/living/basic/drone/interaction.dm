@@ -16,7 +16,7 @@
 			drone.visible_message(span_notice("[drone] begins to cannibalize parts from [src]."), span_notice("You begin to cannibalize parts from [src]..."))
 			if(do_after(drone, 6 SECONDS, 0, target = src))
 				drone.visible_message(span_notice("[drone] repairs itself using [src]'s remains!"), span_notice("You repair yourself using [src]'s remains."))
-				drone.adjustBruteLoss(-src.maxHealth)
+				drone.adjust_brute_loss(-src.maxHealth)
 				new /obj/effect/decal/cleanable/blood/splatter/oil(get_turf(src))
 				ghostize(can_reenter_corpse = FALSE)
 				qdel(src)
@@ -93,7 +93,7 @@
 		to_chat(user, span_warning("You need to remain still to tighten [src]'s screws!"))
 		return ITEM_INTERACT_SUCCESS
 
-	adjustBruteLoss(-getBruteLoss())
+	adjust_brute_loss(-get_brute_loss())
 	visible_message(span_notice("[user] tightens [src == user ? "[user.p_their()]" : "[src]'s"] loose screws!"), span_notice("[src == user ? "You tighten" : "[user] tightens"] your loose screws."))
 	return ITEM_INTERACT_SUCCESS
 
@@ -113,16 +113,16 @@
 		update_drone_hack(FALSE)
 	return ITEM_INTERACT_SUCCESS
 
-/mob/living/basic/drone/getarmor(def_zone, type)
+/mob/living/basic/drone/get_worn_armor_value(obj/item/bodypart/def_zone, damage_type)
 	var/armorval = 0
 
 	if(head)
-		armorval = head.get_armor_rating(type)
+		armorval = head.get_armor_rating(damage_type)
 	return (armorval * get_armor_effectiveness()) //armor is reduced for tiny fragile drones
 
 /// Returns a multiplier for any head armor you wear as a drone.
 /mob/living/basic/drone/proc/get_armor_effectiveness()
-	return 0
+	return 0.8
 
 /**
  * Hack or unhack a drone
@@ -165,7 +165,7 @@
 		visible_message(span_info("[src]'s display glows a content blue!"), \
 						"<font size=3 color='#0000CC'><b>ERROR: LAW OVERRIDE DETECTED</b></font>")
 		to_chat(src, span_info("<b>From now on, these are your laws:</b>"))
-		laws = initial(laws)
+		laws = get_default_laws()
 		to_chat(src, laws)
 		to_chat(src, "<i>Having been restored, your onboard antivirus reports the all-clear and you are able to perform all actions again.</i>")
 		hacked = FALSE

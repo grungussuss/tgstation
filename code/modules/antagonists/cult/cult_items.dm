@@ -13,6 +13,7 @@
 	icon = 'icons/obj/weapons/khopesh.dmi'
 	icon_state = "render"
 	inhand_icon_state = "cultdagger"
+	worn_icon = null
 	worn_icon_state = "render"
 	icon_angle = -45
 	lefthand_file = 'icons/mob/inhands/weapons/swords_lefthand.dmi'
@@ -55,7 +56,7 @@ Striking a noncultist, however, will tear their flesh."}
 	if(owner.get_active_held_item() != src)
 		block_message = "[owner] parries [attack_text] with [src] in their offhand"
 
-	if(IS_CULTIST(owner) && prob(final_block_chance) && attack_type != (PROJECTILE_ATTACK || OVERWHELMING_ATTACK))
+	if(IS_CULTIST(owner) && prob(final_block_chance) && (attack_type != PROJECTILE_ATTACK || attack_type != OVERWHELMING_ATTACK))
 		new /obj/effect/temp_visual/cult/sparks(get_turf(owner))
 		owner.visible_message(span_danger("[block_message]"))
 		return TRUE
@@ -88,6 +89,7 @@ Striking a noncultist, however, will tear their flesh."}
 	icon = 'icons/obj/weapons/sword.dmi'
 	icon_state = "cultblade"
 	inhand_icon_state = "cultblade"
+	worn_icon = 'icons/mob/clothing/back.dmi'
 	worn_icon_state = "cultblade"
 	icon_angle = -45
 	lefthand_file = 'icons/mob/inhands/64x64_lefthand.dmi'
@@ -143,7 +145,7 @@ Striking a noncultist, however, will tear their flesh."}
 			var/mob/living/carbon/human/miscreant = user
 			miscreant.apply_damage(rand(force/2, force), BRUTE, pick(GLOB.arm_zones))
 		else
-			user.adjustBruteLoss(rand(force/2,force))
+			user.adjust_brute_loss(rand(force/2,force))
 		return
 	..()
 
@@ -192,7 +194,7 @@ Striking a noncultist, however, will tear their flesh."}
 		// Void
 		PATH_VOID = list(
 			WIELDER_SPELLS = list(/datum/action/cooldown/spell/pointed/void_phase),
-			SWORD_SPELLS = list(/datum/action/cooldown/spell/pointed/void_prison),
+			SWORD_SPELLS = list(/datum/action/cooldown/spell/aoe/void_pull),
 			SWORD_PREFIX = "tenebrous",
 		),
 		// Blade
@@ -375,8 +377,6 @@ Striking a noncultist, however, will tear their flesh."}
 
 /obj/item/melee/cultblade/haunted/Initialize(mapload, mob/soul_to_bind, mob/awakener, do_bind = TRUE)
 	. = ..()
-
-	AddElement(/datum/element/heretic_focus)
 	add_traits(list(TRAIT_CASTABLE_LOC, TRAIT_SPELLS_TRANSFER_TO_LOC), INNATE_TRAIT)
 	if(do_bind && !mapload)
 		bind_soul(soul_to_bind, awakener)
@@ -422,10 +422,6 @@ Striking a noncultist, however, will tear their flesh."}
 	var/datum/antagonist/soultrapped_heretic/bozo = new()
 	bozo.objectives |= copied_objectives
 	trapped_entity.mind.add_antag_datum(bozo)
-
-	// Assigning the spells to give to the wielder and spirit.
-	// Let them cast the given spell.
-	ADD_TRAIT(trapped_entity, TRAIT_ALLOW_HERETIC_CASTING, INNATE_TRAIT)
 
 	var/list/path_spells = heretic_paths_to_haunted_sword_abilities[heretic_path]
 
@@ -591,6 +587,7 @@ Striking a noncultist, however, will tear their flesh."}
 	lefthand_file = 'icons/mob/inhands/items/drinks_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/items/drinks_righthand.dmi'
 	list_reagents = list(/datum/reagent/fuel/unholywater = 50)
+	can_lid = FALSE
 
 /obj/item/reagent_containers/cup/beaker/unholywater/Initialize(mapload)
 	. = ..()
@@ -686,7 +683,7 @@ Striking a noncultist, however, will tear their flesh."}
 	. = ..()
 	if(!IS_CULTIST(user) && isliving(user))
 		var/mob/living/living_user = user
-		living_user.adjustOrganLoss(ORGAN_SLOT_BRAIN, 5)
+		living_user.adjust_organ_loss(ORGAN_SLOT_BRAIN, 5)
 		. += span_danger("It hurts just to look at it. Better keep away.")
 	else
 		. += span_cult("It can be used to create a gateway to Nar'Sie's domain, which will summon weak, sentient constructs over time.")
@@ -801,9 +798,9 @@ Striking a noncultist, however, will tear their flesh."}
 	new /obj/effect/temp_visual/dir_setting/cult/phase/out(mobloc, user_cultist.dir)
 	new /obj/effect/temp_visual/dir_setting/cult/phase(destination, user_cultist.dir)
 
-	playsound(mobloc, SFX_PORTAL_ENTER, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
+	playsound(mobloc, /datum/sound_effect/portal_enter, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
 	playsound(destination, 'sound/effects/phasein.ogg', 25, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
-	playsound(destination, SFX_PORTAL_ENTER, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
+	playsound(destination, /datum/sound_effect/portal_enter, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
 
 /obj/item/melee/cultblade/halberd
 	name = "bloody halberd"
@@ -836,16 +833,11 @@ Striking a noncultist, however, will tear their flesh."}
 	AddComponent(/datum/component/two_handed, \
 		force_unwielded = 17, \
 		force_wielded = 24, \
+		update_icon_state = TRUE, \
 	)
 
-/obj/item/melee/cultblade/halberd/update_icon_state()
-	icon_state = HAS_TRAIT(src, TRAIT_WIELDED) ? "[base_icon_state]1" : "[base_icon_state]0"
-	inhand_icon_state = HAS_TRAIT(src, TRAIT_WIELDED) ? "[base_icon_state]1" : "[base_icon_state]0"
-	return ..()
-
 /obj/item/melee/cultblade/halberd/Destroy()
-	if(halberd_act)
-		QDEL_NULL(halberd_act)
+	QDEL_NULL(halberd_act)
 	return ..()
 
 /obj/item/melee/cultblade/halberd/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
@@ -959,7 +951,7 @@ Striking a noncultist, however, will tear their flesh."}
 	if(isshade(our_target) || isconstruct(our_target))
 		var/mob/living/basic/construct/undead_abomination = our_target
 		if(undead_abomination.health + 5 < undead_abomination.maxHealth)
-			undead_abomination.adjust_health(-5)
+			undead_abomination.adjust_brute_loss(-5)
 	return PROJECTILE_DELETE_WITHOUT_HITTING
 
 /obj/item/blood_beam
@@ -1045,33 +1037,41 @@ Striking a noncultist, however, will tear their flesh."}
 		playsound(src, 'sound/effects/magic/exit_blood.ogg', 75, TRUE)
 		new /obj/effect/temp_visual/dir_setting/cult/phase(user.loc, user.dir)
 		var/turf/temp_target = get_turf_in_angle(set_angle, targets_from, 40)
-		for(var/turf/T in get_line(targets_from,temp_target))
-			if (locate(/obj/effect/blessing, T))
-				temp_target = T
-				playsound(T, 'sound/effects/parry.ogg', 50, TRUE)
-				new /obj/effect/temp_visual/at_shield(T, T)
+		for(var/turf/target_turf in get_line(targets_from,temp_target))
+			if (HAS_TRAIT(target_turf, TRAIT_TURF_BLESSED))
+				temp_target = target_turf
+				playsound(target_turf, 'sound/effects/parry.ogg', 50, TRUE)
+				new /obj/effect/temp_visual/at_shield(target_turf, target_turf)
 				break
-			T.narsie_act(TRUE, TRUE)
-			for(var/mob/living/target in T.contents)
-				if(IS_CULTIST(target))
-					new /obj/effect/temp_visual/cult/sparks(T)
-					if(ishuman(target))
-						var/mob/living/carbon/human/H = target
-						if(H.stat != DEAD)
-							H.reagents.add_reagent(/datum/reagent/fuel/unholywater, 7)
-					if(isshade(target) || isconstruct(target))
-						var/mob/living/basic/construct/healed_guy = target
-						if(healed_guy.health + 15 < healed_guy.maxHealth)
-							healed_guy.adjust_health(-15)
-						else
-							healed_guy.health = healed_guy.maxHealth
+
+			target_turf.narsie_act(TRUE, TRUE)
+			for(var/mob/living/target in target_turf)
+				if(!IS_CULTIST(target))
+					var/mob/living/victim = target
+					if(!victim.density)
+						continue
+					victim.Paralyze(20)
+					victim.adjust_brute_loss(45)
+					playsound(victim, 'sound/effects/hallucinations/wail.ogg', 50, TRUE)
+					victim.emote("scream")
+					continue
+
+				new /obj/effect/temp_visual/cult/sparks(target_turf)
+				if(ishuman(target))
+					var/mob/living/carbon/human/cultie = target
+					if(cultie.stat != DEAD)
+						cultie.reagents.add_reagent(/datum/reagent/fuel/unholywater, 7)
+					continue
+
+				if(!isshade(target) && !isconstruct(target))
+					continue
+
+				var/mob/living/basic/construct/healed_guy = target
+				if(healed_guy.health + 15 < healed_guy.maxHealth)
+					healed_guy.adjust_brute_loss(-15)
 				else
-					var/mob/living/L = target
-					if(L.density)
-						L.Paralyze(20)
-						L.adjustBruteLoss(45)
-						playsound(L, 'sound/effects/hallucinations/wail.ogg', 50, TRUE)
-						L.emote("scream")
+					healed_guy.health = healed_guy.maxHealth
+
 		user.Beam(temp_target, icon_state="blood_beam", time = 7, beam_type = /obj/effect/ebeam/blood)
 
 
@@ -1098,45 +1098,44 @@ Striking a noncultist, however, will tear their flesh."}
 	var/illusions = 2
 
 /obj/item/shield/mirror/hit_reaction(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "the attack", final_block_chance = 0, damage = 0, attack_type = MELEE_ATTACK, damage_type = BRUTE)
-	if(IS_CULTIST(owner))
-		if(attack_type == PROJECTILE_ATTACK)
-			if(damage_type == BRUTE || damage_type == BURN)
-				if(damage >= 30)
-					var/turf/T = get_turf(owner)
-					T.visible_message(span_warning("The sheer force from [hitby] shatters the mirror shield!"))
-					new /obj/effect/temp_visual/cult/sparks(T)
-					playsound(T, 'sound/effects/glass/glassbr3.ogg', 100)
-					owner.Paralyze(25)
-					qdel(src)
-					return FALSE
-			var/obj/projectile/projectile = hitby
-			if(projectile.reflectable)
-				return FALSE //To avoid reflection chance double-dipping with block chance
-		. = ..()
-		if(.)
-			if(illusions > 0)
-				illusions--
-				addtimer(CALLBACK(src, TYPE_PROC_REF(/obj/item/shield/mirror, readd)), 45 SECONDS)
-				if(prob(60))
-					var/mob/living/simple_animal/hostile/illusion/M = new(owner.loc)
-					M.faction = list(FACTION_CULT)
-					M.Copy_Parent(owner, 70, 10, 5)
-					M.move_to_delay = owner.cached_multiplicative_slowdown
-				else
-					var/mob/living/simple_animal/hostile/illusion/escape/E = new(owner.loc)
-					E.Copy_Parent(owner, 70, 10)
-					E.GiveTarget(owner)
-					E.Goto(owner, owner.cached_multiplicative_slowdown, E.minimum_distance)
-			return TRUE
-	else
+	if(!IS_CULTIST(owner))
 		if(prob(50))
-			var/mob/living/simple_animal/hostile/illusion/H = new(owner.loc)
-			H.Copy_Parent(owner, 100, 20, 5)
-			H.faction = list(FACTION_CULT)
-			H.GiveTarget(owner)
-			H.move_to_delay = owner.cached_multiplicative_slowdown
-			to_chat(owner, span_danger("<b>[src] betrays you!</b>"))
+			var/mob/living/basic/illusion/bizarro = new(owner.loc)
+			bizarro.full_setup(owner, target_mob = owner, faction_override = list(FACTION_CULT), life = 10 SECONDS, damage = 20, replicate = 5)
+
+			to_chat(owner, span_bolddanger("You're betrayed by \"yourself\"!"))
 		return FALSE
+
+	if(attack_type == PROJECTILE_ATTACK)
+		if(damage_type == BRUTE || damage_type == BURN)
+			if(damage >= 30)
+				var/turf/T = get_turf(owner)
+				T.visible_message(span_warning("The sheer force from [hitby] shatters the mirror shield!"))
+				new /obj/effect/temp_visual/cult/sparks(T)
+				playsound(T, 'sound/effects/glass/glassbr3.ogg', 100)
+				owner.Paralyze(25)
+				qdel(src)
+				return FALSE
+		var/obj/projectile/projectile = hitby
+		if(projectile.reflectable)
+			return FALSE //To avoid reflection chance double-dipping with block chance
+
+	. = ..()
+	if(!.)
+		return FALSE
+
+	if(illusions > 0)
+		illusions--
+		addtimer(CALLBACK(src, TYPE_PROC_REF(/obj/item/shield/mirror, readd)), 45 SECONDS)
+		if(prob(60)) // make a potentially slower, but replicable apparation
+			var/mob/living/basic/illusion/apparation = new(owner.loc)
+			apparation.full_setup(owner, target_mob = null, faction_override = list(FACTION_CULT), life = 7 SECONDS, damage = 10, replicate = 5)
+			apparation.cached_multiplicative_slowdown = owner.cached_multiplicative_slowdown
+		else // normal apparation designed to escape
+			var/mob/living/basic/illusion/escape/decoy = new(owner.loc)
+			decoy.full_setup(owner, target_mob = owner, faction_override = list(FACTION_CULT), life = 7 SECONDS, damage = 10) // Damage for retaliation
+	return TRUE
+
 
 /obj/item/shield/mirror/proc/readd()
 	illusions++

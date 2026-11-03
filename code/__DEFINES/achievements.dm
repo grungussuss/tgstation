@@ -2,6 +2,7 @@
 
 /// Achievements icon set
 #define ACHIEVEMENTS_SET 'icons/ui/achievements/achievements.dmi'
+#define PDA_THEMES_PROGRESS_SET 'icons/ui/achievements/pda_themes.dmi'
 
 #define ACHIEVEMENT_DEFAULT "default"
 #define ACHIEVEMENT_SCORE "score"
@@ -14,6 +15,7 @@
 
 //Misc Medal hub IDs
 #define MEDAL_METEOR "Your Life Before Your Eyes"
+#define MEDAL_METEOR_PUNCH "Your Life In Your Hands"
 #define MEDAL_PULSE "Jackpot"
 #define MEDAL_TIMEWASTE "Overextended The Joke"
 #define MEDAL_RODSUPLEX "Feat of Strength"
@@ -43,6 +45,7 @@
 #define MEDAL_COSMOS_ASCENSION "Cosmos"
 #define MEDAL_LOCK_ASCENSION "Knock"
 #define MEDAL_MOON_ASCENSION "Moon"
+#define MEDAL_GAZER_SIPPY "Welcoming Gift"
 #define MEDAL_TOOLBOX_SOUL "Toolsoul"
 #define MEDAL_HOT_DAMN "Hot Damn!"
 #define MEDAL_CAYENNE_DISK "Very Important Piscis"
@@ -60,6 +63,16 @@
 #define MEDAL_CIGARETTES "Cigarettes"
 #define MEDAL_SHARKDRAGON "Sharkdragon"
 #define MEDAL_THEORETICAL_LIMITS "All Within Theoretical Limits"
+#define MEDAL_DESENSITIZED "In Flanders Fields"
+#define MEDAL_SPICY_HANDSHAKE "Spicy Handshake"
+#define MEDAL_DOWN_LOW_TOO_SLOW "Down Low Too Slow"
+#define MEDAL_SOUVENIR "Syndicate T-Shirt Achievement"
+#define MEDAL_SAMARITAN "Good Samaritan"
+#define MEDAL_RED_PILL "Red Pill"
+#define MEDAL_KONG "Rise of Kong"
+#define MEDAL_NO_PARKING "You Can't Park here"
+#define MEDAL_CLEVER_GIRL "Clever Girl"
+#define MEDAL_BAG_OF_HOLDING "The Ultimate Storage Solution"
 
 //Skill medal hub IDs
 #define MEDAL_LEGENDARY_MINER "Legendary Miner"
@@ -148,6 +161,9 @@
 
 ///DB ID for all the different kinds of fish that you've caught so far.
 #define FISH_SCORE "Fish Score"
+
+///Database ID for unlockable PDA themes, purely costmetic
+#define PDA_THEMES_SCORE "PDA Themes"
 
 // Tourist related achievements and scores
 

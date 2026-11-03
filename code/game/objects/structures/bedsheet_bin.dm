@@ -12,14 +12,16 @@ LINEN BINS
 	righthand_file = 'icons/mob/inhands/items/bedsheet_righthand.dmi'
 	icon_state = "sheetwhite"
 	inhand_icon_state = "sheetwhite"
-	drop_sound = SFX_CLOTH_DROP
-	pickup_sound = SFX_CLOTH_PICKUP
+	drop_sound = /datum/sound_effect/cloth_drop
+	pickup_sound = /datum/sound_effect/cloth_pickup
 	slot_flags = ITEM_SLOT_NECK
 	layer = BELOW_MOB_LAYER
 	throwforce = 0
 	throw_speed = 1
 	throw_range = 2
 	w_class = WEIGHT_CLASS_TINY
+	supports_variations_flags = CLOTHING_CERULEAN_MASK_INBETWEEN
+	bodyshapes_with_variations = BODYSHAPE_CERULEAN
 	resistance_flags = FLAMMABLE
 	dying_key = DYE_REGISTRY_BEDSHEET
 	interaction_flags_click = NEED_DEXTERITY|ALLOW_RESTING
@@ -37,7 +39,7 @@ LINEN BINS
 
 /obj/item/bedsheet/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/surgery_initiator)
+	AddElement(/datum/element/surgery_aid, "bedsheet")
 	AddElement(/datum/element/bed_tuckable, mapload, 0, 0, 0)
 	if(bedsheet_type == BEDSHEET_DOUBLE)
 		stack_amount *= 2
@@ -393,7 +395,7 @@ LINEN BINS
 	add_overlay(gondola_mouth)
 	add_overlay(gondola_eyes)
 
-/obj/item/bedsheet/gondola/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/bedsheet/gondola/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if(!isinhands)
 		. += mutable_appearance(icon_file, gondola_mouth)
@@ -581,6 +583,7 @@ LINEN BINS
 	resistance_flags = FLAMMABLE
 	max_integrity = 70
 	anchored_tabletop_offset = 6
+	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT)
 	/// The number of bedsheets in the bin
 	var/amount = 10
 	/// A list of actual sheets within the bin

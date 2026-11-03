@@ -100,14 +100,15 @@
 	if(!istype(cuffs))
 		return NONE
 
-	if(check_cuffs_strength(carbon_target, target, cutter_user, cuffs, span_notice("[cutter_user] tries to cut through [target]'s restraints with [cutter], but fails!")))
+	if(check_cuffs_strength(cutter, target, cutter_user, cuffs, span_notice("[cutter_user] tries to cut through [target]'s restraints with [cutter], but fails!")))
 		INVOKE_ASYNC(src, PROC_REF(do_cuffsnap_target), cutter, target, cutter_user, cuffs)
 
 	return COMPONENT_SKIP_ATTACK
 
 ///Check that the type of restraints can be cut by this element.
 /datum/element/cuffsnapping/proc/check_cuffs_strength(obj/item/cutter, mob/living/target, mob/living/cutter_user, obj/item/restraints/handcuffs/cuffs, message)
-	if(cuffs.restraint_strength ? snap_time_strong : snap_time_weak)
+	var/snap_time = cuffs.restraint_strength ? snap_time_strong : snap_time_weak
+	if(!isnull(snap_time))
 		return TRUE
 	cutter_user.visible_message(message)
 	playsound(source = get_turf(cutter), soundin = cutter.usesound || cutter.hitsound, vol = cutter.get_clamped_volume(), vary = TRUE)
@@ -123,12 +124,12 @@
 
 ///Called when a player tries to remove the cuffs binding an item to their owner
 /datum/element/cuffsnapping/proc/try_cuffsnap_item(obj/item/cutter, mob/living/target, mob/living/cutter_user, obj/item/cuffed, obj/item/restraints/handcuffs/cuffs)
-	if(check_cuffs_strength(cutter, target, cutter_user, cuffs, span_notice("[cutter_user] tries to cut through the restraints binding [cuffed] to [target], but fails!")))
+	if(!check_cuffs_strength(cutter, target, cutter_user, cuffs, span_notice("[cutter_user] tries to cut through the restraints binding [cuffed] to [target], but fails!")))
 		return
 
 	log_combat(cutter_user, target, "cut or tried to cut restraints binding [cuffed] to")
 
-	do_snip_snap(cutter, target, cutter_user, cuffs, span_notice("[cutter_user] cuts the restraints binding [src] to [target] with [cutter]!"))
+	do_snip_snap(cutter, target, cutter_user, cuffs, span_notice("[cutter_user] cuts the restraints binding [cuffed] to [target] with [cutter]!"))
 
 ///The proc responsible for the very timed action that deletes the cuffs
 /datum/element/cuffsnapping/proc/do_snip_snap(obj/item/cutter, mob/living/target, mob/cutter_user, obj/item/restraints/handcuffs/cuffs, message)
@@ -139,8 +140,8 @@
 		var/mob/living/carbon/carbon_target = target
 		target_was_restrained = carbon_target.handcuffed
 
-	if(snap_time)
-		if(!do_after(cutter_user, snap_time, target, interaction_key = cutter)) // If 0 just do it. This to bypass the do_after() creating a needless progress bar.
+	if(!isnull(snap_time) && snap_time > 0)
+		if(!do_after(cutter_user, snap_time, target, interaction_key = cutter)) //No doafter if time = 0
 			return
 		if(target_was_restrained) //Removing restraints takes priority over cuffed items. This only applies for carbon mobs, but we need to make sure the restraints are still the same.
 			var/mob/living/carbon/carbon_target = target

@@ -57,7 +57,7 @@
 			new /obj/item/clothing/under/chameleon(src) // 2 tc since it's not the full set
 			new /obj/item/clothing/mask/chameleon(src) // Goes with above
 			new /obj/item/clothing/shoes/chameleon/noslip(src) // 2 tc
-			new /obj/item/computer_disk/syndicate/camera_app(src) // 1 tc
+			new /obj/item/disk/computer/syndicate/camera_app(src) // 1 tc
 			new /obj/item/multitool/ai_detect(src) // 1 tc
 			new /obj/item/encryptionkey/syndicate(src) // 2 tc
 			new /obj/item/storage/box/syndie_kit/mulligan(src) // 4 tc
@@ -115,14 +115,14 @@
 			new /obj/item/implanter/storage(src) // 8 tc
 
 		if(KIT_HACKER) //L-L--LOOK AT YOU, HACKER
-			new /obj/item/ai_module/syndicate(src) // 4 tc
+			new /obj/item/ai_module/law/syndicate(src) // 4 tc
 			new /obj/item/card/emag(src) // 4 tc
 			new /obj/item/card/emag/doorjack(src) // 3 tc
 			new /obj/item/encryptionkey/binary(src) // 5 tc
-			new /obj/item/ai_module/toy_ai(src) // ~6 tc
+			new /obj/item/ai_module/law/toy_ai(src) // ~6 tc
 			new /obj/item/multitool/ai_detect(src) // 1 tc
 			new /obj/item/storage/toolbox/syndicate(src) // 1 tc
-			new /obj/item/computer_disk/syndicate/camera_app(src) // 1 tc
+			new /obj/item/disk/computer/syndicate/camera_app(src) // 1 tc
 			new /obj/item/clothing/glasses/thermal/syndi(src) // 4 tc
 			new /obj/item/card/id/advanced/chameleon/elite(src) // 2 tc
 
@@ -143,9 +143,9 @@
 
 		if(KIT_SABOTAGE)
 			new /obj/item/storage/backpack/duffelbag/syndie/sabotage(src) // 5 tc for 3 c4 and 2 x4
-			new /obj/item/computer_disk/syndicate/camera_app(src) // 1 tc
+			new /obj/item/disk/computer/syndicate/camera_app(src) // 1 tc
 			new /obj/item/sbeacondrop/powersink(src) // 11 tc
-			new /obj/item/computer_disk/virus/detomatix(src) // 6 tc
+			new /obj/item/disk/computer/virus/detomatix(src) // 6 tc
 			new /obj/item/storage/toolbox/syndicate(src) // 1 tc
 			new /obj/item/pizzabox/bomb(src) // 6 tc
 			new /obj/item/storage/box/syndie_kit/emp(src) // 2 tc
@@ -212,7 +212,7 @@
 			new /obj/item/toy/cards/deck/syndicate(src) // 1 tc, for poker
 
 		if(KIT_NINJA)
-			new /obj/item/katana(src) // Unique , hard to tell how much tc this is worth. 8 tc?
+			new /obj/item/storage/belt/sheath/katana(src) // Unique , hard to tell how much tc this is worth. 8 tc?
 			new /obj/item/reagent_containers/hypospray/medipen/stimulants(src) // 5 tc
 			for(var/i in 1 to 6)
 				new /obj/item/throwing_star(src) // 1 tc
@@ -301,7 +301,7 @@
 			new /obj/item/clothing/head/helmet/marine/pmc(src)
 			new /obj/item/clothing/mask/gas/sechailer(src)
 			new /obj/item/clothing/glasses/night(src) // 3~ TC
-			new /obj/item/clothing/gloves/krav_maga/combatglovesplus(src) //5TC
+			new /obj/item/clothing/gloves/kaza_ruk/combatglovesplus(src) //5TC
 			new /obj/item/clothing/shoes/jackboots(src)
 			new /obj/item/storage/belt/military/assault/fisher(src) //items in this belt easily costs 18 TC
 
@@ -391,6 +391,12 @@
 /obj/item/storage/box/syndie_kit/imp_macrobomb/PopulateContents()
 	new /obj/item/implanter/explosive_macro(src)
 
+/obj/item/storage/box/syndie_kit/imp_macrobomb_fake
+	name = "fake macrobomb implant box"
+
+/obj/item/storage/box/syndie_kit/imp_macrobomb_fake/PopulateContents()
+	new /obj/item/implanter/explosive_macro/fake(src)
+
 /obj/item/storage/box/syndie_kit/imp_deniability
 	name = "tactical deniability implant box"
 
@@ -412,10 +418,15 @@
 
 /obj/item/storage/box/syndie_kit/clownpins
 	name = "ultra hilarious firing pin box"
+	var/pin_type = /obj/item/firing_pin/clown/ultra
 
 /obj/item/storage/box/syndie_kit/clownpins/PopulateContents()
-	for(var/i in 1 to 7)
-		new /obj/item/firing_pin/clown/ultra(src)
+	for(var/i in 1 to 4)
+		new pin_type(src)
+
+/obj/item/storage/box/syndie_kit/clownpins/super
+	name = "super ultra hilarious firing pin box"
+	pin_type = /obj/item/firing_pin/clown/ultra/selfdestruct
 
 /obj/item/storage/box/syndie_kit/imp_storage
 	name = "storage implant box"
@@ -478,7 +489,7 @@
 	new /obj/item/reagent_containers/cup/bottle/polonium(src)
 	new /obj/item/reagent_containers/cup/bottle/venom(src)
 	new /obj/item/reagent_containers/cup/bottle/fentanyl(src)
-	new /obj/item/reagent_containers/cup/bottle/formaldehyde(src)
+	new /obj/item/reagent_containers/cup/bottle/anacea(src)
 	new /obj/item/reagent_containers/cup/bottle/spewium(src)
 	new /obj/item/reagent_containers/cup/bottle/syndol(src)
 	new /obj/item/reagent_containers/cup/bottle/cyanide(src)
@@ -490,6 +501,12 @@
 	new /obj/item/reagent_containers/cup/bottle/curare(src)
 	new /obj/item/reagent_containers/cup/bottle/amanitin(src)
 	new /obj/item/reagent_containers/syringe(src)
+
+/obj/item/storage/box/syndie_kit/carnivorous_blood/PopulateContents()
+	new /obj/item/reagent_containers/cup/bottle/carnivorous_blood(src)
+	new /obj/item/reagent_containers/syringe(src)
+	new /obj/item/food/meat/slab/human(src)
+	new /obj/item/paper/guides/carnivorous_blood(src)
 
 /obj/item/storage/box/syndie_kit/nuke
 	name = "nuke core extraction kit"
@@ -597,7 +614,7 @@
 	new /obj/item/radio/headset/headset_cent/empty(src)
 	new /obj/item/clothing/glasses/sunglasses(src)
 	new /obj/item/storage/backpack/satchel(src)
-	new /obj/item/modular_computer/pda/heads(src)
+	new /obj/item/modular_computer/pda/crew/heads(src)
 	new /obj/item/clipboard(src)
 
 /obj/item/storage/box/syndie_kit/chameleon/broken/PopulateContents()
@@ -706,7 +723,7 @@
 /obj/item/storage/box/syndie_kit/imp_deathrattle/PopulateContents()
 	new /obj/item/implanter(src)
 
-	var/datum/deathrattle_group/group = new
+	var/datum/deathrattle_group/standard/group = new
 
 	var/implants = list()
 	for(var/j in 1 to 8)
@@ -736,13 +753,11 @@
 /obj/item/storage/box/syndie_kit/induction_kit
 	name = "syndicate induction kit"
 	desc = "Contains all you need for introducing your newest comrade to the Syndicate and all its worker's benefits."
+	var/implant_type = /obj/item/implanter/induction_implant
 
 /obj/item/storage/box/syndie_kit/induction_kit/PopulateContents()
 	// Basic weaponry, so they have something to use.
-	new /obj/item/gun/ballistic/automatic/pistol/clandestine(src) // 6 TC, but free for nukies
-	new /obj/item/ammo_box/magazine/m10mm/hp(src) // 3 TC, a reward for the teamwork involved
-	new /obj/item/ammo_box/magazine/m10mm/ap(src) // 3 TC, a reward for the teamwork involved
-	new /obj/item/pen/edagger(src) // 2 TC
+	give_weaponry()
 	// The necessary equipment to help secure that disky.
 	new /obj/item/radio/headset/syndicate/alt(src) // 5 TC / Free for nukies
 	new /obj/item/modular_computer/pda/nukeops(src) // ?? TC / Free for nukies
@@ -751,34 +766,57 @@
 	new spess_suit(src) // Above allows me to get the helmet from a variable on the object
 	var/obj/item/clothing/head/helmet/space/syndicate/spess_helmet = GLOB.syndicate_space_suits_to_helmets[spess_suit]
 	new spess_helmet(src) // 4 TC for the space gear
-	new /obj/item/tank/jetpack/oxygen/harness(src) // They kinda need this to fly to the cruiser.
+	new /obj/item/tank/jetpack/harness(src) // They kinda need this to fly to the cruiser.
 	// Tacticool gear
 	new /obj/item/clothing/shoes/combat(src)
 	new /obj/item/clothing/under/syndicate(src)
 	new /obj/item/clothing/gloves/fingerless(src)
 	new /obj/item/book/manual/nuclear(src) // Very important
 	// The most important part of the kit, the implant that gives them the syndicate faction.
-	new /obj/item/implanter/induction_implant(src)
+	new implant_type(src)
+	// Tactical map implant so they can see the minimap with the rest of the team.
+	new /obj/item/implanter/tacmap/nuclear(src)
 	// All in all, 6+3+3+2+5+2+4 = ~25 TC of 'miscellaneous' items.
 	// This is a lot of value for 10 TC, but you have to keep in mind that you NEED someone to get this stuff station-side.
 	// Pretty much all of it is a bad deal for reinforcements or yourself as they already have similar or good-enough alternatives.
+
+/obj/item/storage/box/syndie_kit/induction_kit/proc/give_weaponry()
+	new /obj/item/gun/ballistic/automatic/pistol/clandestine(src) // 6 TC, but free for nukies
+	new /obj/item/ammo_box/magazine/m10mm/hp(src) // 3 TC, a reward for the teamwork involved
+	new /obj/item/ammo_box/magazine/m10mm/ap(src) // 3 TC, a reward for the teamwork involved
+	new /obj/item/pen/edagger(src) // 2 TC
+
+/obj/item/storage/box/syndie_kit/induction_kit/clown
+	name = "syndicate circus induction kit"
+	desc = "A special induction kit for joining the syndicate circus."
+	implant_type = /obj/item/implanter/induction_implant/clown
+
+/obj/item/storage/box/syndie_kit/induction_kit/clown/give_weaponry()
+	// Toy gun instead of real gun
+	var/obj/item/gun/ballistic/automatic/pistol/toy/riot/clandestine/gun = new(src)
+	qdel(gun.pin)
+	var/obj/item/firing_pin/clown/ultra/new_pin = new()
+	new_pin.gun_insert(null, gun, TRUE)
+
+	// You need this for the gun
+	new /obj/item/dnainjector/clumsymut(src)
+	// And a bonus
+	new /obj/item/reagent_containers/spray/waterflower/lube/super(src)
 
 /obj/item/implanter/induction_implant
 	name = "implanter (nuclear operative)"
 	desc = "A sterile automatic implant injector. You can see a tiny, somehow legible sticker on the side: 'NOT A BRAINWASH DEVICE'"
 	imp_type = /obj/item/implant/nuclear_operative
 
+/obj/item/implanter/induction_implant/clown
+	name = "implanter (syndicate circus)"
+	imp_type = /obj/item/implant/nuclear_operative/clown
+
 /obj/item/implant/nuclear_operative
 	name = "nuclear operative implant"
 	desc = "Registers you as a member of a Syndicate nuclear operative team."
 	implant_color = "r"
-
-/obj/item/implant/nuclear_operative/get_data()
-	return "<b>Implant Specifications:</b><BR> \
-		<b>Name:</b> Suspicious Implant<BR> \
-		<b>Life:</b> UNKNOWN <BR> \
-		<b>Implant Details:</b> <BR> \
-		<b>Function:</b> Strange implant that seems to resist any attempts at scanning it."
+	var/antag_datum_type = /datum/antagonist/nukeop
 
 /obj/item/implant/nuclear_operative/implant(mob/living/target, mob/user, silent = FALSE, force = FALSE)
 	. = ..()
@@ -798,16 +836,17 @@
 			human_target.reagents.add_reagent(/datum/reagent/toxin, 2)
 			return FALSE
 
-	if(!human_target.is_antag()) // GTFO. Technically not foolproof but making a heartbreaker or a paradox clone a nuke op sounds hilarious
+	if(is_valid_inductee(target)) // GTFO. Technically not foolproof but making a heartbreaker or a paradox clone a nuke op sounds hilarious
 		to_chat(human_target, span_notice("Huh? Nothing happened? But you're starting to feel a little ill..."))
 		human_target.reagents.add_reagent(/datum/reagent/toxin, 15)
 		return FALSE
 
-	var/datum/antagonist/nukeop/nuke_datum = new()
+	var/datum/antagonist/nukeop/nuke_datum = new antag_datum_type()
 	nuke_datum.send_to_spawnpoint = FALSE
+	nuke_datum.give_bonus_tc = FALSE
 	nuke_datum.nukeop_outfit = null
 	human_target.mind?.add_antag_datum(nuke_datum)
-	human_target.faction |= ROLE_SYNDICATE
+	human_target.add_faction(ROLE_SYNDICATE)
 	to_chat(human_target, span_warning("You are now a nuclear operative. Your main objective, if you were an antagonist and willing, is presumably to assist the nuclear operative team and secure the disk."))
 	to_chat(human_target, span_userdanger("This implant does NOT, in any way, brainwash you. If you were a normal crew member beforehand, forcibly implanted or otherwise, you are still one and cannot assist the nuclear operatives."))
 	return TRUE
@@ -818,10 +857,21 @@
 		return FALSE
 	var/mob/living/living_target = target
 	living_target.mind.remove_antag_datum(/datum/antagonist/nukeop)
-	living_target.faction -= ROLE_SYNDICATE
+	living_target.remove_faction(ROLE_SYNDICATE)
 	to_chat(target, span_notice("You feel a little less nuclear."))
 	to_chat(target, span_userdanger("You're no longer identified as a nuclear operative! You are free to follow any valid goals you wish, even continuing to secure the disk. Just make sure neither any turrets nor operatives kill you on sight."))
 	return TRUE
+
+/obj/item/implant/nuclear_operative/proc/is_valid_inductee(mob/living/target)
+	return target.is_antag()
+
+/obj/item/implant/nuclear_operative/clown
+	name = "syndicate circus implant"
+	desc = "Registers the wearer as a member of the syndicate circus."
+	antag_datum_type = /datum/antagonist/nukeop/clownop
+
+/obj/item/implant/nuclear_operative/clown/is_valid_inductee(mob/living/target)
+	return HAS_MIND_TRAIT(target, TRAIT_CLUMSY) || HAS_MIND_TRAIT(target, TRAIT_NAIVE) || ..()
 
 /obj/item/storage/box/syndie_kit/poster_box
 	name = "syndicate poster pack"
@@ -889,8 +939,14 @@
 
 /obj/item/storage/box/syndicate/horse_box/PopulateContents()
 	new /obj/item/food/monkeycube/dangerous_horse(src)
-	new /obj/item/slimepotion/slime/sentience/nuclear/dangerous_horse(src)
+	new /obj/item/slimepotion/sentience/nuclear/dangerous_horse(src)
 	new /obj/item/food/grown/apple(src)
+
+/obj/item/storage/box/syndicate/sleeping_carp/PopulateContents()
+	new /obj/item/book/granter/martial/carp(src)
+	new /obj/item/clothing/head/costume/snakeeater(src)
+	new /obj/item/clothing/under/costume/gi(src)
+	new /obj/item/clothing/shoes/sandal(src)
 
 #undef KIT_RECON
 #undef KIT_BLOODY_SPAI

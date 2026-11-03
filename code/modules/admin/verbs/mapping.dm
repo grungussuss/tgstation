@@ -8,11 +8,11 @@ ADMIN_VERB(camera_view, R_DEBUG, "Camera Range Display", "Shows the range of cam
 
 	if(!on)
 		var/list/seen = list()
-		for(var/obj/machinery/camera/C as anything in GLOB.cameranet.cameras)
-			for(var/turf/T in C.can_see())
-				seen[T]++
-		for(var/turf/T in seen)
-			T.maptext = MAPTEXT(seen[T])
+		for(var/obj/machinery/camera/cam as anything in SScameras.cameras)
+			for(var/turf/cam_turf as anything in cam.can_see())
+				seen[cam]++
+		for(var/turf/seen_turf as anything in seen)
+			seen_turf.maptext = MAPTEXT(seen[seen_turf])
 	BLACKBOX_LOG_ADMIN_VERB("Show Camera Range")
 
 #ifdef TESTING
@@ -34,7 +34,7 @@ ADMIN_VERB_VISIBILITY(sec_camera_report, ADMIN_VERB_VISIBLITY_FLAG_MAPPING_DEBUG
 ADMIN_VERB(sec_camera_report, R_DEBUG, "Camera Report", "Get a printout of all camera issues.", ADMIN_CATEGORY_MAPPING)
 	var/list/obj/machinery/camera/CL = list()
 
-	for(var/obj/machinery/camera/C as anything in GLOB.cameranet.cameras)
+	for(var/obj/machinery/camera/C as anything in SScameras.cameras)
 		CL += C
 
 	var/output = {"<B>Camera Abnormalities Report</B><HR>
@@ -196,27 +196,26 @@ ADMIN_VERB(disable_communication, R_DEBUG, "Disable all communication verbs", "D
 ADMIN_VERB_VISIBILITY(create_mapping_job_icons, ADMIN_VERB_VISIBLITY_FLAG_MAPPING_DEBUG)
 ADMIN_VERB(create_mapping_job_icons, R_DEBUG, "Generate job landmarks icons", "Generates job starting location landmarks.", ADMIN_CATEGORY_MAPPING)
 	var/icon/final = icon()
-	var/mob/living/carbon/human/dummy/D = new(locate(1,1,1)) //spawn on 1,1,1 so we don't have runtimes when items are deleted
-	D.setDir(SOUTH)
-	for(var/job in subtypesof(/datum/job))
-		var/datum/job/JB = new job
-		switch(JB.title)
+
+	var/list/landmark_iconstates = list()
+	for(var/obj/effect/landmark/start/landmark as anything in valid_subtypesof(/obj/effect/landmark/start))
+		if(landmark::icon_state)
+			landmark_iconstates |= landmark::icon_state
+
+	for(var/job_type in valid_subtypesof(/datum/job))
+		var/datum/job/job_datum = SSjob.get_job_type(job_type)
+		if(!(job_datum.title in landmark_iconstates))
+			continue
+
+		switch(job_datum.title)
 			if(JOB_AI)
-				final.Insert(icon('icons/mob/silicon/ai.dmi', "ai", SOUTH, 1), "AI")
+				final.Insert(icon('icons/mob/silicon/ai.dmi', "ai", SOUTH, 1), JOB_AI)
 			if(JOB_CYBORG)
-				final.Insert(icon('icons/mob/silicon/robots.dmi', "robot", SOUTH, 1), "Cyborg")
+				final.Insert(icon('icons/mob/silicon/robots.dmi', "robot", SOUTH, 1), JOB_CYBORG)
 			else
-				for(var/obj/item/I in D)
-					qdel(I)
-				randomize_human_normie(D)
-				D.dress_up_as_job(
-					equipping = JB,
-					visual_only = TRUE,
-					consistent = TRUE,
-				)
-				var/icon/I = icon(getFlatIcon(D), frame = 1)
-				final.Insert(I, JB.title)
-	qdel(D)
+				if(job_datum.outfit) //only screenshot icons with an outfit
+					var/icon/I = get_flat_human_icon(null, job_datum, null, "landmark_icons[rand(1,100)]", list(SOUTH))
+					final.Insert(I, job_datum.title)
 	//Also add the x
 	for(var/x_number in 1 to 4)
 		final.Insert(icon('icons/hud/screen_gen.dmi', "x[x_number == 1 ? "" : x_number]"), "x[x_number == 1 ? "" : x_number]")
@@ -231,7 +230,7 @@ ADMIN_VERB(debug_z_levels, R_DEBUG, "Debug Z-Levels", "Displays a list of all z-
 	var/list/messages = list()
 
 	var/list/z_list = SSmapping.z_list
-	messages += "\n<b>World</b>: [world.maxx] x [world.maxy] x [world.maxz]\n"
+	messages += "<b>World</b>: [world.maxx] x [world.maxy] x [world.maxz]\n"
 
 	var/list/linked_levels = list()
 	var/min_x = INFINITY

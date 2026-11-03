@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
+/// How long a new window gets to load and send ready before we close it
+#define TGUI_WINDOW_STARTUP_TIMEOUT (60 SECONDS)
+
 /**
  * tgui datum (represents a UI).
  */
@@ -25,8 +28,8 @@
 	var/autoupdate = TRUE
 	/// If the UI has been initialized yet.
 	var/initialized = FALSE
-	/// Time of opening the window.
-	var/opened_at
+	/// The world.time this UI has to finish its first handshake by, set once in open()
+	var/initialization_deadline
 	/// Stops further updates when close() was called.
 	var/closing = FALSE
 	/// The status/visibility of the UI.
@@ -57,7 +60,7 @@
  */
 /datum/tgui/New(mob/user, datum/src_object, interface, title, ui_x, ui_y)
 	log_tgui(user,
-		"new [interface] fancy [user?.client?.prefs.read_preference(/datum/preference/toggle/tgui_fancy)]",
+		"new [interface]",
 		src_object = src_object)
 	src.user = user
 	src.src_object = src_object
@@ -93,16 +96,16 @@
 	window = SStgui.request_pooled_window(user)
 	if(!window)
 		return FALSE
-	opened_at = world.time
 	window.acquire_lock(src)
 	if(!window.is_ready())
+		initialization_deadline = world.time + TGUI_WINDOW_STARTUP_TIMEOUT
 		window.initialize(
 			strict_mode = TRUE,
-			fancy = user.client.prefs.read_preference(/datum/preference/toggle/tgui_fancy),
 			assets = list(
 				get_asset_datum(/datum/asset/simple/tgui),
 			))
 	else
+		initialization_deadline = world.time + TGUI_PING_TIMEOUT
 		window.send_message("ping")
 	send_assets()
 	window.send_message("update", get_payload(
@@ -155,8 +158,22 @@
 /**
  * public
  *
+ * Sends a message to the front end to push the UI window to position 0,0
+ *
+ * optional can_be_suspended bool
+ */
+/datum/tgui/proc/reset_ui_position()
+	if(window)
+		// Windows you want to keep are usually blue screens of death
+		// and we want to keep them around, to allow user to read
+		// the error message properly.
+		window.send_message("resetposition")
+
+/**
+ * public
+ *
  * Closes all ByondUI elements, left dangling by a forceful TGUI exit,
- * such as via Alt+F4, closing in non-fancy mode, or terminating the process
+ * such as via Alt+F4, closing or terminating the process
  *
  */
 /datum/tgui/proc/terminate_byondui_elements()
@@ -206,11 +223,12 @@
  *
  * optional custom_data list Custom data to send instead of ui_data.
  * optional force bool Send an update even if UI is not interactive.
+ * optional always_instant bool Send and update regardless of the cooldown.
  */
-/datum/tgui/proc/send_full_update(custom_data, force)
+/datum/tgui/proc/send_full_update(custom_data, force, always_instant)
 	if(!user.client || !initialized || closing)
 		return
-	if(!COOLDOWN_FINISHED(src, refresh_cooldown))
+	if(!always_instant && !COOLDOWN_FINISHED(src, refresh_cooldown))
 		refreshing = TRUE
 		addtimer(CALLBACK(src, PROC_REF(send_full_update), custom_data, force), COOLDOWN_TIMELEFT(src, refresh_cooldown), TIMER_UNIQUE)
 		return
@@ -220,7 +238,8 @@
 		custom_data,
 		with_data = should_update_data,
 		with_static_data = TRUE))
-	COOLDOWN_START(src, refresh_cooldown, TGUI_REFRESH_FULL_UPDATE_COOLDOWN)
+	if(!always_instant)
+		COOLDOWN_START(src, refresh_cooldown, TGUI_REFRESH_FULL_UPDATE_COOLDOWN)
 
 /**
  * public
@@ -258,7 +277,6 @@
 		"window" = list(
 			"key" = window_key,
 			"size" = window_size,
-			"fancy" = user.client.prefs.read_preference(/datum/preference/toggle/tgui_fancy),
 			"locked" = user.client.prefs.read_preference(/datum/preference/toggle/tgui_lock),
 			"scale" = user.client.prefs.read_preference(/datum/preference/toggle/ui_scale),
 		),
@@ -273,6 +291,7 @@
 		),
 	)
 	var/data = custom_data || with_data && src_object.ui_data(user)
+	SEND_SIGNAL(src_object, COMSIG_UI_DATA, user, data)
 	if(data)
 		json_data["data"] = data
 	var/static_data = with_static_data && src_object.ui_static_data(user)
@@ -297,7 +316,7 @@
 		close(can_be_suspended = FALSE)
 		return
 	// Validate ping
-	if(!initialized && world.time - opened_at > TGUI_PING_TIMEOUT)
+	if(!initialized && world.time > initialization_deadline)
 		log_tgui(user, "Error: Zombie window detected, closing.",
 			window = window,
 			src_object = src_object)
@@ -380,3 +399,5 @@
 		return
 	if(src_object.ui_act(act_type, payload, src, state))
 		SStgui.update_uis(src_object)
+
+#undef TGUI_WINDOW_STARTUP_TIMEOUT

@@ -34,7 +34,7 @@
 		log_message("Permission denied (Attached mobs).", LOG_MECHA)
 		return FALSE
 
-	for(var/obj/item/thing in M.held_items)
+	for(var/obj/item/thing as anything in M.get_held_items())
 		if(!(thing.item_flags & (ABSTRACT|HAND_ITEM)))
 			to_chat(M, span_warning("You can't enter the exosuit while your hands are occupied!"))
 			return FALSE
@@ -60,7 +60,7 @@
 	return TRUE
 
 ///proc called when a new mmi mob tries to enter this mech
-/obj/vehicle/sealed/mecha/proc/mmi_move_inside(obj/item/mmi/brain_obj, mob/user)
+/obj/vehicle/sealed/mecha/proc/mmi_move_inside(obj/item/brain_processor/brain_obj, mob/user)
 	if(!(mecha_flags & MMI_COMPATIBLE))
 		to_chat(user, span_warning("This mecha is not compatible with MMIs!"))
 		return FALSE
@@ -85,7 +85,7 @@
 	return FALSE
 
 ///proc called when a new mmi mob enters this mech
-/obj/vehicle/sealed/mecha/proc/mmi_moved_inside(obj/item/mmi/brain_obj, mob/user)
+/obj/vehicle/sealed/mecha/proc/mmi_moved_inside(obj/item/brain_processor/brain_obj, mob/user)
 	if(!(Adjacent(brain_obj) && Adjacent(user)))
 		return FALSE
 	if(!brain_obj.brain_check(user))
@@ -96,13 +96,13 @@
 		to_chat(user, span_warning("[brain_obj] is stuck to your hand, you cannot put it in [src]!"))
 		return FALSE
 
-	brain_obj.set_mecha(src)
 	add_occupant(brain_mob)//Note this forcemoves the brain into the mech to allow relaymove
 	mecha_flags &= ~PANEL_OPEN //Close panel if open
 	mecha_flags |= SILICON_PILOT
 	brain_mob.reset_perspective(src)
 	brain_mob.remote_control = src
 	brain_mob.update_mouse_pointer()
+	RegisterSignal(brain_mob, COMSIG_MOB_RETRIEVE_ACCESS, PROC_REF(retrieve_access))
 	setDir(SOUTH)
 	log_message("[brain_obj] moved in as pilot.", LOG_MECHA)
 	if(!internal_damage)
@@ -112,12 +112,14 @@
 	return TRUE
 
 /obj/vehicle/sealed/mecha/mob_exit(mob/M, silent = FALSE, randomstep = FALSE, forced = FALSE)
+	// FIXME: this code is really bad (shocker). Needs a refactor
 	var/atom/movable/mob_container
 	var/turf/newloc = get_turf(src)
 	if(ishuman(M))
 		mob_container = M
 	else if(isbrain(M))
 		var/mob/living/brain/brain = M
+		UnregisterSignal(brain, COMSIG_MOB_RETRIEVE_ACCESS)
 		mob_container = brain.container
 	else if(isAI(M))
 		var/mob/living/silicon/ai/AI = M
@@ -147,14 +149,12 @@
 		if(!forced && !silent)
 			to_chat(AI, span_notice("Returning to core..."))
 		mecha_flags &= ~SILICON_PILOT
-		newloc = get_turf(AI.linked_core)
-		qdel(AI.linked_core)
-		AI.forceMove(newloc)
+		AI.resolve_core_link()
 		if(forced)
 			to_chat(AI, span_danger("ZZUZULU.ERR--ERRR-NEUROLOG-- PERCEP--- DIST-B**@"))
 			for(var/count in 1 to 5)
 				addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(do_sparks), rand(10, 20), FALSE, AI), count SECONDS)
-			addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(empulse), get_turf(AI), /*heavy_range = */10, /*light_range = */20), 10 SECONDS)
+			addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(empulse), get_turf(AI), /*heavy_range = */10, /*light_range = */20, AI), 10 SECONDS)
 		return ..()
 	else if(isliving(M))
 		mob_container = M
@@ -164,13 +164,12 @@
 	mob_container.forceMove(newloc)//ejecting mob container
 	log_message("[mob_container] moved out.", LOG_MECHA)
 	SStgui.close_user_uis(M, src)
-	if(istype(mob_container, /obj/item/mmi))
-		var/obj/item/mmi/mmi = mob_container
+	if(istype(mob_container, /obj/item/brain_processor))
+		var/obj/item/brain_processor/mmi = mob_container
 		if(mmi.brainmob)
 			ejector.forceMove(mmi)
 			ejector.reset_perspective()
 			remove_occupant(ejector)
-		mmi.set_mecha(null)
 		mmi.update_appearance()
 	setDir(SOUTH)
 	SEND_SIGNAL(src, COMSIG_MECHA_MOB_EXIT)
@@ -196,7 +195,6 @@
 	if(driver.client)
 		driver.update_mouse_pointer()
 		driver.client.view_size.resetToDefault()
-		zoom_mode = FALSE
 	. = ..()
 	update_appearance()
 

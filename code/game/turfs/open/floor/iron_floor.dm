@@ -3,6 +3,26 @@
 	floor_tile = /obj/item/stack/tile/iron/base
 	rust_resistance = RUST_RESISTANCE_BASIC
 
+/turf/open/floor/iron/asteroid_5
+	icon_state = "asteroid5"
+	base_icon_state = "asteroid5"
+
+/turf/open/floor/iron/asteroid_8
+	icon_state = "asteroid8"
+	base_icon_state = "asteroid8"
+
+/turf/open/floor/iron/pod_dark
+	icon_state = "podfloor_dark"
+	base_icon_state = "podfloor_dark"
+
+/turf/open/floor/iron/pod_dark/airless
+	initial_gas_mix = AIRLESS_ATMOS
+
+/turf/open/floor/iron/sand
+	icon = 'icons/turf/sand.dmi'
+	icon_state = "sand"
+	base_icon_state = "sand"
+
 /turf/open/floor/iron/broken_states()
 	return list("damaged1", "damaged2", "damaged3", "damaged4", "damaged5")
 
@@ -100,6 +120,13 @@
 	icon_state = "darkfull"
 	base_icon_state = "darkfull"
 	floor_tile = /obj/item/stack/tile/iron/dark
+
+/turf/open/floor/iron/dark/bus
+	icon_state = "bus"
+	base_icon_state = "bus"
+
+/turf/open/floor/iron/dark/bus/airless
+	initial_gas_mix = AIRLESS_ATMOS
 
 /turf/open/floor/iron/dark/smooth_edge
 	icon_state = "dark_edge"
@@ -313,9 +340,27 @@
 /turf/open/floor/iron/recharge_floor/airless
 	initial_gas_mix = AIRLESS_ATMOS
 
+/turf/open/floor/iron/recharge_floor/dark
+	icon_state = "recharge_dark"
+	base_icon_state = "recharge_dark"
+	floor_tile = /obj/item/stack/tile/iron/recharge_floor/dark
+
+/turf/open/floor/iron/recharge_floor/white
+	icon_state = "recharge_white"
+	base_icon_state = "recharge_white"
+	floor_tile = /obj/item/stack/tile/iron/recharge_floor/white
+
+/turf/open/floor/iron/recharge_floor/smooth
+	icon_state = "recharge_smooth"
+	base_icon_state = "recharge_smooth"
+	floor_tile = /obj/item/stack/tile/iron/recharge_floor/smooth
+
 /turf/open/floor/iron/recharge_floor/asteroid
 	icon_state = "recharge_floor_asteroid"
 	base_icon_state = "recharge_floor_asteroid"
+
+/turf/open/floor/iron/recharge_floor/asteroid/airless
+	initial_gas_mix = AIRLESS_ATMOS
 
 /turf/open/floor/iron/smooth
 	icon_state = "smooth"
@@ -414,6 +459,7 @@
 	icon_state = "solarpanel"
 	base_icon_state = "solarpanel"
 	floor_tile = /obj/item/stack/tile/iron/solarpanel
+	skip_minimap_rendering = TRUE
 
 /turf/open/floor/iron/solarpanel/airless
 	initial_gas_mix = AIRLESS_ATMOS
@@ -472,7 +518,7 @@
 /turf/open/floor/iron/grimy
 	icon_state = "grimy"
 	base_icon_state = "grimy"
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	floor_tile = /obj/item/stack/tile/iron/grimy
 
 /turf/open/floor/iron/vaporwave
@@ -485,13 +531,13 @@
 	desc = "\"This is a plaque in honour of our comrades on the G4407 Stations. Hopefully TG4407 model can live up to your fame and fortune.\" Scratched in beneath that is a crude image of a meteor and a spaceman. The spaceman is laughing. The meteor is exploding."
 	icon_state = "plaque"
 	base_icon_state = "plaque"
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	floor_tile = /obj/item/stack/tile/iron/goonplaque
 
 /turf/open/floor/iron/stairs
 	icon_state = "stairs"
 	base_icon_state = "stairs"
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 
 /turf/open/floor/iron/stairs/airless
 	initial_gas_mix = AIRLESS_ATMOS

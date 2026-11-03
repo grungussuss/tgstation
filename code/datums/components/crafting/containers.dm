@@ -28,7 +28,7 @@
 	)
 	result = /obj/item/storage/basket
 	category = CAT_CONTAINERS
-	crafting_flags = parent_type::crafting_flags | CRAFT_MUST_BE_LEARNED
+	crafting_flags = parent_type::crafting_flags | CRAFT_MUST_BE_LEARNED | CRAFT_SKIP_MATERIALS_PARITY
 	steps = list(
 		"master the art of underwater basketweaving",
 		"be underwater"

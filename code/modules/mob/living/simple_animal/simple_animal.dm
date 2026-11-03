@@ -17,14 +17,14 @@
 	///Flip the sprite upside down on death. Mostly here for things lacking custom dead sprites.
 	var/flip_on_death = FALSE
 
-	var/list/speak = list()
+	var/list/speak
 	///Emotes while speaking IE: `Ian [emote], [text]` -- `Ian barks, "WOOF!".` Spoken text is generated from the speak variable.
-	var/list/speak_emote = list()
+	var/list/speak_emote
 	var/speak_chance = 0
 	///Hearable emotes
-	var/list/emote_hear = list()
+	var/list/emote_hear
 	///Unlike speak_emote, the list of things in this variable only show by themselves with no spoken text. IE: Ian barks, Ian yaps
-	var/list/emote_see = list()
+	var/list/emote_see
 
 	///ticks up every time `handle_automated_movement()` is called, which is every 2 seconds at the time of documenting. 1  turns per move is 1 movement every 2 seconds.
 	var/turns_per_move = 1
@@ -88,7 +88,7 @@
 	///Damage type of a simple mob's melee attack, should it do damage.
 	var/melee_damage_type = BRUTE
 	/// 1 for full damage , 0 for none , -1 for 1:1 heal from that source.
-	var/list/damage_coeff = list(BRUTE = 1, BURN = 1, TOX = 1, STAMINA = 0, OXY = 1)
+	physiology = list(STAMINA = 0)
 	///Attacking verb in present continuous tense.
 	var/attack_verb_continuous = "attacks"
 	///Attacking verb in present simple tense.
@@ -113,9 +113,6 @@
 	///Sorry, no spider+corgi buttbabies.
 	var/animal_species
 
-	///Simple_animal access.
-	///Innate access uses an internal ID card.
-	var/obj/item/card/id/access_card = null
 	///If the mob can be spawned with a gold slime core. HOSTILE_SPAWN are spawned with plasma, FRIENDLY_SPAWN are spawned with blood.
 	var/gold_core_spawnable = NO_SPAWN
 
@@ -130,7 +127,7 @@
 	var/allow_movement_on_non_turfs = FALSE
 
 	///Played when someone punches the creature.
-	var/attacked_sound = SFX_PUNCH
+	var/attacked_sound = /datum/sound_effect/punch
 
 	///The Status of our AI, can be set to AI_ON (On, usual processing), AI_IDLE (Will not process, but will return to AI_ON if an enemy comes near), AI_OFF (Off, Not processing ever).
 	var/AIStatus = AI_ON
@@ -177,16 +174,15 @@
 		add_traits(weather_immunities, ROUNDSTART_TRAIT)
 	if (environment_smash >= ENVIRONMENT_SMASH_WALLS)
 		AddElement(/datum/element/wall_smasher, strength_flag = environment_smash)
-	if(speak)
+	if(LAZYLEN(speak))
 		speak = string_list(speak)
-	if(speak_emote)
+	if(LAZYLEN(speak_emote))
 		speak_emote = string_list(speak_emote)
-	if(emote_hear)
+	if(LAZYLEN(emote_hear))
 		emote_hear = string_list(emote_hear)
-	if(emote_see)
-		emote_see = string_list(emote_hear)
-	if(damage_coeff)
-		damage_coeff = string_assoc_list(damage_coeff)
+	if(LAZYLEN(emote_see))
+		emote_see = string_list(emote_see)
+
 	if(footstep_type)
 		AddElement(/datum/element/footstep, footstep_type)
 	if(isnull(unsuitable_cold_damage))
@@ -212,13 +208,12 @@
 	if((unsuitable_cold_damage || unsuitable_heat_damage) && (minbodytemp > 0 || maxbodytemp < INFINITY))
 		AddElement(/datum/element/body_temp_sensitive, minbodytemp, maxbodytemp, unsuitable_cold_damage, unsuitable_heat_damage, mapload)
 
-/mob/living/simple_animal/Life(seconds_per_tick = SSMOBS_DT, times_fired)
+/mob/living/simple_animal/Life(seconds_per_tick = SSMOBS_DT)
 	. = ..()
 	if(staminaloss > 0)
-		adjustStaminaLoss(-stamina_recovery * seconds_per_tick, FALSE, TRUE)
+		adjust_stamina_loss(-stamina_recovery * seconds_per_tick, FALSE, TRUE)
 
 /mob/living/simple_animal/Destroy()
-	QDEL_NULL(access_card)
 	GLOB.simple_animals[AIStatus] -= src
 	SSnpcpool.currentrun -= src
 
@@ -231,8 +226,6 @@
 			. += span_deadsay("Upon closer examination, [p_they()] appear[p_s()] to be asleep.")
 		else
 			. += span_deadsay("Upon closer examination, [p_they()] appear[p_s()] to be dead.")
-	if(access_card)
-		. += "There appears to be [icon2html(access_card, user)] \a [access_card] pinned to [p_them()]."
 
 /mob/living/simple_animal/update_stat()
 	if(HAS_TRAIT(src, TRAIT_GODMODE))
@@ -241,7 +234,7 @@
 		if(health <= 0)
 			death()
 		else
-			set_stat(CONSCIOUS)
+			set_stat(STABLE)
 	med_hud_set_status()
 
 /**
@@ -251,7 +244,7 @@
  * Reduces the stamina loss by stamina_recovery
  */
 /mob/living/simple_animal/update_stamina()
-	if(damage_coeff[STAMINA] <= 0) //we shouldn't reset our speed to its initial value if we don't need to, as that can mess with things like mulebot motor wires
+	if(GET_PHYSIOLOGY(src, STAMINA) <= 0) //we shouldn't reset our speed to its initial value if we don't need to, as that can mess with things like mulebot motor wires
 		return
 	set_varspeed(initial(speed) + (staminaloss * 0.06))
 
@@ -314,7 +307,7 @@
 					else
 						manual_emote(pick(emote_hear))
 
-/mob/living/simple_animal/handle_environment(datum/gas_mixture/environment, seconds_per_tick, times_fired)
+/mob/living/simple_animal/handle_environment(datum/gas_mixture/environment, seconds_per_tick)
 	var/atom/A = loc
 	if(isturf(A))
 		var/areatemp = get_temperature(environment)
@@ -399,7 +392,7 @@
 			return FALSE
 	if (isliving(the_target))
 		var/mob/living/L = the_target
-		if(L.stat != CONSCIOUS)
+		if(IS_UNCONSCIOUS_OR_CRIT(L))
 			return FALSE
 	if (ismecha(the_target))
 		var/obj/vehicle/sealed/mecha/M = the_target
@@ -415,14 +408,14 @@
 	REMOVE_TRAIT(src, TRAIT_UNDENSE, BASIC_MOB_DEATH_TRAIT)
 
 /mob/living/simple_animal/proc/make_babies() // <3 <3 <3
-	if(gender != FEMALE || stat || next_scan_time > world.time || !childtype || !animal_species || !SSticker.IsRoundInProgress())
+	if(gender != FEMALE || IS_UNCONSCIOUS_OR_CRIT(src) || next_scan_time > world.time || !childtype || !animal_species || !SSticker.IsRoundInProgress())
 		return
 	next_scan_time = world.time + 400
 	var/alone = TRUE
 	var/mob/living/simple_animal/partner
 	var/children = 0
 	for(var/mob/M in view(7, src))
-		if(M.stat != CONSCIOUS) //Check if it's conscious FIRST.
+		if(IS_UNCONSCIOUS_OR_CRIT(M)) //Check if it's conscious FIRST.
 			continue
 		var/is_child = is_type_in_list(M, childtype)
 		if(is_child) //Check for children SECOND.
@@ -453,49 +446,9 @@
 	toggle_ai(AI_OFF) // To prevent any weirdness.
 	can_have_ai = FALSE
 
-/mob/living/simple_animal/update_sight()
-	if(!client)
-		return
-	if(stat == DEAD)
-		if(SSmapping.level_trait(z, ZTRAIT_NOXRAY))
-			set_sight(null)
-		else if(is_secret_level(z))
-			set_sight(initial(sight))
-		else
-			set_sight(SEE_TURFS|SEE_MOBS|SEE_OBJS)
-		set_invis_see(SEE_INVISIBLE_OBSERVER)
-		return
-
-	lighting_color_cutoffs = list(lighting_cutoff_red, lighting_cutoff_green, lighting_cutoff_blue)
-	set_invis_see(initial(see_invisible))
-	if(SSmapping.level_trait(z, ZTRAIT_NOXRAY))
-		set_sight(null)
-	else
-		set_sight(initial(sight))
-	if(client.eye != src)
-		var/atom/A = client.eye
-		if(A.update_remote_sight(src)) //returns 1 if we override all other sight updates.
-			return
-	return ..()
-
-//Will always check hands first, because access_card is internal to the mob and can't be removed or swapped.
-/mob/living/simple_animal/get_idcard(hand_first)
-	return (..() || access_card)
-
 /mob/living/simple_animal/put_in_hands(obj/item/I, del_on_fail = FALSE, merge_stacks = TRUE, ignore_animation = TRUE)
 	. = ..()
 	update_held_items()
-
-/mob/living/simple_animal/update_held_items()
-	. = ..()
-	if(!client || !hud_used || hud_used.hud_version == HUD_STYLE_NOHUD)
-		return
-	var/turf/our_turf = get_turf(src)
-	for(var/obj/item/I in held_items)
-		var/index = get_held_index_of_item(I)
-		SET_PLANE(I, ABOVE_HUD_PLANE, our_turf)
-		I.screen_loc = ui_hand_position(index)
-		client.screen |= I
 
 //ANIMAL RIDING
 
@@ -554,7 +507,7 @@
 	stop_automated_movement = FALSE
 	if(!isturf(src.loc)) // Are we on a proper turf?
 		return
-	if(stat || resting || buckled) // Are we conscious, upright, and not buckled?
+	if(IS_UNCONSCIOUS_OR_CRIT(src) || resting || buckled) // Are we conscious, upright, and not buckled?
 		return
 	if(!COOLDOWN_FINISHED(src, emote_cooldown)) // Has the cooldown on this ended?
 		return
@@ -570,7 +523,7 @@
 			step(prey, pick(GLOB.cardinals))
 			COOLDOWN_START(src, emote_cooldown, 1 MINUTES)
 			return
-		if(!(prey.stat))
+		if(!IS_UNCONSCIOUS_OR_CRIT(prey))
 			manual_emote("chomps [prey]!")
 			prey.death()
 			prey = null

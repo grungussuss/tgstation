@@ -1,6 +1,10 @@
 /obj/item/clothing/head/utility
 	icon = 'icons/obj/clothing/head/utility.dmi'
 	worn_icon = 'icons/mob/clothing/head/utility.dmi'
+	sound_vary = TRUE
+	pickup_sound = /datum/sound_effect/hard_hat_pickup
+	drop_sound = /datum/sound_effect/hard_hat_drop
+	equip_sound = /datum/sound_effect/hard_hat_equip
 
 /obj/item/clothing/head/utility/hardhat
 	name = "hard hat"
@@ -12,20 +16,20 @@
 	hair_mask = /datum/hair_mask/standard_hat_middle
 	actions_types = list(/datum/action/item_action/toggle_helmet_light)
 	clothing_flags = SNUG_FIT | STACKABLE_HELMET_EXEMPT
+	clothing_traits = list(TRAIT_HEAD_INJURY_BLOCKED)
 	resistance_flags = FIRE_PROOF
-
 	light_system = OVERLAY_LIGHT_DIRECTIONAL
 	light_range = 4
 	light_power = 0.8
 	light_color = "#ffcc99"
 	light_on = FALSE
 	dog_fashion = /datum/dog_fashion/head
-
 	///Determines used sprites: `hardhat[on]_[hat_type]` and `hardhat[on]_[hat_type]2` (lying down sprite)
 	var/hat_type = "yellow"
 	///Whether the headlamp is on or off.
 	var/on = FALSE
-	clothing_traits = list(TRAIT_HEAD_INJURY_BLOCKED)
+	/// If we've been forcibly disabled for a temporary amount of time.
+	COOLDOWN_DECLARE(disabled_time)
 
 /datum/armor/utility_hardhat
 	melee = 15
@@ -60,13 +64,26 @@
 /obj/item/clothing/head/utility/hardhat/proc/turn_off(mob/user)
 	set_light_on(FALSE)
 
+/obj/item/clothing/head/utility/hardhat/emp_act(severity)
+	. = ..()
+	if(. & EMP_PROTECT_SELF)
+		return
+
+	on_saboteur(src, (1 MINUTES / severity))
+
 /obj/item/clothing/head/utility/hardhat/on_saboteur(datum/source, disrupt_duration)
 	. = ..()
-	if(on)
-		toggle_helmet_light()
-		return TRUE
+	on = FALSE
+	set_light_on(FALSE)
+	COOLDOWN_START(src, disabled_time, disrupt_duration)
+	update_appearance()
+	return TRUE
 
 /obj/item/clothing/head/utility/hardhat/attack_self(mob/living/user)
+	if(!COOLDOWN_FINISHED(src, disabled_time))
+		user?.balloon_alert(user, "disrupted!")
+		return
+
 	toggle_helmet_light(user)
 
 /obj/item/clothing/head/utility/hardhat/orange
@@ -118,8 +135,8 @@
 	name = "welding hard hat"
 	desc = "A piece of headgear used in dangerous working conditions to protect the head. Comes with a built-in flashlight AND welding shield! The bulb seems a little smaller though."
 	light_range = 3 //Needs a little bit of tradeoff
-	toggle_message = "You pull the visor down"
-	alt_toggle_message = "You push the visor up"
+	toggle_message = "You pull the visor down."
+	alt_toggle_message = "You push the visor up."
 	dog_fashion = null
 	actions_types = list(/datum/action/item_action/toggle_helmet_light, /datum/action/item_action/toggle_welding_screen)
 	flash_protect = FLASH_PROTECTION_WELDER
@@ -145,9 +162,9 @@
 /obj/item/clothing/head/utility/hardhat/welding/adjust_visor(mob/living/user)
 	. = ..()
 	if(.)
-		playsound(src, up ? SFX_VISOR_UP : SFX_VISOR_DOWN, 50, TRUE)
+		playsound(src, up ? /datum/sound_effect/visor_up : /datum/sound_effect/visor_down, 50, TRUE)
 
-/obj/item/clothing/head/utility/hardhat/welding/worn_overlays(mutable_appearance/standing, isinhands)
+/obj/item/clothing/head/utility/hardhat/welding/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if(isinhands)
 		return
@@ -214,12 +231,16 @@
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 	visor_flags_cover = NONE
 	flags_inv = HIDEEARS|HIDEHAIR|HIDEFACE|HIDEFACIALHAIR|HIDESNOUT
-	hair_mask = ""
+	hair_mask = null
 	transparent_protection = HIDEMASK|HIDEEYES
 	visor_flags_inv = NONE
 	visor_state = "weldvisor_atmos"
 
-/obj/item/clothing/head/utility/hardhat/welding/atmos/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/clothing/head/utility/hardhat/welding/atmos/Initialize(mapload)
+	. = ..()
+	AddElement(/datum/element/equipment_bodypart_texture, BODY_ZONE_HEAD, /datum/bodypart_texture/mesh/firesuit)
+
+/obj/item/clothing/head/utility/hardhat/welding/atmos/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if(!isinhands)
 		. += emissive_appearance(icon_file, "[icon_state]-emissive", src, alpha = src.alpha, effect_type = EMISSIVE_SPECULAR)
@@ -234,7 +255,7 @@
 	hat_type = "pumpkin"
 	clothing_flags = SNUG_FIT | STACKABLE_HELMET_EXEMPT
 	flags_inv = HIDEMASK|HIDEEARS|HIDEEYES|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDESNOUT
-	hair_mask = ""
+	hair_mask = null
 
 	armor_type = /datum/armor/none
 	light_range = 2 //luminosity when on
@@ -242,11 +263,14 @@
 	light_color = "#fff2bf"
 	worn_y_offset = 1
 	dog_fashion = /datum/dog_fashion/head/pumpkin/unlit
-	clothing_traits = list()
+	clothing_traits = null
+	pickup_sound = null
+	drop_sound = null
+	equip_sound = null
 
 /obj/item/clothing/head/utility/hardhat/pumpkinhead/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/adjust_fishing_difficulty, 3)
+	AddElement(/datum/element/adjust_fishing_difficulty, 3)
 
 /obj/item/clothing/head/utility/hardhat/pumpkinhead/set_light_on(new_value)
 	. = ..()
@@ -263,7 +287,7 @@
 	if(light_on)
 		. += emissive_appearance(icon, "carved_pumpkin-emissive", src, alpha = src.alpha)
 
-/obj/item/clothing/head/utility/hardhat/pumpkinhead/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/clothing/head/utility/hardhat/pumpkinhead/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if(light_on && !isinhands)
 		. += emissive_appearance(icon_file, "carved_pumpkin-emissive", src, alpha = src.alpha)
@@ -302,9 +326,9 @@
 	inhand_icon_state = null
 	hat_type = "reindeer"
 	flags_inv = 0
-	hair_mask = ""
+	hair_mask = null
 	armor_type = /datum/armor/none
 	light_range = 1 //luminosity when on
-	clothing_traits = list()
+	clothing_traits = null
 
 	dog_fashion = /datum/dog_fashion/head/reindeer

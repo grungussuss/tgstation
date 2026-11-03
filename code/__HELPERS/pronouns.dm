@@ -60,7 +60,7 @@
 /datum/proc/p_themselves(temp_gender)
 	return "itself"
 
-/datum/proc/plural_s(pluralize)
+/proc/plural_s(pluralize)
 	switch(copytext_char(pluralize, -2))
 		if ("ss")
 			return "es"
@@ -414,7 +414,7 @@
 	if(HAS_TRAIT(src, TRAIT_UNKNOWN_APPEARANCE))
 		return PLURAL
 	// If both face and uniform are hidden, can't assess gender
-	if(obscured_slots & (HIDEFACE|HIDEJUMPSUIT) == (HIDEFACE|HIDEJUMPSUIT))
+	if((obscured_slots & (HIDEFACE|HIDEJUMPSUIT)) == (HIDEFACE|HIDEJUMPSUIT))
 		return PLURAL
 	return gender
 

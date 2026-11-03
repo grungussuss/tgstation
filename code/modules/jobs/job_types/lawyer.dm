@@ -2,7 +2,6 @@
 	title = JOB_LAWYER
 	description = "Advocate for prisoners, create law-binding contracts, \
 		ensure Security is following protocol and Space Law."
-	department_head = list(JOB_HEAD_OF_PERSONNEL)
 	faction = FACTION_STATION
 	total_positions = 2
 	spawn_positions = 2
@@ -28,6 +27,7 @@
 	job_flags = STATION_JOB_FLAGS
 
 	job_tone = "objection"
+	tgui_icon = FA_ICON_GAVEL
 
 /datum/outfit/job/lawyer
 	name = "Lawyer"
@@ -36,7 +36,7 @@
 	id_trim = /datum/id_trim/job/lawyer
 	uniform = /obj/item/clothing/under/rank/civilian/lawyer/bluesuit
 	suit = /obj/item/clothing/suit/toggle/lawyer
-	belt = /obj/item/modular_computer/pda/lawyer
+	belt = /obj/item/modular_computer/pda/crew/lawyer
 	ears = /obj/item/radio/headset/headset_srvsec
 	shoes = /obj/item/clothing/shoes/laceup
 	neck = /obj/item/clothing/neck/tie/red/tied

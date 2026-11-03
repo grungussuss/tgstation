@@ -39,6 +39,7 @@
 
 	if(LAZYLEN(test_organ.organ_traits))
 		TEST_ASSERT(LAZYLEN(lab_rat._status_traits), TEST_ORGAN_INSERT_MESSAGE(test_organ, "should add Traits to lazylist `human._status_traits`."))
+		TEST_ASSERT(!(null in test_organ.organ_traits), "[test_organ.type] contains a null organ trait.")
 		for(var/test_trait in test_organ.organ_traits)
 			TEST_ASSERT(HAS_TRAIT(lab_rat, test_trait), TEST_ORGAN_INSERT_MESSAGE(test_organ, "should add Trait `[test_trait]` to lazylist `human._status_traits`"))
 
@@ -78,8 +79,8 @@
 /datum/unit_test/organ_damage/proc/test_organ(mob/living/carbon/human/dummy, obj/item/organ/test_organ)
 	var/slot_to_use = test_organ.slot
 
-	// Tests [mob/living/proc/adjustOrganLoss]
-	TEST_ASSERT_EQUAL(dummy.adjustOrganLoss(slot_to_use, test_organ.maxHealth * 10), -test_organ.maxHealth, \
+	// Tests [mob/living/proc/adjust_organ_loss]
+	TEST_ASSERT_EQUAL(dummy.adjust_organ_loss(slot_to_use, test_organ.maxHealth * 10), -test_organ.maxHealth, \
 		"Mob level \"apply organ damage\" returned the wrong value for [slot_to_use] organ with default arguments.")
 	TEST_ASSERT_EQUAL(dummy.get_organ_loss(slot_to_use), test_organ.maxHealth, \
 		"Mob level \"apply organ damage\" can exceed the [slot_to_use] organ's damage cap with default arguments.")
@@ -89,14 +90,14 @@
 	dummy.fully_heal(HEAL_ORGANS)
 
 	// Tests [mob/living/proc/set_organ_damage]
-	TEST_ASSERT_EQUAL(dummy.setOrganLoss(slot_to_use, test_organ.maxHealth * 10), -test_organ.maxHealth, \
+	TEST_ASSERT_EQUAL(dummy.set_organ_loss(slot_to_use, test_organ.maxHealth * 10), -test_organ.maxHealth, \
 		"Mob level \"set organ damage\" returned the wrong value for [slot_to_use] organ with default arguments.")
 	TEST_ASSERT_EQUAL(dummy.get_organ_loss(slot_to_use), test_organ.maxHealth, \
 		"Mob level \"set organ damage\" can exceed the [slot_to_use] organ's damage cap with default arguments.")
 	dummy.fully_heal(HEAL_ORGANS)
 
-	// Tests [mob/living/proc/adjustOrganLoss] with a large max supplied
-	TEST_ASSERT_EQUAL(dummy.adjustOrganLoss(slot_to_use, test_organ.maxHealth * 10, INFINITY), -test_organ.maxHealth, \
+	// Tests [mob/living/proc/adjust_organ_loss] with a large max supplied
+	TEST_ASSERT_EQUAL(dummy.adjust_organ_loss(slot_to_use, test_organ.maxHealth * 10, INFINITY), -test_organ.maxHealth, \
 		"Mob level \"apply organ damage\" returned the wrong value for [slot_to_use] organ with a large maximum supplied.")
 	TEST_ASSERT_EQUAL(dummy.get_organ_loss(slot_to_use), test_organ.maxHealth, \
 		"Mob level \"apply organ damage\" can exceed the [slot_to_use] organ's damage cap with a large maximum supplied.")
@@ -137,3 +138,15 @@
 	var/mob/living/carbon/human/anime_dummy = allocate(/mob/living/carbon/human/consistent)
 	anime_dummy.set_species(/datum/species/human/felinid, pref_load = TRUE)
 	TEST_ASSERT(istype(anime_dummy.get_organ_slot(ORGAN_SLOT_EARS), /obj/item/organ/ears/cat), "Felinid with default ears set did not have cat ears on species gain.")
+
+/datum/unit_test/zombie_cure
+
+/datum/unit_test/zombie_cure/Run()
+	var/mob/living/carbon/human/dummy = allocate(/mob/living/carbon/human/consistent)
+	var/obj/item/organ/zombie_infection/infection = allocate(/obj/item/organ/zombie_infection)
+	infection.Insert(dummy)
+	TEST_ASSERT(infection in dummy.organs, "Infection organ was not successfully inserted into the dummy's organs.")
+	dummy.apply_status_effect(/datum/status_effect/zombie)
+	TEST_ASSERT(dummy.has_status_effect(/datum/status_effect/zombie), "Zombie status effect was not applied successfully.")
+	infection.Remove(dummy)
+	TEST_ASSERT(!dummy.has_status_effect(/datum/status_effect/zombie), "Zombie status effect was not removed successfully upon losing the infection.")

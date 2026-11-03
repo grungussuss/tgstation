@@ -61,7 +61,6 @@
 
 	if(use_visibility)
 		update_visibility()
-	update_parallax_contents()
 
 /// Sends a visibility query to the cameranet.
 /// Can be used as a signal handler.
@@ -71,7 +70,7 @@
 	SHOULD_CALL_PARENT(TRUE)
 
 	if(use_visibility)
-		GLOB.cameranet.visibility(src)
+		SScameras.update_eye_chunk(src)
 
 /mob/eye/camera/zMove(dir, turf/target, z_move_flags = NONE, recursions_left = 1, list/falling_movs)
 	. = ..()

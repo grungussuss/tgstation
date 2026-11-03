@@ -12,6 +12,7 @@
 	plane = AREA_PLANE
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	invisibility = INVISIBILITY_LIGHTING
+	tacmap_color = null
 
 	/// List of all turfs currently inside this area as nested lists indexed by zlevel.
 	/// Acts as a filtered version of area.contents For faster lookup
@@ -24,7 +25,10 @@
 	/// This uses the same nested list format as turfs_by_zlevel
 	var/list/list/turf/turfs_to_uncontain_by_zlevel = list()
 
-	var/area_flags = VALID_TERRITORY | BLOBS_ALLOWED | UNIQUE_AREA | CULT_PERMITTED
+	/// General flag for area properties
+	var/area_flags = VALID_TERRITORY | BLOBS_ALLOWED | CULT_PERMITTED
+	/// Flag for mapping related area properties (such as cavegen)
+	var/area_flags_mapping = UNIQUE_AREA
 
 	///Do we have an active fire alarm?
 	var/fire = FALSE
@@ -58,6 +62,8 @@
 
 	/// For space, the asteroid, lavaland, etc. Used with blueprints or with weather to determine if we are adding a new area (vs editing a station room)
 	var/outdoors = FALSE
+	/// Whether or not this area unifies all of its motion sensors.
+	var/motion_monitored = FALSE
 
 	/// Size of the area in open turfs, only calculated for indoors areas.
 	var/areasize = 0
@@ -83,7 +89,7 @@
 	/// The default gravity for the area
 	var/default_gravity = ZERO_GRAVITY
 
-	var/parallax_movedir = 0
+	var/parallax_movedir = NONE
 
 	var/ambience_index = AMBIENCE_GENERIC
 	///A list of sounds to pick from every so often to play to clients.
@@ -112,8 +118,13 @@
 	/// Wire assignment for airlocks in this area
 	var/airlock_wires = /datum/wires/airlock
 
-	///This datum, if set, allows terrain generation behavior to be ran on Initialize()
+	/// Should we actually be running our mapgen if one is set?
+	/// FALSE here with a set map_generator allows the area to probe from shared generators without actually generating its' turfs
+	var/use_mapgen = TRUE
+	/// Datum that would be used in terrain generation behavior
 	var/datum/map_generator/map_generator
+	/// Should the map_generator be shared with all other willing areas on our z_level?
+	var/share_map_generator = TRUE
 
 	///Used to decide what kind of reverb the area makes sound have
 	var/sound_environment = SOUND_ENVIRONMENT_NONE
@@ -126,6 +137,9 @@
 
 	/// Are shuttles allowed to dock in this area
 	var/allow_shuttle_docking = FALSE
+
+	/// If TRUE, then this area will be skipped entirely by minimap rendering.
+	var/skip_minimap_rendering = FALSE
 
 /**
  * A list of teleport locations
@@ -163,7 +177,7 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 /area/New()
 	// This interacts with the map loader, so it needs to be set immediately
 	// rather than waiting for atoms to initialize.
-	if (area_flags & UNIQUE_AREA)
+	if (area_flags_mapping & UNIQUE_AREA)
 		GLOB.areas_by_type[type] = src
 	GLOB.areas += src
 	energy_usage = new /list(AREA_USAGE_LEN) // Some atoms would like to use power in Initialize()
@@ -210,30 +224,61 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 /area/LateInitialize()
 	power_change() // all machines set to current power level, also updates icon
 	update_beauty()
+	if(motion_monitored)
+		AddComponent(/datum/component/monitored_area)
 
 /// Generate turfs, including cool cave wall gen
 /area/proc/RunTerrainGeneration()
-	if(map_generator)
-		map_generator = new map_generator()
-		var/list/turfs = list()
-		for(var/turf/T in contents)
-			turfs += T
-		map_generator.generate_terrain(turfs, src)
+	if (!use_mapgen || !map_generator)
+		return
+	map_generator = get_generator()
+	var/list/turfs = list()
+	for(var/turf/T in contents)
+		turfs += T
+	map_generator.generate_terrain(turfs, src)
 
 /// Populate the previously generated terrain with mobs and objects
 /area/proc/RunTerrainPopulation()
-	if(map_generator)
-		var/list/turfs = list()
-		for(var/turf/T in contents)
-			turfs += T
-		map_generator.populate_terrain(turfs, src)
+	if (!use_mapgen || !map_generator)
+		return
+	map_generator = get_generator()
+	var/list/turfs = list()
+	for(var/turf/T in contents)
+		turfs += T
+	map_generator.populate_terrain(turfs, src)
 
 /area/proc/test_gen()
-	if(map_generator)
-		var/list/turfs = list()
-		for(var/turf/T in contents)
-			turfs += T
-		map_generator.generate_terrain(turfs, src)
+	if (!use_mapgen || !map_generator)
+		return
+	map_generator = get_generator()
+	var/list/turfs = list()
+	for(var/turf/T in contents)
+		turfs += T
+	map_generator.generate_terrain(turfs, src)
+
+/// Gets own, or shared, map generator
+/area/proc/get_generator()
+	RETURN_TYPE(/datum/map_generator)
+	if (!map_generator)
+		return
+
+	if (istype(map_generator))
+		return map_generator
+
+	if (!share_map_generator)
+		map_generator = new map_generator()
+		return map_generator
+
+	var/list/z_generators = GLOB.map_generators_by_z["[z]"]
+	if (z_generators && z_generators[map_generator])
+		map_generator = z_generators[map_generator]
+
+	if (!istype(map_generator))
+		var/new_generator = new map_generator()
+		LAZYSET(GLOB.map_generators_by_z["[z]"], map_generator, new_generator)
+		map_generator = new_generator
+
+	return map_generator
 
 /// Returns the highest zlevel that this area contains turfs for
 /area/proc/get_highest_zlevel()
@@ -360,6 +405,17 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 		GLOB.areas -= src
 	if(!isnull(GLOB.custom_areas))
 		GLOB.custom_areas -= src
+	// reg_in_areas_in_z() lists an area under the z it had at each call, with no duplicate check
+	var/list/areas_in_z = SSmapping.areas_in_z
+	for(var/z_key, z_list in areas_in_z)
+		var/list/z_areas = z_list
+		if(z_areas.RemoveAll(src) && !length(z_areas))
+			areas_in_z -= z_key
+	// teleportlocs keys an area by its name at map load, which barsigns and blueprints can change
+	for(var/loc_name, loc_area in GLOB.teleportlocs)
+		if(loc_area == src)
+			GLOB.teleportlocs -= loc_name
+			break
 	//machinery cleanup
 	STOP_PROCESSING(SSobj, src)
 	QDEL_NULL(alarm_manager)
@@ -416,22 +472,19 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 		fault_location = null
 	SEND_SIGNAL(src, COMSIG_AREA_FIRE_CHANGED, fire)
 
-/**
- * Update the icon state of the area
- *
- * I'm not sure what the heck this does, something to do with weather being able to set icon
- * states on areas?? where the heck would that even display?
- */
-/area/update_icon_state()
-	var/weather_icon
-	for(var/V in SSweather.processing)
-		var/datum/weather/W = V
-		if(W.stage != END_STAGE && (src in W.impacted_areas))
-			W.update_areas()
-			weather_icon = TRUE
-	if(!weather_icon)
-		icon_state = null
-	return ..()
+/// Ensures areas render their weather properly
+/area/update_icon()
+	. = ..()
+	for(var/datum/weather/weather as anything in SSweather.processing)
+		if(weather.stage != END_STAGE && (src in weather.impacted_areas))
+			weather.update_areas()
+
+/// Sets the area's parallax movedir (the direction parallax will animate in while in the area)
+/area/proc/set_parallax_movedir(new_dir)
+	if(parallax_movedir == new_dir)
+		return
+	parallax_movedir = new_dir
+	SEND_SIGNAL(src, COMSIG_AREA_PARALLAX_DIR_CHANGED, parallax_movedir)
 
 /**
  * Update the icon of the area (overridden to always be null for space
@@ -541,6 +594,8 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 	SEND_SIGNAL(src, COMSIG_AREA_ENTERED, arrived, old_area)
 
 	if(!arrived.important_recursive_contents?[RECURSIVE_CONTENTS_AREA_SENSITIVE])
+		return
+	if(get_area(arrived) != src)
 		return
 	for(var/atom/movable/recipient as anything in arrived.important_recursive_contents[RECURSIVE_CONTENTS_AREA_SENSITIVE])
 		SEND_SIGNAL(recipient, COMSIG_ENTER_AREA, src)

@@ -1,7 +1,6 @@
 /datum/job/janitor
 	title = JOB_JANITOR
-	description = "Clean up trash and blood. Replace broken lights. Slip people over."
-	department_head = list(JOB_HEAD_OF_PERSONNEL)
+	description = "Clean up trash and blood, replace broken lights, slip people over."
 	faction = FACTION_STATION
 	total_positions = 2
 	spawn_positions = 1
@@ -31,6 +30,7 @@
 	job_flags = STATION_JOB_FLAGS
 
 	job_tone = "slip"
+	tgui_icon = FA_ICON_SOAP
 
 /datum/outfit/job/janitor
 	name = "Janitor"
@@ -38,10 +38,12 @@
 
 	id_trim = /datum/id_trim/job/janitor
 	uniform = /obj/item/clothing/under/rank/civilian/janitor
-	belt = /obj/item/modular_computer/pda/janitor
+	belt = /obj/item/modular_computer/pda/crew/janitor
 	ears = /obj/item/radio/headset/headset_srv
-	skillchips = list(/obj/item/skillchip/job/janitor)
+	skillchips = list(/obj/item/skillchip/job/janitor, /obj/item/skillchip/disposals)
 	backpack_contents = list(/obj/item/access_key)
+
+	wintercoat = /obj/item/clothing/suit/hooded/wintercoat/janitor
 
 /datum/outfit/job/janitor/pre_equip(mob/living/carbon/human/human_equipper, visuals_only)
 	. = ..()

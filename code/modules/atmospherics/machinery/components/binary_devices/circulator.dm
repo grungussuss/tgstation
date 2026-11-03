@@ -20,7 +20,7 @@
 
 /obj/machinery/atmospherics/components/binary/circulator/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/simple_rotation)
+	AddElement(/datum/element/simple_rotation)
 
 //default cold circ for mappers
 /obj/machinery/atmospherics/components/binary/circulator/cold
@@ -73,6 +73,8 @@
 		return
 
 	add_overlay("flow_on")
+	add_overlay(emissive_appearance(icon, "flow_on-emissive", src, alpha = src.alpha))
+
 	add_overlay("display_[mode]")
 	if(last_pressure_delta > 0)
 		add_overlay("fan_[mode]_[last_pressure_delta > ONE_ATMOSPHERE]")
@@ -153,13 +155,14 @@
 	return TRUE
 
 /obj/machinery/atmospherics/components/binary/circulator/crowbar_act(mob/user, obj/item/I)
-	if(default_deconstruction_crowbar(I))
+	if(default_deconstruction_crowbar(user, I))
 		return TRUE
 	return ..()
 
 /obj/machinery/atmospherics/components/binary/circulator/on_deconstruction(disassembled)
 	if(generator)
 		disconnectFromGenerator()
+	return ..()
 
 /obj/machinery/atmospherics/components/binary/circulator/proc/disconnectFromGenerator()
 	if(mode)

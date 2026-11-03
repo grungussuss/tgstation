@@ -122,7 +122,7 @@
 
 	var/i_dont_even_think_once_about_blowing_stuff_up = tgui_alert(user, "Would you like to activate the evidence disposal bomb now?", "BYE BYE", list("Yes","No"))
 
-	if(i_dont_even_think_once_about_blowing_stuff_up != "Yes" || currently_exploding || QDELETED(user) || QDELETED(src) || user.can_perform_action(src, NEED_DEXTERITY|NEED_HANDS|ALLOW_RESTING))
+	if(i_dont_even_think_once_about_blowing_stuff_up != "Yes" || currently_exploding || QDELETED(user) || QDELETED(src) || !user.can_perform_action(src, NEED_DEXTERITY|NEED_HANDS|ALLOW_RESTING))
 		return
 
 	explosion_timer = addtimer(CALLBACK(src, PROC_REF(think_fast_chucklenuts)), 5 SECONDS, (TIMER_UNIQUE|TIMER_OVERRIDE))
@@ -195,7 +195,7 @@
 
 /obj/item/storage/toolbox/guncase/revolver
 	name = "revolver gun case"
-	weapon_to_spawn = /obj/item/gun/ballistic/revolver/badass/nuclear
+	weapon_to_spawn = /obj/item/gun/ballistic/revolver/syndicate/badass/nuclear
 	extra_to_spawn = /obj/item/ammo_box/speedloader/c357
 
 /obj/item/storage/toolbox/guncase/sword_and_board
@@ -232,6 +232,17 @@
 	new /obj/item/reagent_containers/hypospray/medipen/methamphetamine (src)
 	new /obj/item/clothing/under/rank/prisoner/nosensor (src)
 
+/obj/item/storage/toolbox/guncase/china_lake
+	name = "pump-action grenade launcher weapon case"
+	weapon_to_spawn = /obj/item/gun/ballistic/shotgun/china_lake
+	extra_to_spawn = /obj/item/storage/belt/bandolier/china_lake_extra
+
+/obj/item/storage/toolbox/guncase/china_lake/PopulateContents()
+	new weapon_to_spawn (src)
+	new extra_to_spawn (src)
+	new /obj/item/clothing/under/rank/prisoner/nosensor (src)
+	new /obj/item/storage/fancy/cigarettes/cigpack_syndicate (src)
+
 /obj/item/storage/toolbox/guncase/soviet
 	name = "ancient gun case"
 	desc = "A weapon's case. Has the symbol of the Third Soviet Union stamped on the side."
@@ -263,13 +274,13 @@
 	if(atom_storage.locked == STORAGE_NOT_LOCKED)
 		return TRUE
 
-	if(is_simian(user))
+	if(HAS_TRAIT(user, TRAIT_SIMIAN))
 		atom_storage.locked = STORAGE_NOT_LOCKED
 		to_chat(user, span_notice("You place your paw on the paw scanner, and hear a soft click as [src] unlocks!"))
 		playsound(src, 'sound/items/click.ogg', 25, TRUE)
 		return TRUE
 	to_chat(user, span_warning("You put your hand on the hand scanner, and it rejects it with an angry chimpanzee screech!"))
-	playsound(src, SFX_SCREECH, 75, TRUE)
+	playsound(src, /datum/sound_effect/screech, 75, TRUE)
 	return FALSE
 
 /obj/item/storage/toolbox/guncase/monkeycase/PopulateContents()
@@ -331,13 +342,14 @@
 
 	playsound(src, 'sound/items/tools/drill_use.ogg', 80, TRUE, -1)
 	var/obj/machinery/porta_turret/syndicate/toolbox/turret = new(get_turf(loc))
-	set_faction(turret, user)
+	set_toolbox_faction(turret, user)
 	turret.toolbox = src
 	forceMove(turret)
 	return ITEM_INTERACT_SUCCESS
 
-/obj/item/storage/toolbox/emergency/turret/proc/set_faction(obj/machinery/porta_turret/turret, mob/user)
-	turret.faction = list("[REF(user)]")
+/obj/item/storage/toolbox/emergency/turret/proc/set_toolbox_faction(obj/machinery/porta_turret/turret, mob/user)
+	turret.set_allies(list("[REF(user)]"))
+	turret.set_faction(null)
 
-/obj/item/storage/toolbox/emergency/turret/nukie/set_faction(obj/machinery/porta_turret/turret, mob/user)
-	turret.faction = list(ROLE_SYNDICATE)
+/obj/item/storage/toolbox/emergency/turret/nukie/set_toolbox_faction(obj/machinery/porta_turret/turret, mob/user)
+	turret.set_faction(list(ROLE_SYNDICATE))

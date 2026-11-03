@@ -103,15 +103,14 @@
 /turf/open/floor/plating/rust,
 /area/ruin/space/has_grav/dangerous_research/medical)
 "bb" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid5"
-	},
+/turf/open/misc/asteroid/airless/variant_5,
 /area/space)
 "bl" = (
 /obj/effect/turf_decal/tile/neutral/diagonal_edge,
 /obj/effect/decal/cleanable/dirt,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
+/obj/structure/cable,
 /turf/open/floor/iron/dark/diagonal,
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "bu" = (
@@ -225,9 +224,7 @@
 /turf/open/floor/iron/dark/diagonal,
 /area/ruin/space/has_grav/dangerous_research)
 "do" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid10"
-	},
+/turf/open/misc/asteroid/airless/variant_10,
 /area/space)
 "dw" = (
 /obj/structure/table,
@@ -774,9 +771,7 @@
 /turf/open/floor/iron/white,
 /area/ruin/space/has_grav/dangerous_research/medical)
 "jO" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid9"
-	},
+/turf/open/misc/asteroid/airless/variant_9,
 /area/space)
 "jR" = (
 /turf/closed/wall/r_wall,
@@ -1074,7 +1069,7 @@
 /area/ruin/space/has_grav/dangerous_research/lab)
 "oJ" = (
 /obj/item/stack/medical/bandage,
-/obj/item/stack/medical/gauze/twelve,
+/obj/item/stack/medical/wrap/gauze/twelve,
 /obj/item/reagent_containers/hypospray/medipen/blood_loss,
 /obj/effect/spawner/random/medical/injector,
 /obj/effect/turf_decal/tile/dark_red/anticorner{
@@ -1161,9 +1156,7 @@
 /turf/open/floor/plating,
 /area/ruin/space/has_grav/dangerous_research/medical)
 "pH" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid6"
-	},
+/turf/open/misc/asteroid/airless/variant_6,
 /area/space)
 "pO" = (
 /obj/effect/decal/cleanable/blood/footprints{
@@ -1654,7 +1647,7 @@
 /obj/structure/lattice/catwalk,
 /obj/structure/marker_beacon/purple,
 /turf/template_noop,
-/area/template_noop)
+/area/space/nearstation)
 "uP" = (
 /obj/effect/turf_decal/trimline/purple/line{
 	dir = 1
@@ -1843,7 +1836,6 @@
 /area/ruin/space/has_grav/dangerous_research)
 "xD" = (
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/effect/turf_decal/tile/purple/half/contrasted{
 	dir = 8
 	},
@@ -1855,9 +1847,7 @@
 /turf/open/floor/iron/white,
 /area/ruin/space/has_grav/dangerous_research)
 "xK" = (
-/turf/open/misc/asteroid{
-	icon_state = "asteroid6"
-	},
+/turf/open/misc/asteroid/variant_6,
 /area/ruin/space/has_grav/dangerous_research/medical)
 "xN" = (
 /obj/effect/turf_decal/tile/neutral/diagonal_edge,
@@ -1872,7 +1862,7 @@
 "xZ" = (
 /obj/structure/sign/poster/official/random/directional/east,
 /obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer2{
-	dir = 8
+	dir = 1
 	},
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
 /turf/open/floor/iron/dark,
@@ -1972,9 +1962,7 @@
 /turf/open/floor/iron,
 /area/ruin/space/has_grav/dangerous_research/maint)
 "zi" = (
-/turf/open/misc/asteroid{
-	icon_state = "asteroid8"
-	},
+/turf/open/misc/asteroid/variant_8,
 /area/ruin/space/has_grav/dangerous_research/medical)
 "zj" = (
 /obj/effect/turf_decal/stripes/end,
@@ -1996,7 +1984,7 @@
 	dir = 4
 	},
 /obj/machinery/atmospherics/components/unary/vent_pump/on/layer4{
-	dir = 1
+	dir = 4
 	},
 /obj/effect/turf_decal/tile/neutral/half{
 	dir = 8
@@ -2011,14 +1999,12 @@
 /turf/open/floor/plating/rust,
 /area/ruin/space/has_grav/dangerous_research/lab)
 "zR" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid12"
-	},
+/turf/open/misc/asteroid/airless/variant_12,
 /area/space)
 "zY" = (
 /obj/structure/lattice/catwalk,
 /turf/template_noop,
-/area/template_noop)
+/area/space/nearstation)
 "zZ" = (
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 4
@@ -2100,6 +2086,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/structure/cable,
 /turf/open/floor/iron/dark/diagonal,
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "AQ" = (
@@ -2145,6 +2132,12 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
+/turf/open/floor/iron/dark,
+/area/ruin/space/has_grav/dangerous_research/dorms)
+"Bp" = (
+/obj/effect/turf_decal/tile/neutral/opposingcorners,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "Bq" = (
@@ -2226,11 +2219,6 @@
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/dorms)
-"Cf" = (
-/obj/effect/turf_decal/tile/purple/diagonal_edge,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/turf/open/floor/iron/diagonal,
-/area/ruin/space/has_grav/dangerous_research)
 "Cl" = (
 /turf/closed/wall,
 /area/ruin/space/has_grav/dangerous_research/maint)
@@ -2285,9 +2273,7 @@
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research)
 "CI" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid2"
-	},
+/turf/open/misc/asteroid/airless/variant_2,
 /area/space)
 "CL" = (
 /obj/effect/turf_decal/stripes/asteroid{
@@ -2411,7 +2397,7 @@
 "Ey" = (
 /obj/structure/lattice,
 /turf/template_noop,
-/area/template_noop)
+/area/space/nearstation)
 "EA" = (
 /turf/open/floor/plating/rust,
 /area/ruin/space/has_grav/dangerous_research/lab)
@@ -2452,7 +2438,6 @@
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "Fi" = (
 /obj/structure/table/glass,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/dorms)
@@ -2578,6 +2563,7 @@
 	},
 /obj/item/pen/red,
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "Go" = (
@@ -2793,6 +2779,7 @@
 	name = "Alternate Sciences Research Center"
 	},
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /turf/open/floor/iron/diagonal,
 /area/ruin/space/has_grav/dangerous_research)
 "KS" = (
@@ -2965,7 +2952,6 @@
 	},
 /obj/machinery/door/firedoor,
 /obj/effect/turf_decal/tile/purple/diagonal_edge,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /turf/open/floor/iron/diagonal,
 /area/ruin/space/has_grav/dangerous_research)
 "Ni" = (
@@ -3100,7 +3086,6 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/chair/office/light,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/dorms)
@@ -3117,6 +3102,7 @@
 /obj/effect/turf_decal/tile/neutral/diagonal_edge,
 /obj/effect/decal/cleanable/dirt,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/structure/cable,
 /turf/open/floor/iron/dark/diagonal,
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "OM" = (
@@ -3189,6 +3175,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/structure/cable,
 /turf/open/floor/iron/dark/diagonal,
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "PL" = (
@@ -3216,20 +3203,9 @@
 /obj/structure/chair/office{
 	dir = 1
 	},
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/effect/turf_decal/tile/neutral/opposingcorners,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/dorms)
-"Qa" = (
-/obj/effect/turf_decal/siding/dark{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/effect/turf_decal/tile/neutral/half{
-	dir = 8
-	},
-/turf/open/floor/iron/dark,
-/area/ruin/space/has_grav/dangerous_research/lab)
 "Qe" = (
 /turf/closed/wall/r_wall/rust,
 /area/ruin/space/has_grav/dangerous_research/dorms)
@@ -3264,9 +3240,7 @@
 /turf/open/floor/iron,
 /area/ruin/space/has_grav/dangerous_research/maint)
 "QA" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid1"
-	},
+/turf/open/misc/asteroid/airless/variant_1,
 /area/space)
 "QE" = (
 /obj/item/clothing/suit/jacket/straight_jacket,
@@ -3353,12 +3327,6 @@
 	},
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research)
-"Rt" = (
-/obj/effect/turf_decal/tile/neutral/diagonal_edge,
-/obj/effect/decal/cleanable/dirt,
-/obj/structure/cable,
-/turf/open/floor/iron/dark/diagonal,
-/area/ruin/space/has_grav/dangerous_research/dorms)
 "Rx" = (
 /obj/structure/closet{
 	name = "Greyham's Locker"
@@ -3372,9 +3340,7 @@
 	},
 /area/ruin/space/has_grav/dangerous_research/dorms)
 "RA" = (
-/turf/open/misc/asteroid/airless{
-	icon_state = "asteroid8"
-	},
+/turf/open/misc/asteroid/airless/variant_8,
 /area/space)
 "RB" = (
 /obj/machinery/computer/security/telescreen/entertainment/directional/north,
@@ -3503,6 +3469,7 @@
 "Te" = (
 /obj/effect/turf_decal/tile/purple/diagonal_edge,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /turf/open/floor/iron/diagonal,
 /area/ruin/space/has_grav/dangerous_research)
 "TD" = (
@@ -3535,11 +3502,6 @@
 /obj/effect/turf_decal/tile/neutral/half,
 /turf/open/floor/iron/dark,
 /area/ruin/space/has_grav/dangerous_research/lab)
-"Uc" = (
-/obj/effect/turf_decal/tile/neutral/diagonal_edge,
-/obj/structure/cable,
-/turf/open/floor/iron/dark/diagonal,
-/area/ruin/space/has_grav/dangerous_research/dorms)
 "Uk" = (
 /obj/effect/mapping_helpers/broken_floor,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
@@ -3729,12 +3691,6 @@
 /obj/structure/cable,
 /turf/open/floor/plating/rust,
 /area/ruin/space/has_grav/dangerous_research/lab)
-"Xi" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/effect/turf_decal/tile/neutral/diagonal_edge,
-/obj/structure/cable,
-/turf/open/floor/iron/dark/diagonal,
-/area/ruin/space/has_grav/dangerous_research/dorms)
 "Xk" = (
 /obj/machinery/door/airlock/external,
 /obj/effect/mapping_helpers/airlock/cyclelink_helper{
@@ -4248,7 +4204,7 @@ BN
 fg
 BN
 AK
-Qa
+BN
 zO
 rq
 jp
@@ -4341,7 +4297,7 @@ ts
 ts
 qf
 OL
-Rt
+OW
 wb
 ts
 ts
@@ -4383,7 +4339,7 @@ he
 tD
 hL
 bl
-Uc
+aD
 AT
 ts
 KS
@@ -4425,7 +4381,7 @@ Rx
 ts
 xA
 AO
-Rt
+OW
 HF
 ts
 DX
@@ -4467,10 +4423,10 @@ ts
 ts
 Zg
 PJ
-Rt
+OW
 Mb
 ts
-Bm
+Ny
 OC
 Fi
 PP
@@ -4509,11 +4465,11 @@ Cs
 HQ
 OW
 nz
-Xi
+Lk
 nv
 ts
 Bm
-Ny
+Bp
 Gn
 xZ
 eQ
@@ -4725,8 +4681,8 @@ Hq
 Hq
 RD
 Nc
-tv
-Cf
+lp
+wJ
 fO
 Bq
 Bq

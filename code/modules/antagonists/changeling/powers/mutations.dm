@@ -41,9 +41,9 @@
 /// Removes weapon if it exists, returns true if we removed something
 /datum/action/changeling/weapon/proc/unequip_held(mob/user)
 	var/found_weapon = FALSE
-	for(var/obj/item/held in user.held_items)
+	for(var/obj/item/held as anything in user.get_held_items())
 		found_weapon = check_weapon(user, held) || found_weapon
-	return found_weapon
+	return !!found_weapon
 
 /datum/action/changeling/weapon/try_to_sting(mob/user, mob/target)
 	if (unequip_held(user))
@@ -177,7 +177,8 @@
 	name = "Arm Blade"
 	desc = "We reform one of our arms into a deadly blade. Costs 20 chemicals."
 	helptext = "We may retract our armblade in the same manner as we form it. Cannot be used while in lesser form."
-	button_icon_state = "armblade"
+	button_icon_state = "arm_blade"
+	category = "combat"
 	chemical_cost = 20
 	dna_cost = 2
 	req_human = TRUE
@@ -227,6 +228,8 @@
 	)
 
 /obj/item/melee/arm_blade/afterattack(atom/target, mob/user, list/modifiers, list/attack_modifiers)
+	if(QDELETED(target))
+		return
 	if(istype(target, /obj/structure/table))
 		var/obj/smash = target
 		smash.deconstruct(FALSE)
@@ -271,6 +274,7 @@
 	In our combat stance, we will put the victim in our hold after catching them, and we will pull them in and impale them if we're also holding a sharp weapon, or have an armblade. This pierces armor. \
 	Cannot be used while in lesser form."
 	button_icon_state = "tentacle"
+	category = "combat"
 	chemical_cost = 10
 	dna_cost = 2
 	req_human = TRUE
@@ -297,7 +301,7 @@
 	fire_sound = 'sound/effects/splat.ogg'
 	force = 0
 	max_charges = 1
-	fire_delay = 1
+	fire_delay = 1 DECISECONDS
 	throwforce = 0 //Just to be on the safe side
 	throw_range = 0
 	throw_speed = 0
@@ -362,7 +366,7 @@
 
 /obj/projectile/tentacle/fire(setAngle)
 	if(firer)
-		chain = firer.Beam(src, icon_state = "tentacle", emissive = FALSE)
+		chain = firer.Beam(src, icon_state = "tentacle", emissive = NONE)
 	..()
 
 /obj/projectile/tentacle/proc/reset_throw(mob/living/carbon/human/user)
@@ -373,23 +377,12 @@
 	if(!user.Adjacent(victim))
 		return
 
-	if(user.get_active_held_item() && !user.get_inactive_held_item())
-		user.swap_hand()
-
-	if(user.get_active_held_item())
-		return
-
 	victim.grabbedby(user)
 	victim.grippedby(user, instant = TRUE) //instant aggro grab
 
-	for(var/obj/item/weapon in user.held_items)
+	for(var/obj/item/weapon as anything in user.get_held_items())
 		if(weapon.get_sharpness())
-			victim.visible_message(span_danger("[user] impales [victim] with [user.p_their()] [weapon.name]!"), span_userdanger("[user] impales you with [user.p_their()] [weapon.name]!"))
-			victim.apply_damage(weapon.force, BRUTE, BODY_ZONE_CHEST, attacking_item = weapon)
-			user.do_item_attack_animation(victim, used_item = weapon, animation_type = ATTACK_ANIMATION_PIERCE)
-			user.add_blood_DNA_to_items(victim.get_blood_dna_list(), ITEM_SLOT_ICLOTHING|ITEM_SLOT_OCLOTHING)
-			playsound(get_turf(user),weapon.hitsound,75,TRUE)
-			return
+			weapon.melee_attack_chain(user, victim)
 
 /obj/projectile/tentacle/on_hit(atom/movable/target, blocked = 0, pierce_hit)
 	if(!isliving(firer) || !ismovable(target))
@@ -474,7 +467,7 @@
 	return BULLET_ACT_HIT
 
 /obj/projectile/tentacle/Destroy()
-	qdel(chain)
+	QDEL_NULL(chain)
 	source = null
 	return ..()
 
@@ -487,6 +480,7 @@
 	desc = "We reform one of our arms into a hard shield. Costs 20 chemicals."
 	helptext = "Organic tissue cannot resist damage forever; the shield will break after it is hit too much. The more genomes we absorb, the stronger it is. Cannot be used while in lesser form."
 	button_icon_state = "organic_shield"
+	category = "combat"
 	chemical_cost = 20
 	dna_cost = 1
 	req_human = TRUE
@@ -523,6 +517,9 @@
 		loc.visible_message(span_warning("The end of [loc.name]\'s hand inflates rapidly, forming a huge shield-like mass!"), span_warning("We inflate our hand into a strong shield."), span_hear("You hear organic matter ripping and tearing!"))
 
 /obj/item/shield/changeling/hit_reaction(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "the attack", final_block_chance = 0, damage = 0, attack_type = MELEE_ATTACK, damage_type = BRUTE)
+	if(attack_type == OVERWHELMING_ATTACK)
+		return FALSE
+
 	if(remaining_uses < 1)
 		if(ishuman(loc))
 			var/mob/living/carbon/human/H = loc
@@ -541,6 +538,7 @@
 	desc = "We turn our skin into tough chitin to protect us from damage. Costs 20 chemicals."
 	helptext = "Upkeep of the armor requires a low expenditure of chemicals. The armor provides decent protection against brute force and energy weapons. Cannot be used in lesser form."
 	button_icon_state = "chitinous_armor"
+	category = "combat"
 	chemical_cost = 20
 	dna_cost = 1
 	req_human = TRUE
@@ -562,6 +560,7 @@
 	flags_inv = HIDEJUMPSUIT
 	cold_protection = 0
 	heat_protection = 0
+	bodyshapes_with_variations = BODYSHAPE_CERULEAN
 
 /datum/armor/armor_changeling
 	melee = 40
@@ -607,6 +606,7 @@
 	desc = "We coat our head in a waxy outing coating similar to a bee hive which can be used to manufacture bees to attack our enemies. Costs 15 chemicals."
 	helptext = "While the hive head does not provide much in the ways of armor, it does allow the user to send bees out to attack targets. Reagents can poured inside the hive to cause all bees released to inject said reagents."
 	button_icon_state = "hive_head"
+	category = "combat"
 	chemical_cost = 15
 	dna_cost = 2
 	req_human = FALSE
@@ -648,9 +648,9 @@
 	if(!istype(tool, /obj/item/organ/monster_core/regenerative_core/legion) || !holds_reagents)
 		return NONE
 	visible_message(span_boldwarning("As [user] shoves [tool] into [src], [src] begins to mutate."))
-	var/mob/living/carbon/wearer = loc
+	var/mob/living/carbon/human/wearer = loc
 	playsound(wearer, 'sound/effects/blob/attackblob.ogg', 60, TRUE)
-	wearer.temporarilyRemoveItemFromInventory(wearer.head, TRUE)
+	wearer.temporarilyRemoveItemFromInventory(src, TRUE)
 	wearer.equip_to_slot_if_possible(new /obj/item/clothing/head/helmet/changeling_hivehead/legion(wearer), ITEM_SLOT_HEAD, 1, 1, 1)
 	qdel(tool)
 	return ITEM_INTERACT_SUCCESS
@@ -682,7 +682,8 @@
 		spawns = 1
 	for(var/i in 1 to spawns)
 		var/mob/living/basic/summoned_minion = new spawn_type(owner.drop_location())
-		summoned_minion.faction = list("[REF(owner)]")
+		summoned_minion.set_allies(list("[REF(owner)]"))
+		summoned_minion.set_faction(null)
 		minion_additional_changes(summoned_minion)
 
 ///Our tell that we're using this ability. Usually a sound and a visible message.area
@@ -693,9 +694,9 @@
 ///Stuff we want to do to our minions. This is in its own proc so subtypes can override this behaviour.
 /datum/action/cooldown/hivehead_spawn_minions/proc/minion_additional_changes(mob/living/basic/minion)
 	var/mob/living/basic/bee/summoned_bee = minion
-	var/mob/living/carbon/wearer = owner
-	if(istype(summoned_bee) && length(wearer.head.reagents.reagent_list))
-		summoned_bee.assign_reagent(pick(wearer.head.reagents.reagent_list))
+	var/obj/item/clothing/head/helmet/changeling_hivehead/hivehead = owner.get_item_by_slot(ITEM_SLOT_HEAD)
+	if(istype(summoned_bee) && istype(hivehead) && length(hivehead.reagents.reagent_list))
+		summoned_bee.assign_reagent(pick(hivehead.reagents.reagent_list))
 
 /obj/item/clothing/head/helmet/changeling_hivehead/legion
 	name = "legion hive head"

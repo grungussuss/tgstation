@@ -35,7 +35,7 @@
 	uniform = /obj/item/clothing/under/color/grey
 	shoes = /obj/item/clothing/shoes/sneakers/black
 	suit = /obj/item/clothing/suit/space
-	back = /obj/item/tank/jetpack/oxygen
+	back = /obj/item/tank/jetpack
 	head = /obj/item/clothing/head/helmet/space
 	mask = /obj/item/clothing/mask/breath
 
@@ -117,10 +117,10 @@
 	name = "Heretic Hallucination"
 
 	uniform = /obj/item/clothing/under/color/grey
-	suit = /obj/item/clothing/suit/hooded/cultrobes/eldritch
+	suit = /obj/item/clothing/suit/hooded/cultrobes/eldritch/rust
 	neck = /obj/item/clothing/neck/heretic_focus
 	r_hand = /obj/item/melee/touch_attack/mansus_fist
-	head = /obj/item/clothing/head/hooded/cult_hoodie/eldritch
+	head = /obj/item/clothing/head/hooded/cult_hoodie/eldritch/rust
 	shoes = /obj/item/clothing/shoes/sneakers/black
 
 /datum/outfit/rev_cutout
@@ -185,10 +185,8 @@
 	l_hand = /obj/item/fireaxe
 
 /datum/outfit/psycho/post_equip(mob/living/carbon/human/H)
-	for(var/obj/item/carried_item in H.get_equipped_items(INCLUDE_POCKETS | INCLUDE_ACCESSORIES))
+	for(var/obj/item/carried_item in H.get_equipped_items(INCLUDE_POCKETS | INCLUDE_ACCESSORIES | INCLUDE_HELD))
 		carried_item.add_mob_blood(H)//Oh yes, there will be blood...
-	for(var/obj/item/I in H.held_items)
-		I.add_mob_blood(H)
 	H.regenerate_icons()
 
 /datum/outfit/assassin
@@ -198,7 +196,7 @@
 	id_trim = /datum/id_trim/reaper_assassin
 	uniform = /obj/item/clothing/under/costume/buttondown/slacks/service
 	neck = /obj/item/clothing/neck/tie/red/hitman/tied
-	belt = /obj/item/modular_computer/pda/heads
+	belt = /obj/item/modular_computer/pda/crew/heads
 	ears = /obj/item/radio/headset
 	gloves = /obj/item/clothing/gloves/color/black
 	glasses = /obj/item/clothing/glasses/sunglasses
@@ -224,7 +222,7 @@
 	sec_briefcase.contents += new /obj/item/ammo_box/speedloader/c357
 	sec_briefcase.contents += new /obj/item/grenade/c4/x4
 
-	var/obj/item/modular_computer/pda/heads/pda = H.belt
+	var/obj/item/modular_computer/pda/crew/heads/pda = H.belt
 	pda.imprint_id(H.real_name, "Reaper")
 
 	var/obj/item/card/id/W = H.wear_id
@@ -421,13 +419,13 @@
 	back = /obj/item/mod/control/pre_equipped/debug
 	backpack_contents = list(
 		/obj/item/melee/energy/axe = 1,
-		/obj/item/storage/part_replacer/bluespace/tier4 = 1,
+		/obj/item/storage/part_replacer/bluespace/AdminDebug = 1,
 		/obj/item/gun/magic/wand/resurrection/debug = 1,
 		/obj/item/gun/magic/wand/death/debug = 1,
 		/obj/item/debug/human_spawner = 1,
 		/obj/item/debug/omnitool = 1,
 )
-	belt = /obj/item/storage/belt/utility/chief/full
+	belt = /obj/item/storage/belt/utility/full/powertools
 	ears = /obj/item/radio/headset/headset_cent/commander
 	glasses = /obj/item/clothing/glasses/debug
 	gloves = /obj/item/clothing/gloves/combat
@@ -452,14 +450,14 @@
 	back = /obj/item/mod/control/pre_equipped/administrative
 	backpack_contents = list(
 		/obj/item/melee/energy/axe = 1,
-		/obj/item/storage/part_replacer/bluespace/tier4 = 1,
+		/obj/item/storage/part_replacer/bluespace/AdminDebug = 1,
 		/obj/item/gun/magic/wand/resurrection/debug = 1,
 		/obj/item/gun/magic/wand/death/debug = 1,
 		/obj/item/debug/human_spawner = 1,
 		/obj/item/debug/omnitool = 1,
 		/obj/item/storage/box/stabilized = 1,
 )
-	belt = /obj/item/storage/belt/utility/chief/full
+	belt = /obj/item/storage/belt/utility/full/powertools
 	ears = /obj/item/radio/headset/headset_cent/commander
 	glasses = /obj/item/clothing/glasses/debug
 	gloves = /obj/item/clothing/gloves/combat

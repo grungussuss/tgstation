@@ -1,3 +1,21 @@
+/datum/atom_skin/cowboy_boots
+	abstract_type = /datum/atom_skin/cowboy_boots
+
+/datum/atom_skin/cowboy_boots/brown
+	preview_name = "Brown"
+	new_name = "brown cowboy boots"
+	new_icon_state = "cowboy_brown"
+
+/datum/atom_skin/cowboy_boots/black
+	preview_name = "Black"
+	new_name = "black cowboy boots"
+	new_icon_state = "cowboy_black"
+
+/datum/atom_skin/cowboy_boots/white
+	preview_name = "White"
+	new_name = "white cowboy boots"
+	new_icon_state = "cowboy_white"
+
 /obj/item/clothing/shoes/cowboy
 	name = "cowboy boots"
 	desc = "A small sticker lets you know they've been inspected for snakes, It is unclear how long ago the inspection took place..."
@@ -85,19 +103,31 @@
 	bio = 95
 
 /obj/item/clothing/shoes/cowboy/lizard
-	name = "lizard skin boots"
+	name = "lizardskin boots"
 	desc = "You can hear a faint hissing from inside the boots; you hope it is just a mournful ghost."
-	icon_state = "lizardboots_green"
+	icon = 'icons/map_icons/clothing/shoes.dmi'
+	icon_state = "/obj/item/clothing/shoes/cowboy/lizard"
+	post_init_icon_state = "lizardboots"
+	greyscale_config = /datum/greyscale_config/lizard_shoes
+	greyscale_config_worn = /datum/greyscale_config/lizard_shoes/worn
+	greyscale_colors = "#859333"
 	armor_type = /datum/armor/cowboy_lizard
 
 /datum/armor/cowboy_lizard
 	bio = 90
 	fire = 40
 
+/obj/item/clothing/shoes/cowboy/lizard/on_craft_completion(list/components, datum/crafting_recipe/current_recipe, atom/crafter)
+	var/obj/item/stack/sheet/animalhide/carbon/lizard/skin = locate() in components
+	if (isnull(skin) || !length(skin.skin_color)) // what
+		return ..()
+	set_greyscale(skin.skin_color)
+	return ..()
+
 /obj/item/clothing/shoes/cowboy/lizard/masterwork
-	name = "\improper Hugs-The-Feet lizard skin boots"
+	name = "\improper Hugs-The-Feet lizardskin boots"
 	desc = "A pair of masterfully crafted lizard skin boots. Finally a good application for the station's most bothersome inhabitants."
-	icon_state = "lizardboots_blue"
+	greyscale_colors = "#3e76a7"
 
 /// Shoes for the nuke-ops cowboy fit
 /obj/item/clothing/shoes/cowboy/black/syndicate

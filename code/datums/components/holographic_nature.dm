@@ -19,12 +19,15 @@
 /datum/component/holographic_nature/RegisterWithParent()
 	AddComponent(/datum/component/connect_loc_behalf, parent, loc_connections)
 	if(isliving(parent))
+		RegisterSignal(parent, COMSIG_LIVING_MOB_BUMP, PROC_REF(on_bumped))
+		RegisterSignal(parent, COMSIG_LIVING_MOB_BUMPED, PROC_REF(on_bumped))
 		RegisterSignal(parent, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(on_mob_damaged))
 		return
 
 	var/atom/atom_parent = parent
 	if(isobj(atom_parent) && atom_parent.uses_integrity)
 		RegisterSignal(parent, COMSIG_ATOM_TAKE_DAMAGE, PROC_REF(on_object_damaged))
+
 
 /datum/component/holographic_nature/proc/on_mob_damaged(mob/living/source, damage_amount, damagetype, def_zone, blocked, wound_bonus, exposed_wound_bonus, sharpness, attack_direction, attacking_item)
 	SIGNAL_HANDLER
@@ -44,12 +47,21 @@
 	if(isprojectile(thing) || thing.density)
 		apply_effects()
 
+/datum/component/holographic_nature/proc/on_bumped(atom/movable/source, mob/living/crossing_mob)
+	SIGNAL_HANDLER
+	apply_effects()
+
 /datum/component/holographic_nature/proc/apply_effects()
 	if(!COOLDOWN_FINISHED(src, glitch_cooldown))
 		return
 	COOLDOWN_START(src, glitch_cooldown, GLITCH_DURATION + GLITCH_REMOVAL_DURATION)
 	apply_wibbly_filters(parent)
-	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(remove_wibbly_filters), parent, GLITCH_REMOVAL_DURATION), GLITCH_DURATION)
+	addtimer(CALLBACK(src, PROC_REF(remove_effects), glitch_cooldown), GLITCH_DURATION)
+
+/// Fades the glitch out, unless a newer one has started since
+/datum/component/holographic_nature/proc/remove_effects(glitch_end)
+	if(glitch_end == glitch_cooldown)
+		remove_wibbly_filters(parent, GLITCH_REMOVAL_DURATION)
 
 #undef GLITCH_DURATION
 #undef GLITCH_REMOVAL_DURATION

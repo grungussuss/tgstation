@@ -4,7 +4,6 @@
 		keep the crew alive, be prepared to do anything and everything or die \
 		horribly trying."
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD|DEADMIN_POSITION_SECURITY
-	department_head = list("CentCom")
 	faction = FACTION_STATION
 	total_positions = 1
 	spawn_positions = 1
@@ -23,7 +22,8 @@
 	paycheck = PAYCHECK_COMMAND
 	paycheck_department = ACCOUNT_SEC
 
-	mind_traits = list(HEAD_OF_STAFF_MIND_TRAITS, TRAIT_DESENSITIZED)
+	mind_traits = list(HEAD_OF_STAFF_MIND_TRAITS)
+	desensitized_base = DESENSITIZED_THRESHOLD
 	liver_traits = list(TRAIT_ROYAL_METABOLISM)
 
 	display_order = JOB_DISPLAY_ORDER_CAPTAIN
@@ -49,6 +49,7 @@
 	human_authority = JOB_AUTHORITY_HUMANS_ONLY
 
 	voice_of_god_power = 1.4 //Command staff has authority
+	tgui_icon = FA_ICON_CROWN
 
 
 /datum/job/captain/get_captaincy_announcement(mob/living/captain)
@@ -70,7 +71,7 @@
 		/obj/item/melee/baton/telescopic/gold = 1,
 		/obj/item/station_charter = 1,
 		)
-	belt = /obj/item/modular_computer/pda/heads/captain
+	belt = /obj/item/modular_computer/pda/crew/heads/captain
 	ears = /obj/item/radio/headset/heads/captain/alt
 	glasses = /obj/item/clothing/glasses/sunglasses
 	gloves = /obj/item/clothing/gloves/captain
@@ -90,6 +91,8 @@
 		)
 	implants = list(/obj/item/implant/mindshield)
 	skillchips = list(/obj/item/skillchip/disk_verifier)
+
+	wintercoat = /obj/item/clothing/suit/hooded/wintercoat/captain
 
 	var/special_charter
 
@@ -111,7 +114,7 @@
 	if(visuals_only || !special_charter)
 		return
 
-	var/obj/item/station_charter/banner/celestial_charter = locate() in equipped.held_items
+	var/obj/item/station_charter/banner/celestial_charter = equipped.is_holding_item_of_type(__IMPLIED_TYPE__)
 	if(isnull(celestial_charter))
 		// failed to give out the unique charter, plop on the ground
 		celestial_charter = new(get_turf(equipped))

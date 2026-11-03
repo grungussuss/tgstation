@@ -15,6 +15,7 @@
 	greyscale_config_worn = /datum/greyscale_config/beanie/worn
 	greyscale_colors = "#EEEEEE#EEEEEE"
 	flags_1 = IS_PLAYER_COLORABLE_1
+	item_flags = CAN_BE_OVERSLOT
 
 /obj/item/clothing/head/beanie/black
 	name = "black beanie"
@@ -48,7 +49,7 @@
 
 /obj/item/clothing/head/beanie/durathread
 	name = "durathread beanie"
-	desc = "A beanie made from durathread, its resilient fibres provide some protection to the wearer."
+	desc = "A beanie made from durathread. Its resilient fibres provide some protection to the wearer."
 	icon_state = "/obj/item/clothing/head/beanie/durathread"
 	greyscale_colors = "#8291A1#8291A1"
 	armor_type = /datum/armor/beanie_durathread

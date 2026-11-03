@@ -30,6 +30,7 @@
 /obj/item/trash/candy
 	name = "candy"
 	icon_state= "candy"
+	inhand_icon_state = "candy"
 
 /obj/item/trash/cheesie
 	name = "cheesie honkers"
@@ -38,6 +39,7 @@
 /obj/item/trash/chips
 	name = "chips"
 	icon_state = "chips"
+	inhand_icon_state = "chips"
 
 /obj/item/trash/shrimp_chips
 	name = "shrimp chips"
@@ -46,7 +48,9 @@
 /obj/item/trash/boritos
 	name = "boritos bag"
 	icon_state = "boritos"
-	grind_results = list(/datum/reagent/aluminium = 1) //from the mylar bag
+
+/obj/item/trash/boritos/grind_results()
+	return list(/datum/reagent/aluminium = 1)
 
 /obj/item/trash/boritos/green
 	icon_state = "boritosgreen"
@@ -130,12 +134,27 @@
 	name = "crushed can"
 	icon_state = "cola"
 	resistance_flags = NONE
-	grind_results = list(/datum/reagent/aluminium = 10)
 	custom_materials = list(/datum/material/iron=SMALL_MATERIAL_AMOUNT*2)
+
+/obj/item/trash/can/Initialize(mapload)
+	. = ..()
+	if(mapload)
+		return
+	pixel_x = rand(-4,4)
+	pixel_y = rand(-4,4)
+
+/obj/item/trash/can/grind_results()
+	return list(/datum/reagent/aluminium = 10)
 
 /obj/item/trash/can/food
 	icon = 'icons/obj/food/canned.dmi'
 	icon_state = "peachcan_empty"
+	hitsound = 'sound/items/can/can_hit.ogg'
+	item_flags = parent_type::item_flags & ~NOBLUDGEON
+
+/obj/item/trash/can/food/Initialize(mapload)
+	. = ..()
+	ADD_TRAIT(src, TRAIT_CUSTOM_TAP_SOUND, INNATE_TRAIT)
 
 /obj/item/trash/can/food/peaches
 	name = "canned peaches"
@@ -148,11 +167,6 @@
 /obj/item/trash/can/food/beans
 	name = "tin of beans"
 	icon_state = "beans_empty"
-
-/obj/item/trash/can/Initialize(mapload)
-	. = ..()
-	pixel_x = rand(-4,4)
-	pixel_y = rand(-4,4)
 
 /obj/item/trash/peanuts
 	name = "\improper Gallery peanuts packet"

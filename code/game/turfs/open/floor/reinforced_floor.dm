@@ -10,7 +10,7 @@
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	rcd_proof = TRUE
 	rust_resistance = RUST_RESISTANCE_REINFORCED
 	floor_tile = /obj/item/stack/rods
@@ -93,12 +93,6 @@
 /turf/open/floor/engine/attack_paw(mob/user, list/modifiers)
 	return attack_hand(user, modifiers)
 
-/turf/open/floor/engine/attack_hand(mob/user, list/modifiers)
-	. = ..()
-	if(.)
-		return
-	user.Move_Pulled(src)
-
 //air filled floors; used in atmos pressure chambers
 
 /turf/open/floor/engine/n2o
@@ -111,7 +105,7 @@
 	initial_gas_mix = ATMOS_TANK_CO2
 
 /turf/open/floor/engine/plasma
-	name = "plasma floor"
+	name = "\improper Plasma floor"
 	initial_gas_mix = ATMOS_TANK_PLASMA
 
 /turf/open/floor/engine/o2
@@ -145,7 +139,7 @@
 	initial_gas_mix = ATMOS_TANK_H2
 
 /turf/open/floor/engine/hypernoblium
-	name = "\improper Hypernoblium floor"
+	name = "\improper Hyper-Noblium floor"
 	initial_gas_mix = ATMOS_TANK_HYPERNOBLIUM
 
 /turf/open/floor/engine/miasma
@@ -153,7 +147,7 @@
 	initial_gas_mix = ATMOS_TANK_MIASMA
 
 /turf/open/floor/engine/nitrium
-	name = "\improper nitrium floor"
+	name = "\improper Nitrium floor"
 	initial_gas_mix = ATMOS_TANK_NITRIUM
 
 /turf/open/floor/engine/pluoxium
@@ -182,7 +176,7 @@
 	initial_gas_mix = ATMOS_TANK_HELIUM
 
 /turf/open/floor/engine/antinoblium
-	name = "\improper Antinoblium floor"
+	name = "\improper Anti-Noblium floor"
 	initial_gas_mix = ATMOS_TANK_ANTINOBLIUM
 
 /turf/open/floor/engine/air

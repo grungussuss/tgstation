@@ -9,14 +9,14 @@
  */
 
 /turf/open/floor/wood
-	desc = "Stylish dark wood."
+	desc = "Stylish wood."
 	icon_state = "wood"
 	floor_tile = /obj/item/stack/tile/wood
 	footstep = FOOTSTEP_WOOD
 	barefootstep = FOOTSTEP_WOOD_BAREFOOT
 	clawfootstep = FOOTSTEP_WOOD_CLAW
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	rust_resistance = RUST_RESISTANCE_BASIC
 
 /turf/open/floor/wood/broken_states()
@@ -31,18 +31,18 @@
 		return TRUE
 	return pry_tile(I, user) ? TRUE : FALSE
 
-/turf/open/floor/wood/try_replace_tile(obj/item/stack/tile/T, mob/user, list/modifiers)
-	if(T.turf_type == type)
+/turf/open/floor/wood/try_replace_tile(obj/item/stack/tile/newtile, mob/user, list/modifiers)
+	if(newtile.turf_type == type)
 		return
 	var/obj/item/tool = user.is_holding_tool_quality(TOOL_SCREWDRIVER)
 	if(!tool)
 		tool = user.is_holding_tool_quality(TOOL_CROWBAR)
 	if(!tool)
 		return
-	var/turf/open/floor/plating/P = pry_tile(tool, user, TRUE)
-	if(!istype(P))
+	var/turf/open/floor/plating/bare_floor = pry_tile(tool, user, TRUE)
+	if(!istype(bare_floor))
 		return
-	P.attackby(T, user, modifiers)
+	bare_floor.base_item_interaction(user, newtile, modifiers)
 
 /turf/open/floor/wood/pry_tile(obj/item/C, mob/user, silent = FALSE)
 	C.play_tool_sound(src, 80)
@@ -116,6 +116,13 @@
 /turf/open/floor/bamboo/broken_states()
 	return list("bamboodamaged")
 
+/turf/open/floor/bamboo/planks
+	desc = "A floor tile made from cut bamboo pieces."
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "bamboo"
+	floor_tile = /obj/item/stack/tile/bamboo/planks
+	smoothing_flags = NONE
+
 /turf/open/floor/bamboo/tatami
 	desc = "A traditional Japanese floor mat."
 	icon = 'icons/turf/floors/floor_variations.dmi'
@@ -148,7 +155,7 @@
 	barefootstep = FOOTSTEP_GRASS
 	clawfootstep = FOOTSTEP_GRASS
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 
 /turf/open/floor/grass/broken_states()
@@ -165,6 +172,11 @@
 
 /turf/open/floor/grass/proc/spawniconchange()
 	icon_state = "grass[rand(0,3)]"
+
+/turf/open/floor/grass/norandomicon
+
+/turf/open/floor/grass/norandomicon/spawniconchange()
+	return
 
 /turf/open/floor/grass/lavaland
 	name = "dead grass patch"
@@ -202,7 +214,7 @@
 	barefootstep = FOOTSTEP_GRASS
 	clawfootstep = FOOTSTEP_GRASS
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 
 /turf/open/floor/fake_snow
@@ -216,7 +228,7 @@
 	floor_tile = null
 	initial_gas_mix = FROZEN_ATMOS
 	bullet_bounce_sound = null
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	rust_resistance = RUST_RESISTANCE_ORGANIC
 	slowdown = 1.5
 	bullet_sizzle = TRUE
@@ -251,7 +263,7 @@
 	barefootstep = FOOTSTEP_SAND
 	clawfootstep = FOOTSTEP_SAND
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 
 /turf/open/floor/fakebasalt/Initialize(mapload)
 	. = ..()
@@ -280,7 +292,7 @@
 	barefootstep = FOOTSTEP_CARPET_BAREFOOT
 	clawfootstep = FOOTSTEP_CARPET_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	rust_resistance = RUST_RESISTANCE_BASIC
 
 /turf/open/floor/carpet/examine(mob/user)
@@ -415,6 +427,62 @@
 	floor_tile = /obj/item/stack/tile/carpet/donk
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN + SMOOTH_GROUP_CARPET_DONK
 	canSmoothWith = SMOOTH_GROUP_CARPET_DONK
+
+/turf/open/floor/carpet/bear
+	name = "bear fur carpet"
+	desc = "Bear fur stretched out into a carpet for you to walk on."
+	icon = 'icons/turf/floors/carpet_bear.dmi'
+	icon_state = "carpet_bear-255"
+	base_icon_state = "carpet_bear"
+	floor_tile = /obj/item/stack/tile/carpet/bear
+
+/turf/open/floor/carpet/polar_bear
+	name = "polar bear fur carpet"
+	desc = "Polar bear fur stretched out into a carpet for you to walk on."
+	icon = 'icons/turf/floors/carpet_bearpolar.dmi'
+	icon_state = "carpet_bearpolar-255"
+	base_icon_state = "carpet_bearpolar"
+	floor_tile = /obj/item/stack/tile/carpet/polar_bear
+
+/turf/open/floor/carpet/moth
+	name = "moth carpet"
+	desc = "Moth fur stretched out into a carpet for you to walk on."
+	icon = 'icons/turf/floors/carpet_moth.dmi'
+	icon_state = "carpet_moth-255"
+	base_icon_state = "carpet_moth"
+	floor_tile = /obj/item/stack/tile/carpet/moth
+
+/turf/open/floor/carpet/goliath
+	name = "goliath hide carpet"
+	desc = "Goliath hide plates woven together with watcher sinew to make something aproximating a carpet."
+	icon = 'icons/turf/floors/carpet_goliath.dmi'
+	icon_state = "carpet_goliath-255"
+	base_icon_state = "carpet_goliath"
+	floor_tile = /obj/item/stack/tile/carpet/goliath
+
+/turf/open/floor/carpet/carp
+	name = "carp scales carpet"
+	desc = "Carpet made with carp scales. A carp carpet. Carp carp carp."
+	icon = 'icons/turf/floors/carpet_carp.dmi'
+	icon_state = "carpet_carp-255"
+	base_icon_state = "carpet_carp"
+	floor_tile = /obj/item/stack/tile/carpet/carp
+
+/turf/open/floor/carpet/lizard
+	name = "lizard scales"
+	desc = "Carpet made with lizard scales. Lizards were most likely harmed making this."
+	icon = 'icons/turf/floors/carpet_lizard.dmi'
+	icon_state = "carpet_lizard-255"
+	base_icon_state = "carpet_lizard"
+	floor_tile = /obj/item/stack/tile/carpet/lizard
+
+/turf/open/floor/carpet/human
+	name = "human flesh carpet"
+	desc = "Carpet made from flayed human skin. Fresh and moist."
+	icon = 'icons/turf/floors/carpet_skin.dmi'
+	icon_state = "carpet_skin-255"
+	base_icon_state = "carpet_skin"
+	floor_tile = /obj/item/stack/tile/carpet/human
 
 //*****Airless versions of all of the above.*****
 /turf/open/floor/carpet/airless
@@ -867,7 +935,7 @@
 	smoothing_flags = SMOOTH_BITMASK | SMOOTH_BORDER
 	smoothing_groups = SMOOTH_GROUP_TURF_OPEN + SMOOTH_GROUP_TURF_CHASM
 	canSmoothWith = SMOOTH_GROUP_TURF_CHASM
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 
 /turf/open/floor/fakepit/get_smooth_underlay_icon(mutable_appearance/underlay_appearance, turf/asking_turf, adjacency_dir)
 	underlay_appearance.icon = 'icons/turf/floors.dmi'
@@ -893,7 +961,7 @@
 	floor_tile = /obj/item/stack/tile/fakespace
 	layer = SPACE_LAYER
 	plane = PLANE_SPACE
-	tiled_dirt = FALSE
+	tiled_turf = FALSE
 	damaged_dmi = 'icons/turf/space.dmi'
 
 /turf/open/floor/fakespace/broken_states()

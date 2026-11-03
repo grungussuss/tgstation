@@ -82,7 +82,7 @@
 		if(length(boxes))
 			desc = "A pile of boxes suited for pizzas. There appear to be [length(boxes) + 1] boxes in the pile."
 		if(box.boxtag != "")
-			desc = "[desc] The [length(boxes) ? "top box" : "box"]'s tag reads: [box.boxtag]"
+			desc = "[desc] The [length(boxes) ? "top box" : "box"]'s tag reads: [box.boxtag]."
 
 /obj/item/pizzabox/update_icon_state()
 	if(!open)
@@ -122,7 +122,7 @@
 		tag_overlay.pixel_z = box_offset
 		. += tag_overlay
 
-/obj/item/pizzabox/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/pizzabox/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	var/current_offset = 2
 	if(!isinhands)
@@ -248,7 +248,7 @@
 		if(!user.can_perform_action(src))
 			return ITEM_INTERACT_FAILURE
 		balloon_alert(user, "writing box tag...")
-		playsound(src, SFX_WRITING_PEN, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE, SOUND_FALLOFF_EXPONENT + 3, ignore_walls = FALSE)
+		playsound(src, /datum/sound_effect/writing_pen, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE, SOUND_FALLOFF_EXPONENT + 3, ignore_walls = FALSE)
 		boxtag_set = TRUE
 		update_appearance()
 		return ITEM_INTERACT_SUCCESS

@@ -316,6 +316,53 @@ rough example of the "cone" made by the 3 dirs checked
 		loc = loc.loc
 	return null
 
+//Gets the topmost loose container given the passed in LOOSE_CONTAINER flags
+/proc/get_loose_container(atom/movable/loose, container_flags = ALL)
+	while(ismovable(loose.loc))
+		if(!(container_flags & LOOSE_CONTAINER_INCLUDE_STORAGE) && isitem(loose))
+			var/obj/item/item = loose
+			if(item.item_flags & IN_STORAGE)
+				break
+		var/atom/movable/movable = loose.loc
+		if(movable.anchored)
+			break
+		if(isliving(movable))
+			var/mob/living/living = movable
+			if(!(container_flags & LOOSE_CONTAINER_INCLUDE_INVENTORY))
+				var/list/equipped = living.get_equipped_items(INCLUDE_HELD|INCLUDE_POCKETS)
+				if((loose in equipped) && !HAS_TRAIT(loose, TRAIT_NODROP))
+					if(istype(loose, /obj/item/mod/control) && (container_flags & LOOSE_CONTAINER_INCLUDE_SEALED_MODSUIT))
+						var/obj/item/mod/control/modsuit = loose
+						var/sealed = TRUE
+						for(var/datum/mod_part/part as anything in modsuit.get_part_datums(TRUE))
+							if((part.part_item == modsuit || part.part_item.loc != modsuit) && !part.sealed)
+								sealed = FALSE
+								break
+						if(!sealed)
+							break
+					else
+						break
+			if(living.buckled)
+				if(living.buckled.anchored)
+					break
+				else
+					var/obj/buckled_obj = living.buckled
+					buckled_obj.unbuckle_mob(living)
+		if(!(container_flags & LOOSE_CONTAINER_INCLUDE_CLOSET) && iscloset(movable))
+			break
+		if(!(container_flags & LOOSE_CONTAINER_INCLUDE_MECH_EQUIPMENT) && istype(movable, /obj/item/mecha_parts/mecha_equipment))
+			break
+		if(!(container_flags & LOOSE_CONTAINER_INCLUDE_VEHICLE) && isvehicle(movable))
+			var/obj/vehicle/vehicle = movable
+			if(vehicle.is_occupant(loose))
+				break
+		if(!(container_flags & LOOSE_CONTAINER_INCLUDE_STOMACH) && istype(movable, /obj/item/organ/stomach))
+			var/obj/item/organ/stomach/stomach = movable
+			if(loose in stomach.stomach_contents)
+				break
+		loose = movable
+	return loose
+
 /**
  * Line of sight check!
  * Spawns a dummy object and then iterates through each turf to see if it's blocked by something not handled by pass_args.
@@ -370,14 +417,14 @@ rough example of the "cone" made by the 3 dirs checked
 
 /// Returns an x and y value require to reverse the transformations made to center an oversized icon
 /atom/proc/get_oversized_icon_offsets()
-	if (pixel_x == 0 && pixel_y == 0)
+	if (!base_pixel_x && !base_pixel_y && !base_pixel_w && !base_pixel_z)
 		return list("x" = 0, "y" = 0)
 	var/list/icon_dimensions = get_icon_dimensions(icon)
 	var/icon_width = icon_dimensions["width"]
 	var/icon_height = icon_dimensions["height"]
 	return list(
-		"x" = icon_width > ICON_SIZE_X && pixel_x != 0 ? (icon_width - ICON_SIZE_X) * 0.5 : 0,
-		"y" = icon_height > ICON_SIZE_Y && pixel_y != 0 ? (icon_height - ICON_SIZE_Y) * 0.5 : 0,
+		"x" = icon_width > ICON_SIZE_X && (base_pixel_x || base_pixel_w) ? (icon_width - ICON_SIZE_X) * 0.5 : 0,
+		"y" = icon_height > ICON_SIZE_Y && (base_pixel_y || base_pixel_z) ? (icon_height - ICON_SIZE_Y) * 0.5 : 0,
 	)
 
 /// Helper for easily adding blood from INSIDE a mob to an atom (NOT blood ON the mob)

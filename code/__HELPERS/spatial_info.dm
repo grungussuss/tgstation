@@ -26,7 +26,6 @@
 	alerts = null
 	screens = null
 	client_colours = null
-	color_filter_store = null
 	hud_possible = null
 	/// references to everything "on" the turf we are assigned to, that we care about. populated in assign() and cleared in unassign().
 	/// movables iside of other movables count as being "on" if they have get_turf(them) == our turf. intentionally not a lazylist
@@ -208,11 +207,42 @@
 				. -= target
 				break
 
+/**
+ * Returns a list of mobs who are in hearing range of every radio in the list of radios given
+ */
 /proc/get_hearers_in_radio_ranges(list/obj/item/radio/radios)
 	. = list()
 	// Returns a list of mobs who can hear any of the radios given in @radios
 	for(var/obj/item/radio/radio as anything in radios)
 		. |= get_hearers_in_LOS(radio.canhear_range, radio)
+
+/**
+ * Returns a list of mobs who can hear any of the radios given in the given radio list, indexed by the radio.
+ * More expensive than get_hearers_in_radio_ranges()
+ */
+/proc/get_hearers_in_radio_ranges_track_radios(list/obj/item/radio/radios)
+	. = list()
+	// Returns a list of mobs who can hear any of the radios given in @radios, indexed by the radio. More expensive than get_hearers_in_radio_ranges()
+	for(var/obj/item/radio/radio as anything in radios)
+		var/list/possible_hearers = get_hearers_in_LOS(radio.canhear_range, radio)
+		if(length(possible_hearers))
+			.[radio] = possible_hearers
+
+/// A filter to be applied to get_hearers_in_x, that removes any non-mob hearers, converting them to their relevant mob if one exists (such as dullahan heads).
+/// Modifies input list.
+/proc/mob_only_listeners(list/atom/movable/hearers)
+	RETURN_TYPE(/list/mob)
+
+	var/hearers_length
+	if(isnull(hearers) || !(hearers_length = hearers.len)) // note on var assignment in the conditional: this is a micro op so we do not have to do a length() check before assigning hearers.len and so we only have to isnull() once.
+		return list()
+
+	for(var/hearer_index in 1 to hearers_length)
+		var/atom/movable/hearer = hearers[hearer_index]
+		hearers[hearer_index] = hearer.get_listening_mob()
+
+	list_clear_nulls(hearers)
+	return hearers
 
 //Used when converting pixels to tiles to make them accurate
 #define OFFSET_X (0.5 / ICON_SIZE_X)
@@ -225,7 +255,7 @@
 		if(Y1 == Y2)
 			return TRUE //Light cannot be blocked on same tile
 		else
-			var/sign = SIGN(Y2-Y1)
+			var/sign = sign(Y2-Y1)
 			Y1 += sign
 			while(Y1 != Y2)
 				current_turf = locate(X1, Y1, Z)
@@ -241,8 +271,8 @@
 		//b = y - mx
 		var/b = (Y1 + PY1/ICON_SIZE_Y - OFFSET_Y) - m*(X1 + PX1/ICON_SIZE_X - OFFSET_X)//In tiles
 
-		var/signX = SIGN(X2-X1)
-		var/signY = SIGN(Y2-Y1)
+		var/signX = sign(X2-X1)
+		var/signY = sign(Y2-Y1)
 		if(X1 < X2)
 			b += m
 		while(X1 != X2 || Y1 != Y2)
@@ -387,6 +417,15 @@
 	. = view(range, source)
 	source.luminosity = lum
 
+/// get_hear that only gets turfs so we can use as_anything
+/proc/get_hear_turfs(range, atom/source)
+	var/lum = source.luminosity
+	source.luminosity = range + 2
+	. = list()
+	for(var/turf/turf in view(range, source))
+		. += turf
+	source.luminosity = lum
+
 ///Returns the open turf next to the center in a specific direction
 /proc/get_open_turf_in_dir(atom/center, dir)
 	var/turf/open/get_turf = get_step(center, dir)
@@ -476,8 +515,9 @@
  * @params inner_range - The inner range of the circle to NOT pull from.
  * @params center - The center of the circle to pull from, can be an atom (we'll apply get_turf() to it within circle_x_turfs procs.)
  * @params view_based - If TRUE, we'll use circle_view_turfs instead of circle_range_turfs procs.
+ * @params reject_dense - If TRUE, ignore picked turfs in this selection that have density.
  */
-/proc/turf_peel(outer_range, inner_range, center, view_based = FALSE)
+/proc/turf_peel(outer_range, inner_range, center, view_based = FALSE, reject_dense = TRUE)
 	if(inner_range > outer_range) // If the inner range is larger than the outer range, you're using this wrong.
 		CRASH("Turf peel inner range is larger than outer range!")
 	var/list/peel = list()
@@ -492,10 +532,12 @@
 	for(var/turf/possible_spawn as anything in outer)
 		if(possible_spawn in inner)
 			continue
+		if(possible_spawn.density && reject_dense)
+			continue
 		peel += possible_spawn
 
 	if(!length(peel))
-		return center //Offer the center only as a default case when we don't have a valid circle.
+		peel += center //Offer the center only as a default case when we don't have a valid circle.
 	return peel
 
 ///check if 2 diagonal turfs are blocked by dense objects

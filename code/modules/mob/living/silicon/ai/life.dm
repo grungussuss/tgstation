@@ -1,4 +1,4 @@
-/mob/living/silicon/ai/Life(seconds_per_tick = SSMOBS_DT, times_fired)
+/mob/living/silicon/ai/Life(seconds_per_tick = SSMOBS_DT)
 	if (stat == DEAD)
 		return
 	//Being dead doesn't mean your temperature never changes
@@ -15,7 +15,7 @@
 	// Handle power damage (oxy)
 	if (battery <= 0 && lacks_power())
 		to_chat(src, span_warning("Your backup battery's output drops below usable levels. It takes only a moment longer for your systems to fail, corrupted and unusable."))
-		adjustOxyLoss(200)
+		adjust_oxy_loss(200)
 
 	if(aiRestorePowerRoutine)
 		// Lost power
@@ -51,7 +51,7 @@
 		return
 
 	var/old_health = health
-	set_health(maxHealth - getOxyLoss() - getToxLoss() - getBruteLoss() - getFireLoss())
+	set_health(maxHealth - get_oxy_loss() - get_tox_loss() - get_brute_loss() - get_fire_loss())
 
 	var/old_stat = stat
 	update_stat()
@@ -65,21 +65,16 @@
 /mob/living/silicon/ai/update_stat()
 	if(HAS_TRAIT(src, TRAIT_GODMODE))
 		return
-	if(stat != DEAD)
-		if(health <= HEALTH_THRESHOLD_DEAD)
-			death()
-			return
-		else if(stat >= UNCONSCIOUS)
-			set_stat(CONSCIOUS)
+	if(stat != DEAD && health <= dead_threshold)
+		death()
+	else if(stat < DEAD)
+		set_stat(STABLE)
 	diag_hud_set_status()
 
 /mob/living/silicon/ai/update_sight()
-	set_invis_see(initial(see_invisible))
-	set_sight(initial(sight))
+	. = ..()
 	if(aiRestorePowerRoutine)
 		clear_sight(SEE_TURFS|SEE_MOBS|SEE_OBJS)
-
-	return ..()
 
 
 /mob/living/silicon/ai/proc/start_RestorePowerRoutine()

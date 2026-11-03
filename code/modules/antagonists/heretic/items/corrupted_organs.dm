@@ -39,7 +39,7 @@
 	if (!LAZYLEN(hallucinations))
 		return
 	organ_owner.client?.images -= hallucinations
-	QDEL_NULL(hallucinations)
+	LAZYNULL(hallucinations)
 
 /obj/item/organ/eyes/corrupt/penlight_examine(mob/living/viewer, obj/item/examtool)
 	viewer.playsound_local(src, 'sound/effects/magic/magic_block_mind.ogg', 75, FALSE)
@@ -66,19 +66,11 @@
 
 /obj/item/organ/tongue/corrupt/on_mob_insert(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
-	RegisterSignal(organ_owner, COMSIG_MOB_SAY, PROC_REF(on_spoken))
+	organ_owner.apply_status_effect(/datum/status_effect/shadowspeak, 60)
 
 /obj/item/organ/tongue/corrupt/on_mob_remove(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
-	UnregisterSignal(organ_owner, COMSIG_MOB_SAY)
-
-/// When the mob speaks, sometimes put it in a different language
-/obj/item/organ/tongue/corrupt/proc/on_spoken(mob/living/organ_owner, list/speech_args)
-	SIGNAL_HANDLER
-	if (organ_owner.has_reagent(/datum/reagent/water/holywater) || prob(60))
-		return
-	speech_args[SPEECH_LANGUAGE] = /datum/language/shadowtongue
-
+	organ_owner.remove_status_effect(/datum/status_effect/shadowspeak)
 
 /// Randomly secretes alcohol or hallucinogens when you're drinking something
 /obj/item/organ/liver/corrupt
@@ -167,7 +159,7 @@
 	deltimer(thirst_timer)
 	thirst_timer = addtimer(VARSET_CALLBACK(src, thirst_satiated, FALSE), 3 MINUTES, TIMER_STOPPABLE | TIMER_DELETE_ME)
 
-/obj/item/organ/stomach/corrupt/handle_hunger(mob/living/carbon/human/human, seconds_per_tick, times_fired)
+/obj/item/organ/stomach/corrupt/handle_hunger(mob/living/carbon/human/human, seconds_per_tick)
 	if (thirst_satiated || human.has_reagent(/datum/reagent/water/holywater))
 		return ..()
 
@@ -206,7 +198,7 @@
 	. = ..()
 	AddElement(/datum/element/corrupted_organ)
 
-/obj/item/organ/heart/corrupt/on_life(seconds_per_tick, times_fired)
+/obj/item/organ/heart/corrupt/on_life(seconds_per_tick)
 	. = ..()
 	if (!COOLDOWN_FINISHED(src, hand_cooldown) || IS_IN_MANSUS(owner) || !owner.needs_heart() || !is_beating() || owner.has_reagent(/datum/reagent/water/holywater))
 		return
@@ -251,8 +243,7 @@
 	breather.emote("cough");
 	var/chosen_gas = pick_weight(gas_types)
 	var/datum/gas_mixture/mix_to_spawn = new()
-	mix_to_spawn.add_gas(pick(chosen_gas))
-	mix_to_spawn.gases[chosen_gas][MOLES] = gas_amount
+	mix_to_spawn.adjust_gas(pick(chosen_gas), gas_amount)
 	mix_to_spawn.temperature = breather.bodytemperature
 	log_atmos("[owner] coughed some gas into the air due to their corrupted lungs.", mix_to_spawn)
 	var/turf/open/our_turf = get_turf(breather)
@@ -280,9 +271,9 @@
 	AddElement(/datum/element/corrupted_organ)
 	AddElement(/datum/element/noticable_organ, "%PRONOUN_Their abdomen is distended... and wiggling.", BODY_ZONE_PRECISE_GROIN)
 
-/obj/item/organ/appendix/corrupt/on_life(seconds_per_tick, times_fired)
+/obj/item/organ/appendix/corrupt/on_life(seconds_per_tick)
 	. = ..()
-	if (owner.stat != CONSCIOUS || owner.has_reagent(/datum/reagent/water/holywater) || IS_IN_MANSUS(owner) || !SPT_PROB(worm_chance, seconds_per_tick))
+	if (IS_UNCONSCIOUS_OR_CRIT(owner) || owner.has_reagent(/datum/reagent/water/holywater) || IS_IN_MANSUS(owner) || !SPT_PROB(worm_chance, seconds_per_tick))
 		return
 	owner.vomit(MOB_VOMIT_MESSAGE | MOB_VOMIT_HARM, vomit_type = /obj/effect/decal/cleanable/vomit/nebula/worms, distance = 0)
 	owner.Knockdown(0.5 SECONDS)

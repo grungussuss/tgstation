@@ -18,7 +18,7 @@
 	var/returns_created_atoms = FALSE
 
 	///the list of atoms created by this template being loaded, only populated if returns_created_atoms is TRUE
-	var/list/created_atoms = list()
+	var/list/created_atoms
 	//make sure this list is accounted for/cleared if you request it from ssatoms!
 
 	///If true, any openspace turfs above the template will be replaced with ceiling_turf when loading. Should probably be FALSE for lower levels of multi-z ruins.
@@ -31,6 +31,9 @@
 /datum/map_template/New(path = null, rename = null, cache = FALSE)
 	SHOULD_CALL_PARENT(TRUE)
 	. = ..()
+	// holodeck computers read this list even when a load fails
+	if(returns_created_atoms)
+		LAZYINITLIST(created_atoms)
 	if(path)
 		mappath = path
 	if(mappath)
@@ -89,15 +92,10 @@
 	if(!SSatoms.initialized)
 		return
 
+	if(returns_created_atoms)
+		LAZYINITLIST(created_atoms)
 	SSatoms.InitializeAtoms(areas + turfs + movables, returns_created_atoms ? created_atoms : null)
-
-	for(var/turf/unlit as anything in turfs)
-		if(unlit.space_lit)
-			continue
-		var/area/loc_area = unlit.loc
-		if(!loc_area.static_lighting)
-			continue
-		unlit.lighting_build_overlay()
+	SSlighting.setup_static_lighting_if_needed(turfs)
 
 	// NOTE, now that Initialize and LateInitialize run correctly, do we really
 	// need these two below?

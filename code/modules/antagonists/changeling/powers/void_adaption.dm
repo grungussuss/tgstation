@@ -4,6 +4,8 @@
 	helptext = "This ability is passive, and will automatically protect us in situations of extreme cold or vacuum, \
 		as well as removing our need to breathe oxygen, although we will still be affected by hazardous gases. \
 		While it is actively protecting us from temperature or pressure it reduces our chemical regeneration rate."
+	category = "utility"
+	button_icon_state = "void_adaption"
 	owner_has_control = FALSE
 	dna_cost = 2
 
@@ -57,12 +59,12 @@
 		return
 	var/datum/antagonist/changeling/changeling_data = IS_CHANGELING(void_adapted)
 	to_chat(void_adapted, span_changeling("Our cells harden themselves against the [pick(active_reasons)]."))
-	changeling_data?.chem_recharge_slowdown -= recharge_slowdown
+	changeling_data?.chem_recharge_slowdown += recharge_slowdown
 	currently_active = TRUE
 
 /// Called when we stop being adapted
 /datum/action/changeling/void_adaption/proc/on_removed_adaption(mob/living/former, message)
 	var/datum/antagonist/changeling/changeling_data = IS_CHANGELING(former)
 	to_chat(former, span_changeling(message))
-	changeling_data?.chem_recharge_slowdown += recharge_slowdown
+	changeling_data?.chem_recharge_slowdown -= recharge_slowdown
 	currently_active = FALSE

@@ -16,7 +16,7 @@
 	ranged_ignores_vision = TRUE
 	stat_attack = DEAD
 	atmos_requirements = null
-	damage_coeff = list(BRUTE = 1, BURN = 0.5, TOX = 1, STAMINA = 0, OXY = 1)
+	physiology = list(BURN = 0.5, STAMINA = 0)
 	minbodytemp = 0
 	maxbodytemp = INFINITY
 	vision_range = 5
@@ -69,6 +69,7 @@
 	)
 	AddComponent(/datum/component/seethrough_mob)
 	AddElement(/datum/element/simple_flying)
+	AddElement(/datum/element/block_mining_mob_respawns, 10)
 	if (achievement_type || score_achievement_type)
 		var/list/achievements = list(/datum/award/achievement/boss/boss_killer, /datum/award/score/boss_score)
 		if (achievement_type)
@@ -112,7 +113,7 @@
 	set_health(0)
 	return ..()
 
-/mob/living/simple_animal/hostile/megafauna/dust(just_ash, drop_items, force)
+/mob/living/simple_animal/hostile/megafauna/dust(just_ash, drop_items, give_moodlet, force)
 	if(!force && health > 0)
 		return
 	loot.Cut()
@@ -128,7 +129,7 @@
 	if(!isliving(target))
 		return
 	var/mob/living/living_target = target
-	if(living_target.stat == DEAD || (living_target.health <= HEALTH_THRESHOLD_DEAD && HAS_TRAIT(living_target, TRAIT_NODEATH)))
+	if(living_target.stat == DEAD || (living_target.health <= dead_threshold && HAS_TRAIT(living_target, TRAIT_NODEATH)))
 		devour(living_target)
 		return
 	if(isnull(client) && ranged && ranged_cooldown <= world.time)
@@ -147,7 +148,7 @@
 		qdel(victim.get_organ_slot(ORGAN_SLOT_LUNGS))
 		qdel(victim.get_organ_slot(ORGAN_SLOT_HEART))
 		qdel(victim.get_organ_slot(ORGAN_SLOT_LIVER))
-	victim.adjustBruteLoss(500)
+	victim.adjust_brute_loss(500)
 	victim.death() //make sure they die
 	victim.apply_status_effect(/datum/status_effect/gutted)
 	LoseTarget()
@@ -170,13 +171,13 @@
 /mob/living/simple_animal/hostile/megafauna/ex_act(severity, target)
 	switch (severity)
 		if (EXPLODE_DEVASTATE)
-			adjustBruteLoss(250)
+			adjust_brute_loss(250)
 
 		if (EXPLODE_HEAVY)
-			adjustBruteLoss(100)
+			adjust_brute_loss(100)
 
 		if (EXPLODE_LIGHT)
-			adjustBruteLoss(50)
+			adjust_brute_loss(50)
 
 	return TRUE
 

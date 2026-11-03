@@ -124,7 +124,7 @@
 
 /// Stop fucking around and get the rest of it out
 /datum/status_effect/goose_vomit/proc/vomit_finale()
-	tick_interval = 0.1 SECONDS
+	tick_interval = 0.2 SECONDS
 	owner.set_jitter_if_lower(1 SECONDS)
 	hurl_item(vomit_strongly = TRUE)
 
@@ -141,6 +141,8 @@
 	thing.forceMove(drop_location)
 	if (isopenturf(drop_location))
 		make_mess(drop_location)
+		if (QDELETED(thing)) // Stacks can merge and delete themselves
+			return
 		var/destination = get_edge_target_turf(drop_location, pick(GLOB.alldirs))
 		var/throwRange = vomit_strongly ? rand(2, 8) : 1
 		thing.safe_throw_at(destination, throwRange, 2)
@@ -176,7 +178,7 @@
 
 /datum/status_effect/goose_choking/on_remove()
 	UnregisterSignal(owner, COMSIG_LIVING_DEATH)
-	if (duration >= world.time)
+	if (duration > 0)
 		return // Saved by something, although probably by dying early
 	owner.death_message = "lets out one final oxygen-deprived honk before [owner.p_they()] go[owner.p_es()] limp and lifeless.."
 	owner.death()

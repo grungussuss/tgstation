@@ -16,8 +16,7 @@
 		TRAIT_UNHUSKABLE,
 	)
 
-	inherent_biotypes = MOB_HUMANOID|MOB_MINERAL
-	inherent_respiration_type = RESPIRATION_PLASMA
+	inherent_biotypes = MOB_HUMANOID|MOB_MINERAL|MOB_SKELETAL
 	mutantlungs = /obj/item/organ/lungs/plasmaman
 	smoker_lungs = /obj/item/organ/lungs/plasmaman/plasmaman_smoker
 	mutanttongue = /obj/item/organ/tongue/bone/plasmaman
@@ -27,7 +26,6 @@
 	mutantheart = null
 	heatmod = 1.5
 	payday_modifier = 1.0
-	breathid = GAS_PLASMA
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | ERT_SPAWN
 	species_cookie = /obj/item/reagent_containers/condiment/milk
 	outfit_important_for_life = /datum/outfit/plasmaman
@@ -41,6 +39,10 @@
 		BODY_ZONE_R_LEG = /obj/item/bodypart/leg/right/plasmaman,
 		BODY_ZONE_CHEST = /obj/item/bodypart/chest/plasmaman,
 	)
+	survival_box_overrides = list(
+		SURVIVAL_INTERNALS_TYPE = /obj/item/tank/internals/plasmaman/belt,
+		SURVIVAL_MEDIPEN_TYPE = /obj/item/reagent_containers/hypospray/medipen,
+	)
 
 	// Body temperature for Plasmen is much lower human as they can handle colder environments
 	bodytemp_normal = (BODYTEMP_NORMAL - 40)
@@ -52,6 +54,7 @@
 	bodytemp_cold_damage_limit = (BODYTEMP_COLD_DAMAGE_LIMIT - 50) // about -50c
 
 	outfit_override_registry = list(
+		/datum/outfit/ninja = /datum/outfit/ninja/plasmaman,
 		/datum/outfit/syndicate = /datum/outfit/syndicate/plasmaman,
 		/datum/outfit/syndicate/full = /datum/outfit/syndicate/full/plasmaman,
 		/datum/outfit/syndicate/leader = /datum/outfit/syndicate/leader/plasmaman,
@@ -66,21 +69,11 @@
 		/datum/outfit/syndicate/full/loneop = /datum/outfit/syndicate/full/plasmaman/loneop,
 	)
 
-	/// If the bones themselves are burning clothes won't help you much
-	var/internal_fire = FALSE
-
 /datum/species/plasmaman/pre_equip_species_outfit(datum/job/job, mob/living/carbon/human/equipping, visuals_only = FALSE)
 	if(job?.plasmaman_outfit)
 		equipping.equipOutfit(job.plasmaman_outfit, visuals_only)
 	else
 		give_important_for_life(equipping)
-
-/datum/species/plasmaman/get_scream_sound(mob/living/carbon/human)
-	return pick(
-		'sound/mobs/humanoids/plasmaman/plasmeme_scream_1.ogg',
-		'sound/mobs/humanoids/plasmaman/plasmeme_scream_2.ogg',
-		'sound/mobs/humanoids/plasmaman/plasmeme_scream_3.ogg',
-	)
 
 /datum/species/plasmaman/get_physical_attributes()
 	return "Plasmamen literally breathe and live plasma. They spontaneously combust on contact with oxygen, and besides all the quirks that go with that, \

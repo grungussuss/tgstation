@@ -1,13 +1,13 @@
 PROCESSING_SUBSYSTEM_DEF(station)
 	name = "Station"
-	flags = SS_BACKGROUND
+	ss_flags = SS_BACKGROUND
 	runlevels = RUNLEVEL_GAME
 	wait = 5 SECONDS
 
 	///A list of currently active station traits
 	var/list/station_traits = list()
 	///Assoc list of trait type || assoc list of traits with weighted value. Used for picking traits from a specific category.
-	var/list/selectable_traits_by_types = list(STATION_TRAIT_POSITIVE = list(), STATION_TRAIT_NEUTRAL = list(), STATION_TRAIT_NEGATIVE = list())
+	var/alist/selectable_traits_by_types = alist(STATION_TRAIT_POSITIVE = list(), STATION_TRAIT_NEUTRAL = list(), STATION_TRAIT_NEGATIVE = list())
 	///Currently active announcer. Starts as a type but gets initialized after traits are selected
 	var/datum/centcom_announcer/announcer = /datum/centcom_announcer/default
 	///A list of trait roles that should be protected from antag
@@ -23,7 +23,6 @@ PROCESSING_SUBSYSTEM_DEF(station)
 	// Autowiki also wants consistent outputs, for example making sure the vending machine page always reports the normal products
 	#if !defined(UNIT_TESTS) && !defined(AUTOWIKI)
 	SetupTraits()
-	display_lobby_traits()
 	#endif
 
 	announcer = new announcer() //Initialize the station's announcer datum
@@ -94,15 +93,12 @@ PROCESSING_SUBSYSTEM_DEF(station)
 
 		return
 
-	for(var/datum/station_trait/trait_typepath as anything in subtypesof(/datum/station_trait))
+	for(var/datum/station_trait/trait_typepath as anything in valid_subtypesof(/datum/station_trait))
 
 		// If forced, (probably debugging), just set it up now, keep it out of the pool.
 		if(initial(trait_typepath.force))
 			setup_trait(trait_typepath)
 			continue
-
-		if(initial(trait_typepath.abstract_type) == trait_typepath)
-			continue //Dont add abstract ones to it
 
 		if(!(initial(trait_typepath.trait_flags) & STATION_TRAIT_PLANETARY) && SSmapping.is_planetary()) // we're on a planet but we can't do planet ;_;
 			continue
@@ -110,7 +106,7 @@ PROCESSING_SUBSYSTEM_DEF(station)
 		if(!(initial(trait_typepath.trait_flags) & STATION_TRAIT_SPACE_BOUND) && !SSmapping.is_planetary()) //we're in space but we can't do space ;_;
 			continue
 
-		if(!(initial(trait_typepath.trait_flags) & STATION_TRAIT_REQUIRES_AI) && !CONFIG_GET(flag/allow_ai)) //can't have AI traits without AI
+		if((initial(trait_typepath.trait_flags) & STATION_TRAIT_REQUIRES_AI) && !CONFIG_GET(flag/allow_ai)) //can't have AI traits without AI
 			continue
 
 		if(ispath(trait_typepath, /datum/station_trait/random_event_weight_modifier)) //Don't add event modifiers for events that can't occur on our map.
@@ -174,10 +170,3 @@ PROCESSING_SUBSYSTEM_DEF(station)
 		var/datum/station_trait/trait_to_remove = i
 		selectable_traits_by_types[initial(trait_to_remove.trait_type)] -= trait_to_remove
 
-/// Update station trait lobby buttons for clients who joined before we initialised this subsystem
-/datum/controller/subsystem/processing/station/proc/display_lobby_traits()
-	for (var/mob/dead/new_player/player as anything in GLOB.new_player_list)
-		var/datum/hud/new_player/observer_hud = player.hud_used
-		if (!istype(observer_hud))
-			continue
-		observer_hud.show_station_trait_buttons()

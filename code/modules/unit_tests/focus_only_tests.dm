@@ -12,6 +12,9 @@
 /// Checks that every overlay passed into build_appearance_list exists in the icon
 /datum/unit_test/focus_only/invalid_overlays
 
+/// Checks that every screen alert with an overlay icon state is valid
+/datum/unit_test/focus_only/screen_alert_overlay
+
 /// Checks that every icon sent to the research_designs spritesheet is valid
 /datum/unit_test/focus_only/invalid_research_designs
 
@@ -33,14 +36,8 @@
 /// Ensures that items that got the nullrod_core element with the chaptain_spawnable arg can be selected by the chaplain
 /datum/unit_test/focus_only/nullrod_variants
 
-/// Checks that no light shares a tile/pixel offsets with another
-/datum/unit_test/focus_only/stacked_lights
-
 /// Checks for bad icon / icon state setups in cooking crafting menu
 /datum/unit_test/focus_only/bad_cooking_crafting_icons
-
-/// Ensures openspace never spawns on the bottom of a z stack
-/datum/unit_test/focus_only/openspace_clear
 
 /// Checks to ensure that variables expected to exist in a job datum (for config reasons) actually exist
 /datum/unit_test/focus_only/missing_job_datum_variables
@@ -72,3 +69,9 @@
 
 ///Checks that items have roughly the same materials whenever spawned via processing/microwaving/baking etc. or any other mean.
 /datum/unit_test/focus_only/check_materials_when_processed
+
+///Checks primarily that emissives aren't mistakenly not tagged with the meta flag
+/datum/unit_test/focus_only/bodypart_overlay_flags
+
+/// Ensures two handed components that use `update_icon_state` have the correct items in their files
+/datum/unit_test/focus_only/two_handed_icons

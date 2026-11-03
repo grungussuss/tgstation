@@ -10,6 +10,7 @@
 	always_unpowered = FALSE
 	// Loading the same shuttle map at a different time will produce distinct area instances.
 	area_flags = NONE
+	area_flags_mapping = NONE
 	icon = 'icons/area/areas_station.dmi'
 	icon_state = "shuttle"
 	flags_1 = CAN_BE_DIRTY_1
@@ -71,6 +72,10 @@
 	name = "Flying Dutchman"
 	requires_power = FALSE
 
+/area/shuttle/pirate/siren
+	default_gravity = ZERO_GRAVITY
+	area_flags = NO_GRAVITY
+
 ////////////////////////////Bounty Hunter Shuttles////////////////////////////
 
 /area/shuttle/hunter
@@ -120,35 +125,27 @@
 	static_lighting = FALSE
 	base_lighting_alpha = 255
 
-
 /area/shuttle/arrival
 	name = "Arrival Shuttle"
-	area_flags = UNIQUE_AREA// SSjob refers to this area for latejoiners
-
+	area_flags_mapping = UNIQUE_AREA // SSjob refers to this area for latejoiners
 
 /area/shuttle/arrival/on_joining_game(mob/living/boarder)
 	if(SSshuttle.arrivals?.mode == SHUTTLE_CALL)
 		var/atom/movable/screen/splash/Spl = new(null, null, boarder.client, TRUE)
 		Spl.fade(TRUE)
 		boarder.playsound_local(get_turf(boarder), 'sound/announcer/ApproachingTG.ogg', 25)
-	boarder.update_parallax_teleport()
-
 
 /area/shuttle/pod_1
 	name = "Escape Pod One"
-	area_flags = NONE
 
 /area/shuttle/pod_2
 	name = "Escape Pod Two"
-	area_flags = NONE
 
 /area/shuttle/pod_3
 	name = "Escape Pod Three"
-	area_flags = NONE
 
 /area/shuttle/pod_4
 	name = "Escape Pod Four"
-	area_flags = NONE
 
 /area/shuttle/mining
 	name = "Mining Shuttle"
@@ -166,10 +163,9 @@
 
 /area/shuttle/escape
 	name = "Emergency Shuttle"
-	area_flags = BLOBS_ALLOWED
+	area_flags = CULT_PERMITTED
 	area_limited_icon_smoothing = /area/shuttle/escape
 	flags_1 = CAN_BE_DIRTY_1
-	area_flags = CULT_PERMITTED
 
 /area/shuttle/escape/backup
 	name = "Backup Emergency Shuttle"
@@ -199,6 +195,12 @@
 
 /area/shuttle/escape/engine
 	name = "Escape Shuttle Engine"
+
+/area/shuttle/escape/tombstone
+	ambience_index = AMBIENCE_SPOOKY
+
+/area/shuttle/escape/xenobio
+	name = "Escape Shuttle Xenobiology"
 
 /area/shuttle/transport
 	name = "Transport Shuttle"
@@ -290,8 +292,6 @@
 		to_chat(L, "<span class='reallybig redtext'>The battle is won. Your bloodlust subsides.</span>", confidential = TRUE)
 		for(var/obj/item/chainsaw/doomslayer/chainsaw in L)
 			qdel(chainsaw)
-		var/obj/item/skeleton_key/key = new(L)
-		L.put_in_hands(key)
 	else
 		to_chat(L, span_warning("You are not yet worthy of passing. Drag a severed head to the barrier to be allowed entry to the hall of champions."), confidential = TRUE)
 

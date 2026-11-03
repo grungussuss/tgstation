@@ -26,7 +26,7 @@
 
 /obj/item/storage/box/pdas/PopulateContents()
 	for(var/i in 1 to 4)
-		new /obj/item/modular_computer/pda(src)
+		new /obj/item/modular_computer/pda/crew(src)
 
 /obj/item/storage/box/ids
 	name = "box of spare IDs"
@@ -150,7 +150,7 @@
 	custom_premium_price = PAYCHECK_CREW * 3
 
 /obj/item/storage/box/dishdrive/PopulateContents()
-	var/static/items_inside = list(
+	var/list/items_inside = list(
 		/obj/item/circuitboard/machine/dish_drive = 1,
 		/obj/item/screwdriver = 1,
 		/obj/item/stack/cable_coil/five = 1,
@@ -178,8 +178,9 @@
 	custom_price = PAYCHECK_COMMAND * 1.25
 
 /obj/item/storage/box/tail_pin/PopulateContents()
-	for(var/i in 1 to 3)
-		new /obj/item/poster/tail_board(src)
+	new /obj/item/poster/tail_board(src)
+	new /obj/item/clothing/glasses/blindfold(src)
+	for(var/i in 1 to 4)
 		new /obj/item/tail_pin(src)
 
 /obj/item/storage/box/party_poppers
@@ -305,3 +306,16 @@
 		new /obj/item/sticker/purity_seal(src)
 		new /obj/item/sticker/purity_seal/purity_seal_2(src)
 
+/obj/item/storage/box/stamps
+	name = "box of stamps"
+	desc = "Stamps for all kinds of documents."
+	illustration = "stamp"
+	custom_price = PAYCHECK_CREW
+
+/obj/item/storage/box/stamps/PopulateContents()
+	var/static/items_inside = list(
+		/obj/item/stamp/granted = 1,
+		/obj/item/stamp/denied = 1,
+		/obj/item/stamp/void = 1,
+	)
+	generate_items_inside(items_inside,src)

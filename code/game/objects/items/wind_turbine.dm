@@ -22,12 +22,11 @@
 	force = 10
 	throwforce = 6
 	w_class = WEIGHT_CLASS_BULKY
+	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 22, /datum/material/plastic = SHEET_MATERIAL_AMOUNT * 5, /datum/material/glass = SMALL_MATERIAL_AMOUNT * 0.5)
 	///What item is being charged currently?
 	var/obj/item/charging = null
 	///Did we put power into "charging" last process()?
 	var/using_power = FALSE
-	///Did we finish recharging the currently inserted item?
-	var/finished_recharging = FALSE
 
 	///Current rotor animation frame. (floating point value).
 	var/rotor_tick = 0
@@ -106,16 +105,44 @@
 	if(slot & slot_flags)
 		RegisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(on_move))
 		RegisterSignal(user, COMSIG_ATOM_POST_DIR_CHANGE, PROC_REF(on_dir_change))
+		RegisterSignal(user, COMSIG_LIVING_SUICIDE_ACT, PROC_REF(on_suicide_act))
 	else
 		setDir(SOUTH)
-		UnregisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(on_move))
-		UnregisterSignal(user, COMSIG_ATOM_POST_DIR_CHANGE, PROC_REF(on_dir_change))
+		UnregisterSignal(user, list(
+			COMSIG_MOVABLE_MOVED,
+			COMSIG_ATOM_POST_DIR_CHANGE,
+			COMSIG_LIVING_SUICIDE_ACT
+		))
 
 ///Called when the thing HOLDING the turbine changes direction
 /obj/item/portable_wind_turbine/proc/on_dir_change(datum/source, old_dir, new_dir)
 	SIGNAL_HANDLER
 
 	update_appearance()
+
+/obj/item/portable_wind_turbine/proc/on_suicide_act(mob/living/source)
+	SIGNAL_HANDLER
+	if(source.get_active_held_item())
+		return NONE
+
+	return suicide_act(source)
+
+/obj/item/portable_wind_turbine/suicide_act(mob/living/user)
+	var/obj/item/bodypart/head = user.get_bodypart(BODY_ZONE_HEAD)
+	if(isnull(head))
+		return NONE
+
+	playsound(user,'sound/items/weapons/bladeslice.ogg', 50)
+	user.visible_message(span_suicide("[user] moves [user.p_their()] head in the way of [src]'s blades! \
+		It looks like [user.p_theyre()] trying to commit suicide!"))
+	user.set_suicide(TRUE)
+	user.apply_damage(75, BRUTE, BODY_ZONE_HEAD, wound_bonus = 100, forced = TRUE, sharpness = SHARP_EDGED, attacking_item = src)
+	if(head.dismember())
+		user.death() // anti-ling check
+		return MANUAL_SUICIDE
+
+	user.visible_message(span_suicide("...but fails to separate [user.p_their()] head from [user.p_their()] body! Ouch!"))
+	return SHAME
 
 ///Updates the worn back icon for the current loc
 /obj/item/portable_wind_turbine/proc/update_back()
@@ -231,7 +258,6 @@
 	if(is_type_in_typecache(arrived, allowed_devices))
 		charging = arrived
 		START_PROCESSING(SSmachines, src)
-		finished_recharging = FALSE
 		using_power = TRUE
 		update_appearance()
 	return ..()
@@ -245,31 +271,33 @@
 		update_appearance()
 	return ..()
 
-/obj/item/portable_wind_turbine/attackby(obj/item/attacking_item, mob/user, params)
-	if(istype(attacking_item, /obj/item/stock_parts/capacitor))
+/obj/item/portable_wind_turbine/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	if(istype(tool, /obj/item/stock_parts/capacitor))
 		if (cap)
 			balloon_alert(user, "already has a capacitor!")
-			return TRUE
-		user.transferItemToLoc(attacking_item, src)
-		cap = attacking_item
-		balloon_alert(user, "inserted the [attacking_item]")
-		return TRUE
-	if(!is_type_in_typecache(attacking_item, allowed_devices))
-		return ..()
+			return ITEM_INTERACT_BLOCKING
+		user.transferItemToLoc(tool, src)
+		cap = tool
+		balloon_alert(user, "inserted the [tool]")
+		return ITEM_INTERACT_SUCCESS
+
+	if(!is_type_in_typecache(tool, allowed_devices))
+		return NONE
+
 	if(isnull(cap))
 		balloon_alert(user, "no capacitor inserted!")
-		return TRUE
+		return ITEM_INTERACT_BLOCKING
 	if(charging)
 		balloon_alert(user, "already charging something!")
-		return TRUE
-	if(istype(attacking_item, /obj/item/gun/energy))
-		var/obj/item/gun/energy/energy_gun = attacking_item
+		return ITEM_INTERACT_BLOCKING
+	if(istype(tool, /obj/item/gun/energy))
+		var/obj/item/gun/energy/energy_gun = tool
 		if(!energy_gun.can_charge)
 			balloon_alert(user, "not rechargable!")
-			return TRUE
-	user.transferItemToLoc(attacking_item, src)
-	charging = attacking_item
-	return TRUE
+			return ITEM_INTERACT_BLOCKING
+	user.transferItemToLoc(tool, src)
+	charging = tool
+	return ITEM_INTERACT_SUCCESS
 
 /obj/item/portable_wind_turbine/attack_hand(mob/user, list/modifiers)
 	if(loc == user || (istype(loc, /turf) && !isnull(charging)))
@@ -313,17 +341,16 @@
 	if(charging_cell)
 		var/wanted_power = min(charging_cell.maxcharge - charging_cell.charge, charging_cell.chargerate)
 		if(wanted_power > 0)
-			using_power = TRUE
 			var/power_to_give = min(available_power, wanted_power) * seconds_per_tick / 2
 			if (power_to_give > 0)
 				charging_cell.give(power_to_give)
 				available_power -= power_to_give
+				if(charging_cell.charge == charging_cell.maxcharge)
+					playsound(src, 'sound/machines/ping.ogg', 30, TRUE)
+					say("[charging] has finished recharging!")
+				else
+					using_power = TRUE
 		update_appearance()
-
-	if(!using_power && !finished_recharging) //Inserted thing is at max charge/ammo, notify those around us
-		finished_recharging = TRUE
-		playsound(src, 'sound/machines/ping.ogg', 30, TRUE)
-		say("[charging] has finished recharging!")
 
 /obj/item/portable_wind_turbine/emp_act(severity)
 	. = ..()
@@ -348,7 +375,7 @@
 	if (istype(charging, /obj/item/melee/baton/security/))
 		. += mutable_appearance(icon, "baton")
 
-/obj/item/portable_wind_turbine/worn_overlays(mutable_appearance/standing, isinhands, icon_file)
+/obj/item/portable_wind_turbine/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
 	if (isinhands)
 		return

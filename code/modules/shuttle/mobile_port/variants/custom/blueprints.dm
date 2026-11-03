@@ -104,9 +104,8 @@
 		if(turf_area.allow_shuttle_docking)
 			if(!GLOB.custom_areas[turf_area] && turf_area.apc)
 				var/obj/machinery/power/apc/apc = turf_area.apc
-				var/datum/component/wall_mounted/wallmount_comp = apc.GetComponent(/datum/component/wall_mounted)
 				var/turf/apc_turf = get_turf(apc)
-				if(target == apc_turf || target == wallmount_comp.hanging_wall_turf)
+				if(target == apc_turf)
 					holder.image_state = "red"
 		else
 			holder.image_state = "red"
@@ -115,9 +114,8 @@
 		if(GLOB.custom_areas[turf_area] && HAS_TRAIT(turf_area, TRAIT_HAS_SHUTTLE_CONSTRUCTION_TURF))
 			if(turf_area.apc)
 				var/obj/machinery/power/apc/apc = turf_area.apc
-				var/datum/component/wall_mounted/wallmount_comp = apc.GetComponent(/datum/component/wall_mounted)
 				var/turf/apc_turf = get_turf(apc)
-				if(HAS_TRAIT(apc_turf, TRAIT_SHUTTLE_CONSTRUCTION_TURF) || HAS_TRAIT(wallmount_comp.hanging_wall_turf, TRAIT_SHUTTLE_CONSTRUCTION_TURF))
+				if(HAS_TRAIT(apc_turf, TRAIT_SHUTTLE_CONSTRUCTION_TURF))
 					holder.image_state = "red"
 	holder.regenerate_image()
 
@@ -131,6 +129,7 @@
 	attack_verb_continuous = list("attacks", "baps", "hits")
 	attack_verb_simple = list("attack", "bap", "hit")
 	interaction_flags_atom = parent_type::interaction_flags_atom | INTERACT_ATOM_ALLOW_USER_LOCATION | INTERACT_ATOM_IGNORE_MOBILITY
+	custom_materials = list(/datum/material/plastic = HALF_SHEET_MATERIAL_AMOUNT)
 
 	var/base_desc = "A blank sheet of synthetic engineering-grade paper."
 	var/linked_desc = "A sheet of synthetic engineering-grade paper with shuttle schematics printed on it."
@@ -150,6 +149,10 @@
 	. = ..()
 	prox_monitor = new(src, 0, FALSE)
 	update_appearance()
+
+/obj/item/shuttle_blueprints/Destroy(force)
+	QDEL_NULL(prox_monitor)
+	return ..()
 
 /obj/item/shuttle_blueprints/equipped(mob/user, slot, initial)
 	. = ..()
@@ -202,7 +205,7 @@
 		user.balloon_alert(user, "cancelled")
 		return
 	new_name = apply_text_macros(new_name)
-	var/obj/item/hitting_implement = (locate(/obj/item/reagent_containers/cup/glass/bottle) in user.held_items) || user.get_item_for_held_index(hand)
+	var/obj/item/hitting_implement = user.is_holding_item_of_type(/obj/item/reagent_containers/cup/glass/bottle) || user.get_item_for_held_index(hand)
 	if(!attacked.IsReachableBy(user, hitting_implement.reach))
 		user.balloon_alert(user, "out of range!")
 		return
@@ -461,7 +464,7 @@
 		return ITEM_INTERACT_SUCCESS
 	if(istype(interacting_with, /mob/living/silicon/robot))
 		var/mob/living/silicon/robot/borg = interacting_with
-		var/obj/item/shuttle_blueprints/borg/other_blueprints = (locate() in borg.model.modules) || (locate() in borg.held_items)
+		var/obj/item/shuttle_blueprints/borg/other_blueprints = (locate() in borg.model.modules) || (borg.is_holding_item_of_type(__IMPLIED_TYPE__))
 		if(!other_blueprints)
 			return
 		if(other_blueprints.shuttles.Find(shuttle_ref))
@@ -571,7 +574,7 @@
 				balloon_alert(usr, "invalid room!")
 				return TRUE
 			var/area/shuttle/custom/new_area = new()
-			new_area.name = area_name
+			new_area.setup(area_name)
 			shuttle.shuttle_areas[new_area] = TRUE
 			set_turfs_to_area(turfs, new_area)
 			new_area.reg_in_areas_in_z()
@@ -702,6 +705,7 @@
 	base_icon_state = "shuttle_blueprints_crude"
 	base_desc = "This is just a sheet of paper thoroughly covered in what could either be crayon or spraypaint."
 	linked_desc = "This is just a crude doodle of a shuttle drawn on a background of what could either be crayon or spraypaint."
+	custom_materials = list(/datum/material/paper = HALF_SHEET_MATERIAL_AMOUNT / 2)
 
 /obj/item/shuttle_blueprints/borg
 	name = "shuttle blueprint database"

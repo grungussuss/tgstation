@@ -2,9 +2,8 @@
 	title = JOB_CHIEF_MEDICAL_OFFICER
 	description = "Coordinate doctors and other medbay employees, ensure they \
 		know how to save lives, check for injuries on the crew monitor."
-	department_head = list(JOB_CAPTAIN)
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD
-	head_announce = list(RADIO_CHANNEL_MEDICAL)
+	head_announce = RADIO_CHANNEL_MEDICAL
 	faction = FACTION_STATION
 	total_positions = 1
 	spawn_positions = 1
@@ -27,11 +26,12 @@
 	paycheck = PAYCHECK_COMMAND
 	paycheck_department = ACCOUNT_MED
 
-	mind_traits = list(HEAD_OF_STAFF_MIND_TRAITS, MEDICAL_MIND_TRAITS)
+	mind_traits = list(HEAD_OF_STAFF_MIND_TRAITS)
+	desensitized_base = DESENSITIZED_THRESHOLD
 	liver_traits = list(TRAIT_MEDICAL_METABOLISM, TRAIT_ROYAL_METABOLISM)
 
 	display_order = JOB_DISPLAY_ORDER_CHIEF_MEDICAL_OFFICER
-	bounty_types = CIV_JOB_MED
+	bounty_types = CIV_JOB_MED_VIRO
 
 	mail_goodies = list(
 		/obj/effect/spawner/random/medical/organs = 10,
@@ -46,6 +46,7 @@
 	human_authority = JOB_AUTHORITY_HUMANS_ONLY
 
 	voice_of_god_power = 1.4 //Command staff has authority
+	tgui_icon = FA_ICON_USER_MD
 
 
 /datum/job/chief_medical_officer/get_captaincy_announcement(mob/living/captain)
@@ -64,12 +65,12 @@
 	backpack_contents = list(
 		/obj/item/melee/baton/telescopic/silver = 1,
 		)
-	belt = /obj/item/modular_computer/pda/heads/cmo
+	belt = /obj/item/modular_computer/pda/crew/heads/cmo
 	ears = /obj/item/radio/headset/heads/cmo
 	shoes = /obj/item/clothing/shoes/sneakers/white
 	l_pocket = /obj/item/laser_pointer/blue
 	r_pocket = /obj/item/pinpointer/crew
-	l_hand = /obj/item/storage/medkit/surgery
+	l_hand = /obj/item/storage/medkit/surgery/cmo
 
 	backpack = /obj/item/storage/backpack/chief_medic
 	satchel = /obj/item/storage/backpack/satchel/chief_medic
@@ -82,6 +83,8 @@
 		/obj/item/stamp/head/cmo,
 		)
 	skillchips = list(/obj/item/skillchip/entrails_reader)
+
+	wintercoat = /obj/item/clothing/suit/hooded/wintercoat/medical/cmo
 
 /datum/outfit/job/cmo/mod
 	name = "Chief Medical Officer (MODsuit)"
